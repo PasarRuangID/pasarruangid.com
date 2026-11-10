@@ -227,6 +227,11 @@ input[type=date]{min-height:42px}
 .proof.need{border-color:#e5484d;color:#b42318;animation:pulse .6s ease 2}
 .viadana{width:100%;font-size:12px;color:#1f4fb3;background:#eaf2ff;border-radius:8px;padding:5px 8px;text-align:center}
 .ongkirinfo{font-size:13px;background:#f1f6ff;color:#1f3f7a;border-radius:10px;padding:9px 11px}
+.kycb{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:22px;margin-top:4px}
+.kycb div{flex:1;font-size:14px}.kycb small{display:block;color:var(--muted);font-size:12px}.kycb.ok{background:#e7f6f1;border-color:#bfe6d8}.kycb.wait{background:#eaf2ff;border-color:#cfe0ff}
+.consent{display:flex;gap:8px;align-items:flex-start;font-weight:400!important;font-size:13px;background:var(--bg);border-radius:10px;padding:10px}.consent input{width:auto!important;margin-top:2px}
+.vbadge{display:inline-block;font-size:11px;font-weight:700;color:#0b6a53;background:#e7f6f1;border-radius:6px;padding:1px 6px;vertical-align:middle}
+input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -376,6 +381,25 @@ input[type=date]{min-height:42px}
 </div></div>
 <div class="modal-bg" id="ords" onclick="if(event.target===this)close_('ords')"><div class="modal"><button class="x" onclick="close_('ords')">×</button><div class="form" id="ordsBox"></div></div></div>
 <div class="modal-bg" id="ord" onclick="if(event.target===this){close_('ord');ORD_CUR=null}"><div class="modal"><button class="x" onclick="close_('ord');ORD_CUR=null">×</button><div class="form" id="ordBox"></div></div></div>
+<div class="modal-bg" id="kyc" onclick="if(event.target===this)close_('kyc')"><div class="modal"><button class="x" onclick="close_('kyc')">×</button>
+  <form class="form" onsubmit="return submitKyc(event)">
+    <h3>🪪 Verifikasi KTP</h3>
+    <div class="fee">Setelah disetujui admin, profilmu otomatis disesuaikan dengan data KTP & mendapat badge <b>✅ Terverifikasi</b>. Nama, jenis kelamin & tanggal lahir akan dikunci.</div>
+    <label>Foto KTP<div class="pick" onclick="document.getElementById('k-ktp').click()"><span id="k-ktpv">🪪 Ketuk untuk foto / pilih KTP</span></div></label>
+    <input type="file" id="k-ktp" accept="image/*" hidden onchange="pickKyc(this,'ktp')">
+    <small style="color:var(--muted)">Boleh tutup 6 digit tengah NIK dengan jari/kertas. Pastikan nama & foto terlihat jelas.</small>
+    <label>Selfie sambil memegang KTP<div class="pick" onclick="document.getElementById('k-self').click()"><span id="k-selfv">🤳 Ketuk untuk foto selfie + KTP</span></div></label>
+    <input type="file" id="k-self" accept="image/*" capture="user" hidden onchange="pickKyc(this,'self')">
+    <b style="margin-top:6px">Data sesuai KTP</b>
+    <label>Nama lengkap<input id="k-name" required maxlength="60" placeholder="Sesuai KTP"></label>
+    <div class="row"><label>Tempat lahir<input id="k-bplace" required maxlength="40"></label><label>Tanggal lahir<input id="k-birth" type="date" required></label></div>
+    <label>Jenis kelamin<select id="k-gender" required><option value="">—</option><option>Laki-laki</option><option>Perempuan</option></select></label>
+    <label>Alamat sesuai KTP<textarea id="k-addr" rows="2" required maxlength="300" placeholder="Jalan, RT/RW, kel/desa, kecamatan"></textarea></label>
+    <label>Kota / Kabupaten<input id="k-city" list="kotaDL2" required maxlength="50" autocomplete="off"></label>
+    <label class="consent"><input type="checkbox" id="k-ok" required><span>Saya setuju data & foto KTP digunakan <b>hanya</b> untuk verifikasi akun PasarRuang. Foto dihapus otomatis setelah dicek admin.</span></label>
+    <button class="btn buy" id="k-send" type="submit">Kirim untuk Diverifikasi</button>
+  </form>
+</div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -471,7 +495,7 @@ function openDetail(id){
       <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
-      <div class="seller"><div class="ava">${esc(x.seller[0]).toUpperCase()}</div><div><b>${esc(x.seller)}</b><small>${x.remote?"Penjual PasarRuang":"Dijual oleh admin PasarRuang"} · chat langsung di website</small></div></div>
+      <div class="seller"><div class="ava">${esc(x.seller[0]).toUpperCase()}</div><div><b>${esc(x.seller)}${vbadge(x.uid)}</b><small>${x.remote?"Penjual PasarRuang":"Dijual oleh admin PasarRuang"} · chat langsung di website</small></div></div>
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
         ${x.price&&!x.noBuy&&!x.sold?`<button class="btn buy" onclick="openPay('${x.id}')">Beli Sekarang</button>`:""}
@@ -702,13 +726,14 @@ async function myDel(fid){if(!confirmTap("del"+fid))return;try{await FB.remove(f
 let CT={};function confirmTap(k){if(CT[k]&&Date.now()-CT[k]<3000){delete CT[k];return true;}CT[k]=Date.now();toast("Ketuk sekali lagi untuk yakin");return false;}
 async function openAdmin(){ if(!isAdmin()){toast("Khusus admin");return;} const box=document.getElementById("adminBox");
   document.getElementById("admin").classList.add("open"); box.innerHTML="<h3>Panel Admin</h3><p style='color:var(--muted)'>Memuat…</p>";
-  try{ALL=await FB.all();}catch(e){box.innerHTML=`<h3>Panel Admin</h3><p>Gagal memuat: ${esc(e.code||e.message)}. Pastikan Rules Firestore sudah dipasang.</p>`;return;}
+  try{[ALL]=await Promise.all([FB.all(),admKycLoad()]);}catch(e){box.innerHTML=`<h3>Panel Admin</h3><p>Gagal memuat: ${esc(e.code||e.message)}. Pastikan Rules Firestore sudah dipasang.</p>`;return;}
   drawAdmin();
 }
 function admTabs(){const cnt=k=>ALL.filter(x=>x.status===k).length,pv=AORD.filter(o=>o.status==="menunggu_verifikasi").length;
-  return `<div class="tabs" style="flex-wrap:wrap">${[["pay","💳 Pembayaran",pv],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
+  return `<div class="tabs" style="flex-wrap:wrap">${[["pay","💳 Pembayaran",pv],["kyc","🪪 KTP",KYCLIST.length],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
 function drawAdmin(){ const box=document.getElementById("adminBox"); const cnt=k=>ALL.filter(x=>x.status===k).length;
   const l=ALL.filter(x=>x.status===ADMTAB).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(ADMTAB==="kyc"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Menunggu verifikasi KTP (${KYCLIST.length})</b>${KYCLIST.length?KYCLIST.map(k=>`<div class="lrow crow" onclick="admKycView('${k.uid}')"><div class="lth">🪪</div><div class="linfo"><b>${esc((k.data||{}).name||"-")}</b><div>${esc(k.email||"")}</div><small>${fmtDT(k.createdAt)}</small></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}`;return;}
   if(ADMTAB==="pay"){const pv=AORD.filter(o=>o.status==="menunggu_verifikasi"),rest=AORD.filter(o=>o.status!=="menunggu_verifikasi").slice(0,40);
     box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Perlu verifikasi pembayaran (${pv.length})</b>${pv.length?pv.map(o=>`<div class="lrow crow" onclick="openOrder('${o.id}')"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(o.buyerName)}</div>${obadge(o.status)}<small>${esc(o.orderNo||"")} · ${fmtDT(o.updatedAt)}</small></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}
       <b>Pesanan terbaru</b>${rest.map(o=>`<div class="lrow crow" onclick="openOrder('${o.id}')"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(o.buyerName)} → ${esc(o.sellerName)}</div>${obadge(o.status)}</div></div>`).join("")||`<p style="color:var(--muted)">Belum ada pesanan.</p>`}`;return;}
@@ -759,16 +784,17 @@ let PROFILE=null, PROF_ASKED=false;
 const PF=["name","phone","city","address","gender","birth","shopName"];
 function profPct(p){if(!p)return 0;const need=["name","phone","city","address"],extra=["gender","birth"];let n=need.filter(k=>p[k]).length*20+extra.filter(k=>p[k]).length*10;return Math.min(100,n);}
 const profDone=p=>!!(p&&p.name&&p.phone&&p.city&&p.address);
-async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);return;}
+async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;loadKyc();try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);return;}
   if(!profDone(PROFILE)&&!PROF_ASKED&&!isAdmin()){PROF_ASKED=true;setTimeout(()=>{if(!document.querySelector(".modal-bg.open"))openProfile(true);},700);}}
 function openProfile(first){if(!needLogin(()=>openProfile(),"mengatur profil"))return;const p=PROFILE||{},g=i=>document.getElementById(i);
   const pct=profPct(p);
   g("profHead").innerHTML=`<h3>${first?"Lengkapi Akunmu 👋":"Profil Saya"}</h3>
     <div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div style="flex:1"><b>${esc(USER.email||"")}</b><div class="pbar"><i style="width:${pct}%"></i></div><small style="color:var(--muted)">Profil ${pct}% lengkap</small></div></div>
-    ${first?`<p style="color:var(--muted);font-size:14px">Isi data di bawah supaya checkout & pasang iklan jadi lebih cepat. Tidak perlu KTP.</p>`:""}`;
+    ${first?`<p style="color:var(--muted);font-size:14px">Isi data di bawah supaya checkout & pasang iklan jadi lebih cepat.</p>`:""}${kycBlock()}`;
   g("pf-name").value=p.name||USER.displayName||"";g("pf-phone").value=p.phone?("0"+String(p.phone).replace(/^62/,"")):"";g("pf-gender").value=p.gender||"";g("pf-birth").value=p.birth||"";
   g("pf-city").value=p.city||"";g("pf-addr").value=p.address||"";g("pf-shop").value=p.shopName||"";
   g("pf-skip").style.display=first?"block":"none";
+  const lock=isVerified(USER.uid);["pf-name","pf-gender","pf-birth"].forEach(i=>{g(i).disabled=lock;g(i).title=lock?"Sesuai KTP (terverifikasi)":"";});
   document.getElementById("prof").classList.add("open");}
 async function saveProfile(e){e.preventDefault();const g=i=>document.getElementById(i).value.trim();
   const phone=normWa(g("pf-phone"));if(phone.length<10||phone.length>15){toast("Nomor WhatsApp tidak valid");return false;}
@@ -854,6 +880,45 @@ function ordShip(id){const c=document.getElementById("o-cour").value,r=document.
 function ordVerify(id){const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dikemas",{cancelReason:""});if(o&&String(o.listingId).startsWith("f_"))await FB.update(String(o.listingId).slice(2),{sold:true}).catch(()=>{});FB.refresh();},"Pembayaran valid — penjual diberi tahu");}
 function ordReject(id){const why=prompt("Kenapa bukti tidak valid? (dikirim ke pembeli)","Nominal tidak sesuai / bukti tidak terbaca");if(why===null)return;
   ordAct(id,()=>FB.orderStatus(id,"menunggu_bayar",{cancelReason:"Bukti ditolak admin: "+why.slice(0,100),proof:""}),"Pembeli diminta upload ulang");}
+
+// ===== VERIFIKASI KTP =====
+let KYC=null, VERIFIED=new Set(), KIMG={ktp:"",self:""}, KYCLIST=[];
+function watermark(im,max,limit){const c=document.createElement("canvas");let w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,max/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);
+  const x=c.getContext("2d");x.drawImage(im,0,0,c.width,c.height);x.save();x.translate(c.width/2,c.height/2);x.rotate(-Math.PI/7);
+  const fs=Math.max(18,Math.round(c.width/22));x.font=`800 ${fs}px Inter,sans-serif`;x.fillStyle="rgba(255,255,255,.45)";x.strokeStyle="rgba(0,0,0,.25)";x.lineWidth=2;x.textAlign="center";
+  const t="HANYA UNTUK VERIFIKASI PASARRUANG · "+new Date().toLocaleDateString("id-ID");
+  for(let y=-c.height;y<c.height;y+=fs*3){x.strokeText(t,0,y);x.fillText(t,0,y);}x.restore();
+  let q=.75,d=c.toDataURL("image/jpeg",q);while(d.length>limit&&q>.35){q-=.08;d=c.toDataURL("image/jpeg",q);}return d;}
+async function pickKyc(inp,k){const f=inp.files[0];if(!f)return;try{const im=await loadImg(f);KIMG[k]=watermark(im,1100,260000);
+  document.getElementById(k==="ktp"?"k-ktpv":"k-selfv").innerHTML=`<img src="${KIMG[k]}" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px">`;}catch(e){toast("Gagal membaca foto");}}
+async function loadKyc(){KYC=null;if(!USER||!window.FB)return;try{KYC=await FB.getKyc();}catch(e){}}
+const isVerified=uid=>VERIFIED.has(uid);
+function kycBlock(){if(!USER)return"";
+  if(isVerified(USER.uid))return `<div class="kycb ok">✅ <div><b>Akun terverifikasi KTP</b><small>Nama, jenis kelamin & tanggal lahir sesuai KTP</small></div></div>`;
+  if(KYC&&KYC.status==="pending")return `<div class="kycb wait"><span class="pulse-dot"></span><div><b>Verifikasi KTP sedang dicek admin</b><small>Biasanya kurang dari 1×24 jam</small></div></div>`;
+  return `<div class="kycb">🪪 <div><b>${KYC&&KYC.status==="rejected"?"Verifikasi ditolak":"Belum verifikasi KTP"}</b><small>${KYC&&KYC.status==="rejected"?esc(KYC.reason||"Coba kirim ulang dengan foto lebih jelas"):"Dapatkan badge ✅ Terverifikasi biar pembeli makin percaya"}</small></div><button type="button" class="copy" onclick="openKyc()">${KYC&&KYC.status==="rejected"?"Kirim ulang":"Verifikasi"}</button></div>`;}
+function openKyc(){if(!needLogin(openKyc,"verifikasi KTP"))return;close_("prof");KIMG={ktp:"",self:""};
+  const p=PROFILE||{},g=i=>document.getElementById(i);g("k-name").value=p.name||"";g("k-birth").value=p.birth||"";g("k-gender").value=p.gender||"";g("k-addr").value=p.address||"";g("k-city").value=p.city||"";g("k-bplace").value="";g("k-ok").checked=false;
+  g("k-ktpv").textContent="🪪 Ketuk untuk foto / pilih KTP";g("k-selfv").textContent="🤳 Ketuk untuk foto selfie + KTP";document.getElementById("kyc").classList.add("open");}
+async function submitKyc(e){e.preventDefault();if(!KIMG.ktp||!KIMG.self){toast("Upload foto KTP & selfie dulu");return false;}
+  const g=i=>document.getElementById(i).value.trim();const btn=document.getElementById("k-send");btn.disabled=true;btn.textContent="Mengirim…";
+  try{await FB.submitKyc({ktpImg:KIMG.ktp,selfieImg:KIMG.self,data:{name:g("k-name"),birthPlace:g("k-bplace"),birth:g("k-birth"),gender:g("k-gender"),address:g("k-addr"),city:g("k-city")}});
+    KIMG={ktp:"",self:""};await loadKyc();close_("kyc");toast("Terkirim! Admin akan mengecek KTP-mu 🪪");}
+  catch(err){toast("Gagal mengirim: "+(err.code||err.message));}
+  btn.disabled=false;btn.textContent="Kirim untuk Diverifikasi";return false;}
+async function admKycLoad(){try{KYCLIST=await FB.pendingKyc();}catch(e){KYCLIST=[];console.warn(e);}}
+function admKycView(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k)return;const d=k.data||{};
+  document.getElementById("adminBox").innerHTML=`<h3>🪪 Cek KTP</h3><button class="tab" onclick="ADMTAB='kyc';drawAdmin()">← Kembali</button>
+    <div class="obox"><b>Data yang diisi</b><div>Nama: <b>${esc(d.name)}</b></div><div>TTL: ${esc(d.birthPlace)}, ${esc(d.birth)}</div><div>Jenis kelamin: ${esc(d.gender)}</div><div>Alamat: ${esc(d.address)}, ${esc(d.city)}</div><small style="color:var(--muted)">${esc(k.email||"")}</small></div>
+    <b>Foto KTP</b><img src="${k.ktpImg}" style="width:100%;border-radius:12px"><b>Selfie + KTP</b><img src="${k.selfieImg}" style="width:100%;border-radius:12px">
+    <div class="warn">Cocokkan: nama & tanggal lahir di form = di KTP, wajah di selfie = foto KTP, KTP terlihat asli.</div>
+    <button class="btn buy" style="background:var(--brand)" onclick="admKycOk('${uid}')">✔️ Setujui & sesuaikan profil</button>
+    <button class="tab" onclick="admKycNo('${uid}')">✖️ Tolak</button>`;}
+async function admKycOk(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k||!confirmTap("k"+uid))return;
+  try{await FB.approveKyc(uid,k.data||{});VERIFIED.add(uid);KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Akun terverifikasi ✅ — foto KTP dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function admKycNo(uid){const why=prompt("Alasan penolakan (dikirim ke pengguna):","Foto KTP kurang jelas / data tidak cocok");if(why===null)return;
+  try{await FB.rejectKyc(uid,why.slice(0,120));KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Verifikasi ditolak — foto dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+const vbadge=uid=>uid&&isVerified(uid)?` <span class="vbadge">✅ Terverifikasi</span>`:"";
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 document.body.insertAdjacentHTML("beforeend",kotaList().replace('id="kotaDL"','id="kotaDL2"'));
 renderCats();render();tryOpenHash();
@@ -918,6 +983,15 @@ try{
         timeline:F.arrayUnion({s:"menunggu_verifikasi",t:Date.now()}),updatedAt:F.serverTimestamp()}); },
     async orderStatus(oid,status,extra={}){ await F.updateDoc(F.doc(db,"orders",oid),{...extra,status,
         timeline:F.arrayUnion({s:status,t:Date.now()}),updatedAt:F.serverTimestamp()}); },
+    // --- verifikasi KTP ---
+    async getKyc(){ const u=auth.currentUser; try{const d=await F.getDoc(F.doc(db,"kyc",u.uid));return d.exists()?d.data():null;}catch(e){return null;} },
+    async submitKyc(k){ const u=auth.currentUser; await F.setDoc(F.doc(db,"kyc",u.uid),{...k,uid:u.uid,email:u.email||"",status:"pending",consent:true,reason:"",createdAt:F.serverTimestamp()}); },
+    async pendingKyc(){ const r=await F.getDocs(F.query(F.collection(db,"kyc"),F.where("status","==","pending"),F.limit(100))); return r.docs.map(d=>({...d.data(),createdAt:tm(d.data().createdAt)})); },
+    async approveKyc(uid,d){ const b=F.writeBatch(db);
+      b.set(F.doc(db,"users",uid),{name:d.name||"",gender:d.gender||"",birth:d.birth||"",birthPlace:d.birthPlace||"",address:d.address||"",city:d.city||"",verified:true,verifiedAt:F.serverTimestamp()},{merge:true});
+      b.set(F.doc(db,"verified",uid),{name:d.name||"",at:F.serverTimestamp()}); b.delete(F.doc(db,"kyc",uid)); await b.commit(); },
+    async rejectKyc(uid,reason){ await F.updateDoc(F.doc(db,"kyc",uid),{status:"rejected",reason,ktpImg:"",selfieImg:""}); },
+    async loadVerified(){ const r=await F.getDocs(F.query(F.collection(db,"verified"),F.limit(1000))); return r.docs.map(d=>d.id); },
     async getProfile(){ const u=auth.currentUser; const d=await F.getDoc(F.doc(db,"users",u.uid)); return d.exists()?d.data():null; },
     async saveProfile(p){ const u=auth.currentUser; await F.setDoc(F.doc(db,"users",u.uid),{...p,email:u.email||"",updatedAt:F.serverTimestamp()},{merge:true}); },
     async markRead(cid){ const u=auth.currentUser; await F.updateDoc(F.doc(db,"chats",cid),{["lastRead."+u.uid]:F.serverTimestamp()}); }
@@ -938,6 +1012,7 @@ try{
     const parts={}; keys.forEach(k=>{ chatUnsubs.push(F.onSnapshot(F.query(F.collection(db,"chats"),F.where("participants","array-contains",k),F.limit(200)),
       r=>{parts[k]=r.docs.map(toChat); const m={}; Object.values(parts).flat().forEach(c=>m[c.id]=c); onChats(Object.values(m));},e=>console.warn("chat:",e))); }); });
   FB.refresh(); if(auth.currentUser) loadProfile();
+  FB.loadVerified().then(ids=>{VERIFIED=new Set(ids);render();}).catch(e=>console.warn("verified:",e));
 }catch(e){ console.warn("Firebase tidak tersedia:",e); }
 </script>
 </body>
