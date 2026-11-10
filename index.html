@@ -248,6 +248,8 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .pline{display:flex;justify-content:space-between;gap:8px;font-size:13px;border-bottom:1px dashed var(--line);padding:5px 0;cursor:pointer}
 .pline span{font-weight:700;white-space:nowrap}
 .po{background:#fff6e5;border-color:#f5e3a3}.po.ok{background:#e7f6f1;border-color:#bfe6d8}.po small{color:var(--muted)}
+.pacc select,.pacc input{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:6px;font:inherit;background:#fff}
+.pacc .copy{margin-top:6px}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -320,7 +322,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas</footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 14 · konfirmasi pencairan</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -421,6 +423,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <button class="btn buy" id="k-send" type="submit">Kirim untuk Diverifikasi</button>
   </form>
 </div></div>
+<div class="modal-bg" id="pout" onclick="if(event.target===this)close_('pout')"><div class="modal"><button class="x" onclick="close_('pout')">×</button><div class="form" id="poutBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -846,7 +849,7 @@ function trackerHtml(o){if(o.status==="dibatalkan")return `<div class="otl cance
   return `<div class="ptrack">${OFLOW.map((st,i)=>`<div class="${i<=k?"on":""} ${i===k&&st!=="selesai"?"now":""}"><i>${i<k||st==="selesai"&&k===i?"✓":i+1}</i>${OLABEL[st]}${tl[st]?`<em>${fmtDT(tl[st])}</em>`:""}</div>`).join("")}</div>`;}
 function onOrders(kind,list){ if(kind==="buy")BUY=list;else if(kind==="sell")SELL=list;else AORD=list;
   [BUY,SELL,AORD].forEach(a=>a.sort((x,y)=>(y.updatedAt||0)-(x.updatedAt||0)));
-  const need=SELL.filter(o=>o.status==="dikemas").length+BUY.filter(o=>o.status==="dikirim").length+(isAdmin()?AORD.filter(o=>o.status==="menunggu_verifikasi").length:0);
+  const need=SELL.filter(o=>o.status==="dikemas"||(isPaidOut(o)&&!o.payout.confirmed&&o.sellerKey!=="admin")).length+BUY.filter(o=>o.status==="dikirim").length+(isAdmin()?AORD.filter(o=>o.status==="menunggu_verifikasi").length:0);
   const ub=document.getElementById("userBtn");if(ub)ub.classList.toggle("dot",need>0);
   if(document.getElementById("ords").classList.contains("open"))drawOrders();
   if(ORD_CUR&&document.getElementById("ord").classList.contains("open")){const o=findOrder(ORD_CUR);if(o)drawOrder(o);}
@@ -861,7 +864,7 @@ function drawOrders(){const role=ORD_ROLE,list=role==="buy"?BUY:SELL,box=documen
   box.innerHTML=`<h3>${role==="buy"?"🧾 Pesanan Saya":"🏪 Penjualan Saya"}</h3>${role==="sell"?sellerWallet():""}
     <div class="otabs">${tabs.map(([k,t])=>{const n=list.filter(o=>inTab(o,k)).length;return `<button class="${k===cur?"on":""}" onclick="OTAB['${role}']='${k}';drawOrders()">${t}${n?`<b>${n}</b>`:""}</button>`;}).join("")}</div>
     ${l.length?l.map(o=>`<div class="lrow crow" onclick="openOrder('${o.id}')"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div>
-      <div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(role==="buy"?o.sellerName:o.buyerName)}</div>${obadge(o.status)}${role==="sell"&&o.status==="selesai"&&o.sellerKey!=="admin"?(isPaidOut(o)?` <span class="badge" style="background:#e7f6f1;color:#0b6a53">Dana cair</span>`:` <span class="badge" style="background:#fff6e5;color:#8a5a00">Menunggu cair</span>`):""}${expired(o)?` <span class="badge" style="background:#fde2e2;color:#b42318">Lewat batas bayar</span>`:""}
+      <div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(role==="buy"?o.sellerName:o.buyerName)}</div>${obadge(o.status)}${role==="sell"&&o.status==="selesai"&&o.sellerKey!=="admin"?(isPaidOut(o)?(o.payout.confirmed?` <span class="badge" style="background:#e7f6f1;color:#0b6a53">Dana diterima</span>`:` <span class="badge" style="background:#eaf2ff;color:#1f4fb3">Dana cair · konfirmasi</span>`):` <span class="badge" style="background:#fff6e5;color:#8a5a00">Menunggu cair</span>`):""}${expired(o)?` <span class="badge" style="background:#fde2e2;color:#b42318">Lewat batas bayar</span>`:""}
       <small>${esc(o.orderNo||"")} · ${fmtDT(o.updatedAt)}</small></div></div>`).join("")
       :`<div class="oempty"><div>${(OST[cur]||["","","","📦"])[3]}</div>${role==="buy"?"Belum ada pesanan di sini":"Belum ada penjualan di sini"}</div>`}`;}
 function openOrder(id){const o=findOrder(id);if(!o){toast("Pesanan tidak ditemukan");return;}ORD_CUR=id;close_("ords");document.getElementById("ord").classList.add("open");drawOrder(o);}
@@ -1000,33 +1003,73 @@ const isPaidOut=o=>o.payout&&o.payout.status==="paid";
 const needPayout=o=>o.status==="selesai"&&o.sellerKey!=="admin"&&!isPaidOut(o);
 const maskNo=n=>n?String(n).replace(/^(.*)(.{4})$/,(m,a,b)=>"•".repeat(Math.min(a.length,6))+b):"";
 function payoutLine(o){if(o.status!=="selesai"||o.sellerKey==="admin")return"";
-  return isPaidOut(o)?`<div class="obox po ok"><b>💸 Dana sudah dicairkan</b><div>${rp(o.payout.amount)} → ${esc(o.payout.bank||"")} ${esc(maskNo(o.payout.no))}</div><small>${fmtDT(o.payout.at)}${o.payout.ref?` · Ref: ${esc(o.payout.ref)}`:""}</small></div>`
+  const me=USER&&o.sellerKey===USER.uid;
+  return isPaidOut(o)?`<div class="obox po ok"><b>💸 Dana sudah dicairkan ${o.payout.confirmed?"· ✅ Diterima":""}</b><div>${rp(o.payout.amount)} → ${esc(o.payout.bank||"")} ${esc(maskNo(o.payout.no))}</div><small>${fmtDT(o.payout.at)}${o.payout.ref?` · Ref: ${esc(o.payout.ref)}`:""}${o.payout.confirmed?` · dikonfirmasi ${fmtDT(o.payout.confirmedAt)}`:""}</small>
+      ${o.payout.proof?`<details><summary style="font-size:13px">🧾 Lihat bukti transfer</summary><img src="${o.payout.proof}" style="width:100%;border-radius:10px;margin-top:6px"></details>`:""}</div>
+      ${!o.payout.confirmed?(me?`<button class="btn buy" style="background:var(--brand)" onclick="sellerConfirm('${o.id}')">✅ Dana sudah saya terima</button><small style="color:var(--muted);text-align:center">Cek rekeningmu dulu. Kalau belum masuk, chat admin.</small>`:`<div class="waitpay"><span class="pulse-dot"></span>Menunggu penjual mengonfirmasi dana diterima</div>`):""}`
                      :`<div class="obox po"><b>⏳ Menunggu pencairan</b><div>${rp(payAmt(o))} akan ditransfer admin ke rekeningmu.</div></div>`;}
 function sellerWallet(){const mine=SELL.filter(o=>o.sellerKey!=="admin"),pend=mine.filter(needPayout).reduce((a,o)=>a+payAmt(o),0),done=mine.filter(isPaidOut).reduce((a,o)=>a+(o.payout.amount||0),0);
   const p=PROFILE||{};
+  const unc=mine.filter(o=>isPaidOut(o)&&!o.payout.confirmed);
   return `<div class="wallet"><div><small>Menunggu pencairan</small><b>${rp(pend)}</b></div><div><small>Sudah dicairkan</small><b>${rp(done)}</b></div></div>
+   ${unc.length?`<div class="waitpay" style="cursor:pointer" onclick="openOrder('${unc[0].id}')"><span class="pulse-dot"></span>${unc.length} pencairan menunggu konfirmasimu — ketuk untuk cek</div>`:""}
    <div class="wacc">${p.payBank&&p.payNo?`💳 ${esc(p.payBank)} ${esc(maskNo(p.payNo))} a.n. ${esc(p.payName||"")}`:`⚠️ Rekening pencairan belum diisi.`} <button class="copy" onclick="close_('ords');openProfile()">${p.payBank?"Ubah":"Isi sekarang"}</button></div>`;}
 let PAYACC={};
-async function admPayLoad(){const ids=[...new Set(AORD.filter(needPayout).map(o=>o.sellerKey))].filter(id=>!PAYACC[id]);
-  await Promise.all(ids.map(async id=>{try{PAYACC[id]=(await FB.getUser(id))||{};}catch(e){PAYACC[id]={};}}));}
+let PAYERR={};
+async function admPayLoad(){const ids=[...new Set(AORD.filter(needPayout).map(o=>o.sellerKey))];PAYERR={};
+  await Promise.all(ids.map(async id=>{try{PAYACC[id]=(await FB.getUser(id))||{};}catch(e){console.warn("rekening",id,e);PAYERR[id]=e.code||e.message;delete PAYACC[id];}}));}
 function admPayoutHtml(){const pend=AORD.filter(needPayout),by={};pend.forEach(o=>{(by[o.sellerKey]=by[o.sellerKey]||[]).push(o);});
   const done=AORD.filter(isPaidOut).sort((a,b)=>(b.payout.at||0)-(a.payout.at||0)).slice(0,20);
   const total=pend.reduce((a,o)=>a+payAmt(o),0);
   return `<div class="wallet"><div><small>Total harus dicairkan</small><b>${rp(total)}</b></div><div><small>Penjual</small><b>${Object.keys(by).length}</b></div></div>
+  <button class="tab" onclick="ADMTAB='payout';drawAdmin()">🔄 Muat ulang data rekening</button>
   ${Object.keys(by).length?Object.entries(by).map(([sid,os])=>{const a=PAYACC[sid]||{},amt=os.reduce((x,o)=>x+payAmt(o),0),ok=a.payBank&&a.payNo;
     return `<div class="pcard"><div class="ph"><b>${esc(a.shopName||a.name||os[0].sellerName)}${vbadge(sid)}</b><span>${rp(amt)}</span></div>
       ${ok?`<div class="pacc">💳 <b>${esc(a.payBank)}</b> ${esc(a.payNo)} <button class="copy" onclick="copyTxt('${esc(a.payNo)}','No. rekening disalin')">Salin</button><br>a.n. <b>${esc(a.payName||"-")}</b>${a.verified&&a.name&&a.payName&&a.payName.toLowerCase()!==a.name.toLowerCase()?` <span class="badge" style="background:#fff6e5;color:#8a5a00">beda dgn nama KTP</span>`:""}</div>`
-          :`<div class="warn">Penjual belum mengisi rekening pencairan. Minta lewat chat.</div>`}
+          :`<div class="warn">${PAYERR[sid]?`Gagal memuat rekening (${esc(PAYERR[sid])}). Ketuk 🔄 Muat ulang.`:"Penjual belum mengisi rekening pencairan. Minta lewat chat."}</div>`}
       ${os.map(o=>`<div class="pline" onclick="openOrder('${o.id}')">📦 ${esc(o.title)} <span>${rp(payAmt(o))}</span></div>`).join("")}
       <div style="display:flex;gap:8px"><button class="copy" onclick="copyTxt('${amt}','Nominal disalin')">Salin nominal</button>
-      ${ok?`<button class="btn buy" style="flex:1;padding:10px;background:var(--brand)" onclick="admPayDone('${sid}')">✔️ Sudah ditransfer</button>`:""}</div></div>`;}).join("")
+      <button class="btn buy" style="flex:1;padding:10px;background:var(--brand)" onclick="openPayout('${sid}')">${ok?"💸 Cairkan dana":"✏️ Isi rekening & cairkan"}</button></div></div>`;}).join("")
    :`<div class="oempty"><div>💸</div>Tidak ada dana yang perlu dicairkan</div>`}
-  ${done.length?`<b>Riwayat pencairan</b>${done.map(o=>`<div class="pline" onclick="openOrder('${o.id}')">✅ ${esc(o.sellerName)} · ${esc(o.title)} <span>${rp(o.payout.amount)}</span></div>`).join("")}`:""}`;}
+  ${done.length?`<b>Riwayat pencairan</b>${done.map(o=>`<div class="pline" onclick="openOrder('${o.id}')">${o.payout.confirmed?"✅":"⏳"} ${esc(o.sellerName)} · ${esc(o.title)}<span>${rp(o.payout.amount)}<br><small style="font-weight:400;color:${o.payout.confirmed?"#0b6a53":"#8a5a00"}">${o.payout.confirmed?"Diterima penjual":"Belum dikonfirmasi"}</small></span></div>`).join("")}`:""}`;}
 async function admPayDone(sid){const a=PAYACC[sid]||{},os=AORD.filter(o=>needPayout(o)&&o.sellerKey===sid);if(!os.length)return;
   const amt=os.reduce((x,o)=>x+payAmt(o),0);
   const ref=prompt(`Konfirmasi transfer ${rp(amt)} ke ${a.payBank} ${a.payNo} a.n. ${a.payName}.\n\nNo. referensi transfer (opsional):`,"");if(ref===null)return;
   try{await Promise.all(os.map(o=>FB.orderPayout(o.id,{status:"paid",amount:payAmt(o),bank:a.payBank,no:a.payNo,name:a.payName,ref:ref.slice(0,40),at:Date.now()})));
     toast("Pencairan dicatat ✅");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+
+// ===== KONFIRMASI PENCAIRAN =====
+let POUT={sid:null,proof:"",edit:false};
+function openPayout(sid,edit){const a=PAYACC[sid]||{},os=AORD.filter(o=>needPayout(o)&&o.sellerKey===sid);if(!os.length&&!edit)return;
+  POUT={sid,proof:"",edit:!!edit||!(a.payBank&&a.payNo)};drawPayout();document.getElementById("pout").classList.add("open");}
+function drawPayout(){const sid=POUT.sid,a=PAYACC[sid]||{},os=AORD.filter(o=>needPayout(o)&&o.sellerKey===sid),amt=os.reduce((x,o)=>x+payAmt(o),0),box=document.getElementById("poutBox");
+  const accHtml=POUT.edit?`<div class="pacc"><b>Rekening penjual</b> <small style="color:var(--muted)">(isi dari chat jika penjual belum mengisi)</small>
+      <select id="po-bank">${'<option value="">— pilih —</option>'+BANKLIST.map(b=>`<option ${b===a.payBank?"selected":""}>${b}</option>`).join("")}</select>
+      <input id="po-no" inputmode="numeric" placeholder="No. rekening / HP" value="${esc(a.payNo||"")}"><input id="po-name" placeholder="Nama pemilik" value="${esc(a.payName||"")}">
+      <button class="copy" onclick="savePayAcc()">Simpan rekening</button></div>`
+    :`<div class="pacc">💳 <b>${esc(a.payBank)}</b> ${esc(a.payNo)} <button class="copy" onclick="copyTxt('${esc(a.payNo)}','No. rekening disalin')">Salin</button><br>a.n. <b>${esc(a.payName||"-")}</b> <button class="copy" onclick="POUT.edit=true;drawPayout()">Ubah</button></div>`;
+  box.innerHTML=`<h3>💸 Konfirmasi Pencairan</h3>
+    <div class="ohead" style="background:#e7f6f1;color:#0b6a53"><span>🏪</span><div><b>${esc(a.shopName||a.name||(os[0]&&os[0].sellerName)||"Penjual")}</b><small>${os.length} pesanan selesai</small></div></div>
+    ${accHtml}
+    <div class="obox lines">${os.map(o=>`<div><span>${esc(o.title)}</span><span>${rp(payAmt(o))}</span></div>`).join("")}<div class="tot"><span>Total transfer</span><span>${rp(amt)}</span></div></div>
+    <button class="copy" onclick="copyTxt('${amt}','Nominal disalin')">Salin nominal ${rp(amt)}</button>
+    <div class="warn">1) Transfer <b>${rp(amt)}</b> dari DANA / m-banking ke rekening di atas. 2) Upload bukti transfer. 3) Ketuk konfirmasi.</div>
+    <label class="proof" for="po-proof">🧾 Upload bukti transfer <b>(wajib)</b>${POUT.proof?`<img src="${POUT.proof}">`:""}</label>
+    <input type="file" id="po-proof" accept="image/*" hidden onchange="pickPoutProof(this)">
+    <label>No. referensi transfer <small style="color:var(--muted);font-weight:400">(opsional)</small><input id="po-ref" maxlength="40" placeholder="cth. 202611110001234"></label>
+    <button class="btn buy" style="background:var(--brand)" id="po-go" onclick="confirmPayout()">✔️ Konfirmasi dana sudah dicairkan</button>`;}
+async function pickPoutProof(inp){const f=inp.files[0];if(!f)return;try{const im=await loadImg(f);POUT.proof=shrink(im,1000,0.7,180000);drawPayout();}catch(e){toast("Gagal membaca gambar");}}
+async function savePayAcc(){const g=i=>document.getElementById(i).value.trim();const d={payBank:g("po-bank"),payNo:g("po-no").replace(/[^0-9]/g,"").slice(0,20),payName:g("po-name").slice(0,60)};
+  if(!d.payBank||d.payNo.length<6||!d.payName){toast("Lengkapi bank, nomor & nama pemilik");return;}
+  try{await FB.setUserPay(POUT.sid,d);PAYACC[POUT.sid]={...(PAYACC[POUT.sid]||{}),...d};POUT.edit=false;drawPayout();toast("Rekening disimpan");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function confirmPayout(){const sid=POUT.sid,a=PAYACC[sid]||{},os=AORD.filter(o=>needPayout(o)&&o.sellerKey===sid);
+  if(!(a.payBank&&a.payNo)){toast("Isi & simpan rekening penjual dulu");return;}
+  if(!POUT.proof){toast("Upload bukti transfer dulu 🧾");document.querySelector("#poutBox .proof")?.classList.add("need");return;}
+  const ref=(document.getElementById("po-ref").value||"").trim().slice(0,40),btn=document.getElementById("po-go");btn.disabled=true;btn.textContent="Menyimpan…";
+  try{const at=Date.now();await Promise.all(os.map(o=>FB.orderPayout(o.id,{status:"paid",amount:payAmt(o),bank:a.payBank,no:a.payNo,name:a.payName,ref,proof:POUT.proof,at,confirmed:false})));
+    close_("pout");toast("Pencairan tercatat ✅ Penjual akan diminta konfirmasi");ADMTAB="payout";drawAdmin();}
+  catch(e){toast("Gagal: "+(e.code||e.message));btn.disabled=false;btn.textContent="✔️ Konfirmasi dana sudah dicairkan";}}
+async function sellerConfirm(id){if(!confirmTap("pc"+id))return;try{await FB.payoutConfirm(id);toast("Terima kasih! Dana dikonfirmasi diterima ✅");}catch(e){toast("Gagal: "+(e.code||e.message));}}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 document.body.insertAdjacentHTML("beforeend",kotaList().replace('id="kotaDL"','id="kotaDL2"'));
 renderCats();render();tryOpenHash();
@@ -1093,6 +1136,8 @@ try{
         timeline:F.arrayUnion({s:status,t:Date.now()}),updatedAt:F.serverTimestamp()}); },
     // --- verifikasi KTP ---
     async getUser(uid){ const d=await F.getDoc(F.doc(db,"users",uid)); return d.exists()?d.data():null; },
+    async setUserPay(uid,d){ await F.setDoc(F.doc(db,"users",uid),d,{merge:true}); },
+    async payoutConfirm(oid){ await F.updateDoc(F.doc(db,"orders",oid),{"payout.confirmed":true,"payout.confirmedAt":Date.now(),updatedAt:F.serverTimestamp()}); },
     async orderPayout(oid,p){ await F.updateDoc(F.doc(db,"orders",oid),{payout:p,updatedAt:F.serverTimestamp()}); },
     async getKyc(){ const u=auth.currentUser; try{const d=await F.getDoc(F.doc(db,"kyc",u.uid));return d.exists()?d.data():null;}catch(e){return null;} },
     async submitKyc(k){ const u=auth.currentUser; await F.setDoc(F.doc(db,"kyc",u.uid),{...k,uid:u.uid,email:u.email||"",status:"pending",consent:true,reason:"",createdAt:F.serverTimestamp()}); },
