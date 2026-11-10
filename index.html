@@ -237,6 +237,17 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .ocrbox .pbar2{width:100%;margin:6px 0 2px}
 .ring2{width:26px;height:26px;border-radius:50%;border:3px solid #e2e7ec;border-top-color:var(--brand);animation:spin .8s linear infinite;flex-shrink:0}
 .ocrfill{background:#fff8d6!important;border-color:#e8c766!important}
+.wallet{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wallet div{background:linear-gradient(135deg,#0f8a6c,#13a582);color:#fff;border-radius:14px;padding:12px}
+.wallet div:last-child{background:#f1f6ff;color:#1f3f7a}
+.wallet small{display:block;font-size:12px;opacity:.85}.wallet b{font-size:19px}
+.wacc{font-size:13px;display:flex;align-items:center;gap:8px;justify-content:space-between;background:var(--bg);border-radius:10px;padding:8px 10px}
+.pcard{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.ph{display:flex;justify-content:space-between;align-items:center}.ph span{font-weight:900;color:var(--brand-d);font-size:17px}
+.pacc{background:#f1f6ff;border-radius:10px;padding:9px 11px;font-size:14px;line-height:1.6}
+.pline{display:flex;justify-content:space-between;gap:8px;font-size:13px;border-bottom:1px dashed var(--line);padding:5px 0;cursor:pointer}
+.pline span{font-weight:700;white-space:nowrap}
+.po{background:#fff6e5;border-color:#f5e3a3}.po.ok{background:#e7f6f1;border-color:#bfe6d8}.po small{color:var(--muted)}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -379,6 +390,10 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <label>Kota / Kabupaten<input id="pf-city" list="kotaDL2" required maxlength="50" placeholder="cth. Jakarta Timur" autocomplete="off"></label>
     <label>Alamat lengkap <small style="color:var(--muted);font-weight:400">(untuk pengiriman)</small><textarea id="pf-addr" rows="3" maxlength="300" placeholder="Jalan, No. rumah, RT/RW, kelurahan, kecamatan, kode pos"></textarea></label>
     <label>Nama toko <small style="color:var(--muted);font-weight:400">(opsional, tampil di iklanmu)</small><input id="pf-shop" maxlength="60" placeholder="cth. Zam Gadget"></label>
+    <b style="margin-top:6px">💸 Rekening pencairan <small style="font-weight:400;color:var(--muted)">(untuk penjual)</small></b>
+    <div class="row"><label>Bank / e-wallet<select id="pf-bank"></select></label>
+      <label>No. rekening / HP<input id="pf-accno" inputmode="numeric" maxlength="20" placeholder="1234567890"></label></div>
+    <label>Nama pemilik rekening<input id="pf-accname" maxlength="60" placeholder="Sesuai buku tabungan / akun"></label>
     <div class="fee">🔒 Nomor WhatsApp, tanggal lahir & alamat <b>tidak ditampilkan</b> ke pengguna lain. Dipakai untuk mengisi otomatis checkout & pasang iklan.</div>
     <button class="btn buy" type="submit" id="pf-save">Simpan Profil</button>
     <button class="tab" type="button" id="pf-skip" onclick="close_('prof')">Nanti saja</button>
@@ -736,9 +751,11 @@ async function openAdmin(){ if(!isAdmin()){toast("Khusus admin");return;} const 
   drawAdmin();
 }
 function admTabs(){const cnt=k=>ALL.filter(x=>x.status===k).length,pv=AORD.filter(o=>o.status==="menunggu_verifikasi").length;
-  return `<div class="tabs" style="flex-wrap:wrap">${[["pay","💳 Pembayaran",pv],["kyc","🪪 KTP",KYCLIST.length],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
+  return `<div class="tabs" style="flex-wrap:wrap">${[["pay","💳 Pembayaran",pv],["payout","💸 Pencairan",new Set(AORD.filter(needPayout).map(o=>o.sellerKey)).size],["kyc","🪪 KTP",KYCLIST.length],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
 function drawAdmin(){ const box=document.getElementById("adminBox"); const cnt=k=>ALL.filter(x=>x.status===k).length;
   const l=ALL.filter(x=>x.status===ADMTAB).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(ADMTAB==="payout"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<p style="color:var(--muted)">Memuat rekening…</p>`;
+    admPayLoad().then(()=>{if(ADMTAB==="payout"&&document.getElementById("admin").classList.contains("open"))box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}${admPayoutHtml()}`;});return;}
   if(ADMTAB==="kyc"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Menunggu verifikasi KTP (${KYCLIST.length})</b>${KYCLIST.length?KYCLIST.map(k=>`<div class="lrow crow" onclick="admKycView('${k.uid}')"><div class="lth">🪪</div><div class="linfo"><b>${esc((k.data||{}).name||"-")}</b><div>${esc(k.email||"")}</div><small>${fmtDT(k.createdAt)}</small></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}`;return;}
   if(ADMTAB==="pay"){const pv=AORD.filter(o=>o.status==="menunggu_verifikasi"),rest=AORD.filter(o=>o.status!=="menunggu_verifikasi").slice(0,40);
     box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Perlu verifikasi pembayaran (${pv.length})</b>${pv.length?pv.map(o=>`<div class="lrow crow" onclick="openOrder('${o.id}')"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(o.buyerName)}</div>${obadge(o.status)}<small>${esc(o.orderNo||"")} · ${fmtDT(o.updatedAt)}</small></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}
@@ -799,12 +816,14 @@ function openProfile(first){if(!needLogin(()=>openProfile(),"mengatur profil"))r
     ${first?`<p style="color:var(--muted);font-size:14px">Isi data di bawah supaya checkout & pasang iklan jadi lebih cepat.</p>`:""}${kycBlock()}`;
   g("pf-name").value=p.name||USER.displayName||"";g("pf-phone").value=p.phone?("0"+String(p.phone).replace(/^62/,"")):"";g("pf-gender").value=p.gender||"";g("pf-birth").value=p.birth||"";
   g("pf-city").value=p.city||"";g("pf-addr").value=p.address||"";g("pf-shop").value=p.shopName||"";
+  g("pf-bank").innerHTML='<option value="">—</option>'+BANKLIST.map(b=>`<option>${b}</option>`).join("");g("pf-bank").value=p.payBank||"";g("pf-accno").value=p.payNo||"";g("pf-accname").value=p.payName||"";
   g("pf-skip").style.display=first?"block":"none";
   const lock=isVerified(USER.uid);["pf-name","pf-gender","pf-birth"].forEach(i=>{g(i).disabled=lock;g(i).title=lock?"Sesuai KTP (terverifikasi)":"";});
   document.getElementById("prof").classList.add("open");}
 async function saveProfile(e){e.preventDefault();const g=i=>document.getElementById(i).value.trim();
   const phone=normWa(g("pf-phone"));if(phone.length<10||phone.length>15){toast("Nomor WhatsApp tidak valid");return false;}
-  const data={name:g("pf-name").slice(0,60),phone,gender:g("pf-gender"),birth:g("pf-birth"),city:g("pf-city").slice(0,50),address:g("pf-addr").slice(0,300),shopName:g("pf-shop").slice(0,60)};
+  const data={name:g("pf-name").slice(0,60),phone,gender:g("pf-gender"),birth:g("pf-birth"),city:g("pf-city").slice(0,50),address:g("pf-addr").slice(0,300),shopName:g("pf-shop").slice(0,60),payBank:g("pf-bank"),payNo:g("pf-accno").replace(/[^0-9]/g,"").slice(0,20),payName:g("pf-accname").slice(0,60)};
+  if((data.payBank||data.payNo)&&(!data.payBank||data.payNo.length<6||!data.payName)){toast("Lengkapi bank, nomor & nama pemilik rekening");return false;}
   const btn=document.getElementById("pf-save");btn.disabled=true;btn.textContent="Menyimpan…";
   try{await FB.saveProfile(data);PROFILE={...(PROFILE||{}),...data};close_("prof");toast(profDone(PROFILE)?"Profil tersimpan ✅":"Profil disimpan");}
   catch(err){toast("Gagal menyimpan: "+(err.code||err.message));}
@@ -831,7 +850,7 @@ function onOrders(kind,list){ if(kind==="buy")BUY=list;else if(kind==="sell")SEL
   const ub=document.getElementById("userBtn");if(ub)ub.classList.toggle("dot",need>0);
   if(document.getElementById("ords").classList.contains("open"))drawOrders();
   if(ORD_CUR&&document.getElementById("ord").classList.contains("open")){const o=findOrder(ORD_CUR);if(o)drawOrder(o);}
-  if(document.getElementById("admin").classList.contains("open")&&ADMTAB==="pay")drawAdmin();}
+  if(document.getElementById("admin").classList.contains("open")&&(ADMTAB==="pay"||ADMTAB==="payout"))drawAdmin();}
 const findOrder=id=>BUY.find(o=>o.id===id)||SELL.find(o=>o.id===id)||AORD.find(o=>o.id===id);
 function openOrders(role){if(!needLogin(()=>openOrders(role),"melihat pesanan"))return;ORD_ROLE=role;document.getElementById("ords").classList.add("open");drawOrders();}
 function drawOrders(){const role=ORD_ROLE,list=role==="buy"?BUY:SELL,box=document.getElementById("ordsBox");
@@ -839,10 +858,10 @@ function drawOrders(){const role=ORD_ROLE,list=role==="buy"?BUY:SELL,box=documen
                          :[["menunggu_verifikasi","Menunggu Bayar"],["dikemas","Perlu Dikirim"],["dikirim","Dikirim"],["selesai","Selesai"],["dibatalkan","Batal"]];
   const inTab=(o,k)=>role==="sell"&&k==="menunggu_verifikasi"?["menunggu_bayar","menunggu_verifikasi"].includes(o.status):o.status===k;
   const cur=OTAB[role],l=list.filter(o=>inTab(o,cur));
-  box.innerHTML=`<h3>${role==="buy"?"🧾 Pesanan Saya":"🏪 Penjualan Saya"}</h3>
+  box.innerHTML=`<h3>${role==="buy"?"🧾 Pesanan Saya":"🏪 Penjualan Saya"}</h3>${role==="sell"?sellerWallet():""}
     <div class="otabs">${tabs.map(([k,t])=>{const n=list.filter(o=>inTab(o,k)).length;return `<button class="${k===cur?"on":""}" onclick="OTAB['${role}']='${k}';drawOrders()">${t}${n?`<b>${n}</b>`:""}</button>`;}).join("")}</div>
     ${l.length?l.map(o=>`<div class="lrow crow" onclick="openOrder('${o.id}')"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div>
-      <div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(role==="buy"?o.sellerName:o.buyerName)}</div>${obadge(o.status)}${expired(o)?` <span class="badge" style="background:#fde2e2;color:#b42318">Lewat batas bayar</span>`:""}
+      <div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(role==="buy"?o.sellerName:o.buyerName)}</div>${obadge(o.status)}${role==="sell"&&o.status==="selesai"&&o.sellerKey!=="admin"?(isPaidOut(o)?` <span class="badge" style="background:#e7f6f1;color:#0b6a53">Dana cair</span>`:` <span class="badge" style="background:#fff6e5;color:#8a5a00">Menunggu cair</span>`):""}${expired(o)?` <span class="badge" style="background:#fde2e2;color:#b42318">Lewat batas bayar</span>`:""}
       <small>${esc(o.orderNo||"")} · ${fmtDT(o.updatedAt)}</small></div></div>`).join("")
       :`<div class="oempty"><div>${(OST[cur]||["","","","📦"])[3]}</div>${role==="buy"?"Belum ada pesanan di sini":"Belum ada penjualan di sini"}</div>`}`;}
 function openOrder(id){const o=findOrder(id);if(!o){toast("Pesanan tidak ditemukan");return;}ORD_CUR=id;close_("ords");document.getElementById("ord").classList.add("open");drawOrder(o);}
@@ -859,7 +878,8 @@ function drawOrder(o){const me=USER?USER.uid:"",isBuyer=o.buyerUid===me,isSeller
   if(isSeller&&(o.status==="menunggu_bayar"||o.status==="menunggu_verifikasi"))act+=`<div class="waitpay"><span class="pulse-dot"></span>Menunggu pembayaran pembeli dicek admin. Jangan kirim barang dulu.</div>`;
   if(adm&&o.status==="menunggu_verifikasi")act+=`<div class="admbox"><b>🛡️ Verifikasi pembayaran</b><div>Cek mutasi QRIS: harus masuk tepat <b>${rp(o.total)}</b> (kode unik ${o.code}).</div>
       <button class="btn buy" style="background:var(--brand)" onclick="ordVerify('${o.id}')">✔️ Pembayaran Valid</button><button class="tab" onclick="ordReject('${o.id}')">✖️ Bukti Tidak Valid</button></div>`;
-  if(adm&&o.status==="selesai")act+=`<div class="admbox">💸 Teruskan dana <b>${rp(o.price||0)}</b> ke penjual <b>${esc(o.sellerName)}</b>.</div>`;
+  if((isSeller||adm)&&o.status==="selesai")act+=payoutLine(o);
+  if(adm&&needPayout(o))act+=`<button class="tab" onclick="close_('ord');ORD_CUR=null;ADMTAB='payout';openAdmin()">💸 Buka menu Pencairan</button>`;
   if(adm&&!["selesai","dibatalkan"].includes(o.status)&&!isBuyer)act+=`<button class="tab" onclick="ordCancel('${o.id}','admin')">Batalkan sebagai admin</button>`;
   const other=isBuyer?o.sellerName:o.buyerName;
   document.getElementById("ordBox").innerHTML=`<div class="ohead" style="background:${st[1]};color:${st[2]}"><span>${st[3]}</span><div><b>${st[0]}</b><small>${esc(o.orderNo||"")}</small></div></div>
@@ -972,6 +992,41 @@ async function admKycOk(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k||!confir
 async function admKycNo(uid){const why=prompt("Alasan penolakan (dikirim ke pengguna):","Foto KTP kurang jelas / data tidak cocok");if(why===null)return;
   try{await FB.rejectKyc(uid,why.slice(0,120));KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Verifikasi ditolak — foto dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
 const vbadge=uid=>uid&&isVerified(uid)?` <span class="vbadge">✅ Terverifikasi</span>`:"";
+
+// ===== PENCAIRAN DANA =====
+const BANKLIST="BCA,BRI,BNI,Mandiri,BSI,CIMB Niaga,Permata,BTN,SeaBank,Bank Jago,DANA,GoPay,OVO,ShopeePay".split(",");
+const payAmt=o=>(o.price||0)+((o.ship&&o.ship.fee)||0);   // harga barang + ongkir (penjual yang mengirim). 0% komisi.
+const isPaidOut=o=>o.payout&&o.payout.status==="paid";
+const needPayout=o=>o.status==="selesai"&&o.sellerKey!=="admin"&&!isPaidOut(o);
+const maskNo=n=>n?String(n).replace(/^(.*)(.{4})$/,(m,a,b)=>"•".repeat(Math.min(a.length,6))+b):"";
+function payoutLine(o){if(o.status!=="selesai"||o.sellerKey==="admin")return"";
+  return isPaidOut(o)?`<div class="obox po ok"><b>💸 Dana sudah dicairkan</b><div>${rp(o.payout.amount)} → ${esc(o.payout.bank||"")} ${esc(maskNo(o.payout.no))}</div><small>${fmtDT(o.payout.at)}${o.payout.ref?` · Ref: ${esc(o.payout.ref)}`:""}</small></div>`
+                     :`<div class="obox po"><b>⏳ Menunggu pencairan</b><div>${rp(payAmt(o))} akan ditransfer admin ke rekeningmu.</div></div>`;}
+function sellerWallet(){const mine=SELL.filter(o=>o.sellerKey!=="admin"),pend=mine.filter(needPayout).reduce((a,o)=>a+payAmt(o),0),done=mine.filter(isPaidOut).reduce((a,o)=>a+(o.payout.amount||0),0);
+  const p=PROFILE||{};
+  return `<div class="wallet"><div><small>Menunggu pencairan</small><b>${rp(pend)}</b></div><div><small>Sudah dicairkan</small><b>${rp(done)}</b></div></div>
+   <div class="wacc">${p.payBank&&p.payNo?`💳 ${esc(p.payBank)} ${esc(maskNo(p.payNo))} a.n. ${esc(p.payName||"")}`:`⚠️ Rekening pencairan belum diisi.`} <button class="copy" onclick="close_('ords');openProfile()">${p.payBank?"Ubah":"Isi sekarang"}</button></div>`;}
+let PAYACC={};
+async function admPayLoad(){const ids=[...new Set(AORD.filter(needPayout).map(o=>o.sellerKey))].filter(id=>!PAYACC[id]);
+  await Promise.all(ids.map(async id=>{try{PAYACC[id]=(await FB.getUser(id))||{};}catch(e){PAYACC[id]={};}}));}
+function admPayoutHtml(){const pend=AORD.filter(needPayout),by={};pend.forEach(o=>{(by[o.sellerKey]=by[o.sellerKey]||[]).push(o);});
+  const done=AORD.filter(isPaidOut).sort((a,b)=>(b.payout.at||0)-(a.payout.at||0)).slice(0,20);
+  const total=pend.reduce((a,o)=>a+payAmt(o),0);
+  return `<div class="wallet"><div><small>Total harus dicairkan</small><b>${rp(total)}</b></div><div><small>Penjual</small><b>${Object.keys(by).length}</b></div></div>
+  ${Object.keys(by).length?Object.entries(by).map(([sid,os])=>{const a=PAYACC[sid]||{},amt=os.reduce((x,o)=>x+payAmt(o),0),ok=a.payBank&&a.payNo;
+    return `<div class="pcard"><div class="ph"><b>${esc(a.shopName||a.name||os[0].sellerName)}${vbadge(sid)}</b><span>${rp(amt)}</span></div>
+      ${ok?`<div class="pacc">💳 <b>${esc(a.payBank)}</b> ${esc(a.payNo)} <button class="copy" onclick="copyTxt('${esc(a.payNo)}','No. rekening disalin')">Salin</button><br>a.n. <b>${esc(a.payName||"-")}</b>${a.verified&&a.name&&a.payName&&a.payName.toLowerCase()!==a.name.toLowerCase()?` <span class="badge" style="background:#fff6e5;color:#8a5a00">beda dgn nama KTP</span>`:""}</div>`
+          :`<div class="warn">Penjual belum mengisi rekening pencairan. Minta lewat chat.</div>`}
+      ${os.map(o=>`<div class="pline" onclick="openOrder('${o.id}')">📦 ${esc(o.title)} <span>${rp(payAmt(o))}</span></div>`).join("")}
+      <div style="display:flex;gap:8px"><button class="copy" onclick="copyTxt('${amt}','Nominal disalin')">Salin nominal</button>
+      ${ok?`<button class="btn buy" style="flex:1;padding:10px;background:var(--brand)" onclick="admPayDone('${sid}')">✔️ Sudah ditransfer</button>`:""}</div></div>`;}).join("")
+   :`<div class="oempty"><div>💸</div>Tidak ada dana yang perlu dicairkan</div>`}
+  ${done.length?`<b>Riwayat pencairan</b>${done.map(o=>`<div class="pline" onclick="openOrder('${o.id}')">✅ ${esc(o.sellerName)} · ${esc(o.title)} <span>${rp(o.payout.amount)}</span></div>`).join("")}`:""}`;}
+async function admPayDone(sid){const a=PAYACC[sid]||{},os=AORD.filter(o=>needPayout(o)&&o.sellerKey===sid);if(!os.length)return;
+  const amt=os.reduce((x,o)=>x+payAmt(o),0);
+  const ref=prompt(`Konfirmasi transfer ${rp(amt)} ke ${a.payBank} ${a.payNo} a.n. ${a.payName}.\n\nNo. referensi transfer (opsional):`,"");if(ref===null)return;
+  try{await Promise.all(os.map(o=>FB.orderPayout(o.id,{status:"paid",amount:payAmt(o),bank:a.payBank,no:a.payNo,name:a.payName,ref:ref.slice(0,40),at:Date.now()})));
+    toast("Pencairan dicatat ✅");}catch(e){toast("Gagal: "+(e.code||e.message));}}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 document.body.insertAdjacentHTML("beforeend",kotaList().replace('id="kotaDL"','id="kotaDL2"'));
 renderCats();render();tryOpenHash();
@@ -1037,6 +1092,8 @@ try{
     async orderStatus(oid,status,extra={}){ await F.updateDoc(F.doc(db,"orders",oid),{...extra,status,
         timeline:F.arrayUnion({s:status,t:Date.now()}),updatedAt:F.serverTimestamp()}); },
     // --- verifikasi KTP ---
+    async getUser(uid){ const d=await F.getDoc(F.doc(db,"users",uid)); return d.exists()?d.data():null; },
+    async orderPayout(oid,p){ await F.updateDoc(F.doc(db,"orders",oid),{payout:p,updatedAt:F.serverTimestamp()}); },
     async getKyc(){ const u=auth.currentUser; try{const d=await F.getDoc(F.doc(db,"kyc",u.uid));return d.exists()?d.data():null;}catch(e){return null;} },
     async submitKyc(k){ const u=auth.currentUser; await F.setDoc(F.doc(db,"kyc",u.uid),{...k,uid:u.uid,email:u.email||"",status:"pending",consent:true,reason:"",createdAt:F.serverTimestamp()}); },
     async pendingKyc(){ const r=await F.getDocs(F.query(F.collection(db,"kyc"),F.where("status","==","pending"),F.limit(100))); return r.docs.map(d=>({...d.data(),createdAt:tm(d.data().createdAt)})); },
