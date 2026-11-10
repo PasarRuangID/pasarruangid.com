@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PasarRuang — Marketplace Jual Beli</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%23fff%22/%3E%3Cpath%20d%3D%22M14%2030h36v18a4%204%200%200%201-4%204H18a4%204%200%200%201-4-4z%22%20fill%3D%22%230f8a6c%22/%3E%3Crect%20x%3D%2227%22%20y%3D%2237%22%20width%3D%2210%22%20height%3D%2215%22%20rx%3D%222%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2234.5%22%20cy%3D%2245%22%20r%3D%221.2%22%20fill%3D%22%230f8a6c%22/%3E%3Cpath%20d%3D%22M12%2014h40l4%2012H8z%22%20fill%3D%22%23ff7a3d%22/%3E%3Cpath%20d%3D%22M8%2026a6%206%200%200%200%2012%200a6%206%200%200%200%2012%200a6%206%200%200%200%2012%200a6%206%200%200%200%2012%200z%22%20fill%3D%22%23ff7a3d%22/%3E%3Cpath%20d%3D%22M20%2014l-2%2012M32%2014v12M44%2014l2%2012%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20opacity%3D%22.9%22/%3E%3Cpath%20d%3D%22M8%2026a6%206%200%200%200%2012%200%22%20fill%3D%22%23ffb48a%22/%3E%3Cpath%20d%3D%22M32%2026a6%206%200%200%200%2012%200%22%20fill%3D%22%23ffb48a%22/%3E%3C/svg%3E">
 <meta name="theme-color" content="#0f8a6c">
@@ -12,7 +12,7 @@
 <meta property="og:title" content="PasarRuang — Marketplace Jual Beli">
 <meta property="og:description" content="Jual beli barang baru & bekas tanpa potongan komisi. Pasang iklan gratis, chat langsung dengan penjual.">
 <meta property="og:image" content="https://pasarruangid.github.io/pasarruangid.com/logo-pasarruang.png">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f4f6f8;--ink:#14212b;--muted:#6b7a86;--brand:#0f8a6c;--brand-d:#0b6a53;--accent:#ff7a3d;--line:#e2e7ec;--card:#fff}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -243,7 +243,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .wallet small{display:block;font-size:12px;opacity:.85}.wallet b{font-size:19px}
 .wacc{font-size:13px;display:flex;align-items:center;gap:8px;justify-content:space-between;background:var(--bg);border-radius:10px;padding:8px 10px}
 .pcard{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
-.ph{display:flex;justify-content:space-between;align-items:center}.ph span{font-weight:900;color:var(--brand-d);font-size:17px}
+.ph{display:flex;justify-content:space-between;align-items:center}.ph span{font-weight:800;color:var(--brand-d);font-size:17px}
 .pacc{background:#f1f6ff;border-radius:10px;padding:9px 11px;font-size:14px;line-height:1.6}
 .pline{display:flex;justify-content:space-between;gap:8px;font-size:13px;border-bottom:1px dashed var(--line);padding:5px 0;cursor:pointer}
 .pline span{font-weight:700;white-space:nowrap}
@@ -313,6 +313,71 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
   .info{grid-template-columns:1fr}
   .searchbox select{display:none}
 }
+
+/* ===== RAPI & RESPONSIF (semua ukuran layar) ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-size:clamp(14px,3.7vw,15px);font-synthesis:none;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;letter-spacing:0;padding-bottom:calc(70px + env(safe-area-inset-bottom))}
+b,strong{font-weight:700}
+h1,h2,h3{font-weight:800;letter-spacing:-.2px;line-height:1.25}
+h3{font-size:clamp(18px,5vw,20px)}
+img,svg{max-width:100%}
+p,b,small,div,span{overflow-wrap:anywhere}
+.top{padding-top:calc(12px + env(safe-area-inset-top))}
+.navb{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+/* form konsisten */
+.form label{display:block;font-size:13px;font-weight:600;color:var(--ink);line-height:1.4}
+.form input:not([type=checkbox]):not([type=radio]):not([type=file]),.form select,.form textarea,.shipf input,.shipf select,.pacc input,.pacc select{font-family:inherit;font-size:16px;font-weight:400;color:var(--ink);line-height:1.4;min-height:46px;border:1px solid #d7dde3;border-radius:12px;padding:11px 13px;background:#fff;width:100%;box-sizing:border-box}
+.form textarea{min-height:84px;resize:vertical}
+.form select,.shipf select,.pacc select,.sort{-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7a86' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+.form input:focus,.form select:focus,.form textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,138,108,.15)}
+.row{gap:10px}
+/* tombol konsisten */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;font-size:15px;font-weight:700;line-height:1.2;border-radius:12px}
+.tab{min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:600;line-height:1.2}
+.copy{font-weight:600}
+.sell-btn,.user-btn,.bell{min-height:38px}
+/* modal: lebar nyaman di HP kecil s/d tablet */
+.modal{width:min(560px,100%);max-height:calc(100vh - 28px - env(safe-area-inset-top));border-radius:20px}
+.form{padding:22px clamp(14px,4.5vw,22px);gap:12px}
+.modal .x{top:12px;right:12px}
+/* kartu produk */
+.cb .t{font-size:clamp(13px,3.5vw,14px);line-height:1.35;min-height:2.7em}
+.cb .p{font-size:clamp(15px,4vw,16px);font-weight:800}
+.cb .m{font-size:12px}
+.tag{font-weight:700;line-height:1.2}
+/* menu akun formal */
+.mlist{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.mrow{display:flex;align-items:center;gap:12px;width:100%;padding:14px 14px;border:0;border-bottom:1px solid var(--line);background:#fff;font:inherit;font-size:15px;font-weight:600;color:var(--ink);text-align:left;cursor:pointer;text-decoration:none}
+.mlist .mrow:last-child{border-bottom:0}
+.mrow:active{background:var(--bg)}
+.mi{width:24px;text-align:center;font-size:18px;flex-shrink:0}
+.mt{flex:1}
+.mc{color:#a0abb5;font-size:20px;line-height:1}
+.mb{font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--brand);color:#fff}
+.mb.ok{background:#e7f6f1;color:#0b6a53}.mb.warn{background:#fff1e8;color:#c4541b}.mb.red{background:#e5484d}
+.mrow.adm{color:var(--brand-d)}.mrow.out{color:#b42318}
+.form label.opt{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;padding:12px 14px}
+.form label.opt small{margin-left:auto;font-weight:700;color:var(--ink);font-size:13px}
+.form label.consent{display:flex;font-weight:400}
+.form label.proof{font-weight:600;color:var(--muted)}
+.opt input[type=radio]{accent-color:var(--brand);width:18px;height:18px;flex-shrink:0}
+/* layar kecil (≤360px) */
+@media(max-width:380px){
+  .top{gap:6px;padding-left:12px;padding-right:12px}.logo{font-size:15px;gap:6px}.logo .mark{width:28px;height:28px}
+  .user-btn,.bell{width:34px;height:34px;min-height:34px}.sell-btn{padding:8px 11px;font-size:14px}
+}
+@media(max-width:360px){
+  .sell-btn{padding:9px 12px}.bell{width:34px;height:34px}
+  .cats{gap:6px}.catb{padding:10px 2px;font-size:11px}.catb i{font-size:22px}
+  .grid{gap:8px}.wrap{padding:12px}
+  .banner{padding:18px}.banner h1{font-size:20px}
+  .actions{flex-direction:column}
+}
+/* tablet / layar lebar */
+@media(min-width:761px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .modal-bg{padding:24px}
+}
 </style>
 </head>
 <body>
@@ -354,7 +419,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 18 · halaman toko & ulasan</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 19 · tampilan rapi</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -770,14 +835,18 @@ function drawUserBtn(){const u=USER,b=document.getElementById("userBtn");if(!u||
 const isAdmin=()=>!!(USER&&USER.email&&USER.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
 async function userMenu(){ if(USER&&!PROFILE&&window.FB){try{await loadProfile();}catch(e){}} if(!USER){afterLogin=null;document.getElementById("loginWhy").textContent="Masuk untuk beli & pasang iklan.";document.getElementById("login").classList.add("open");return;}
   document.getElementById("acctBox").innerHTML=`<h3>Akun</h3><div class="sum"><div class="ic" style="border-radius:50%;overflow:hidden;background:var(--brand);color:#fff;font-weight:800;font-size:26px">${avaHtml(USER.uid,myName(),myPhoto())}</div><div><b>${esc(myName())}${vbadge(USER.uid)}</b><div style="font-size:13px;color:var(--muted)">${esc(USER.email||"")}</div></div></div>
-    <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openProfile()">👤 Profil Saya ${profDone(PROFILE)?"✅":`<span style="color:#c4541b;font-size:12px">· belum lengkap (${profPct(PROFILE)}%)</span>`}</button>
-    <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openOrders('buy')">🧾 Pesanan Saya ${(()=>{const n=BUY.filter(o=>!["selesai","dibatalkan"].includes(o.status)).length;return n?`<span class="cnt">${n}</span>`:""})()}</button>
-    <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openOrders('sell')">🏪 Penjualan Saya ${(()=>{const n=SELL.filter(o=>o.status==="dikemas").length;return n?`<span class="cnt red">${n} perlu dikirim</span>`:""})()}</button>
-    <button class="btn buy" onclick="close_('acct');openMine()">📦 Iklan Saya</button>
-    ${isAdmin()?`<button class="btn buy" style="background:var(--brand)" onclick="close_('acct');openAdmin()">🛡️ Panel Admin</button>`:""}
-    <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openInbox()">💬 Pesan</button>
-    <a class="tab" style="text-align:center;text-decoration:none;color:var(--ink)" href="https://wa.me/${ADMIN_WA}?text=${encodeURIComponent("Halo Admin "+STORE_NAME+", saya mau tanya.")}" target="_blank" rel="noopener">❓ Bantuan admin (WhatsApp)</a>
-    <button class="tab" onclick="close_('acct');window.fbLogout&&fbLogout();toast('Kamu sudah keluar')">Keluar</button>`;
+    <div class="mlist">
+      <button class="mrow" onclick="close_('acct');openProfile()"><span class="mi">👤</span><span class="mt">Profil Saya</span>${profDone(PROFILE)?`<span class="mb ok">Lengkap</span>`:`<span class="mb warn">${profPct(PROFILE)}%</span>`}<span class="mc">›</span></button>
+      <button class="mrow" onclick="close_('acct');openOrders('buy')"><span class="mi">🧾</span><span class="mt">Pesanan Saya</span>${(()=>{const n=BUY.filter(o=>!["selesai","dibatalkan"].includes(o.status)).length;return n?`<span class="mb">${n}</span>`:""})()}<span class="mc">›</span></button>
+      <button class="mrow" onclick="close_('acct');openOrders('sell')"><span class="mi">🏪</span><span class="mt">Penjualan Saya</span>${(()=>{const n=SELL.filter(o=>o.status==="dikemas").length;return n?`<span class="mb red">${n} perlu dikirim</span>`:""})()}<span class="mc">›</span></button>
+      <button class="mrow" onclick="close_('acct');openMine()"><span class="mi">📦</span><span class="mt">Iklan Saya</span><span class="mc">›</span></button>
+      <button class="mrow" onclick="close_('acct');openInbox()"><span class="mi">💬</span><span class="mt">Pesan</span><span class="mc">›</span></button>
+      ${isAdmin()?`<button class="mrow adm" onclick="close_('acct');openAdmin()"><span class="mi">🛡️</span><span class="mt">Panel Admin</span><span class="mc">›</span></button>`:""}
+    </div>
+    <div class="mlist">
+      <a class="mrow" href="https://wa.me/${ADMIN_WA}?text=${encodeURIComponent("Halo Admin "+STORE_NAME+", saya mau tanya.")}" target="_blank" rel="noopener"><span class="mi">❓</span><span class="mt">Bantuan Admin</span><span class="mc">›</span></a>
+      <button class="mrow out" onclick="close_('acct');window.fbLogout&&fbLogout();toast('Kamu sudah keluar')"><span class="mi">⎋</span><span class="mt">Keluar</span></button>
+    </div>`;
   document.getElementById("acct").classList.add("open"); }
 const STATUS={pending:["Menunggu dicek","#fff6e5","#8a5a00"],approved:["Tayang","#e7f6f1","#0b6a53"],rejected:["Ditolak","#fde2e2","#b42318"]};
 const badge=x=>{const s=x.sold?["Terjual","#eef0f2","#44515c"]:(STATUS[x.status]||STATUS.pending);return `<span class="badge" style="background:${s[1]};color:${s[2]}">${s[0]}</span>`;};
