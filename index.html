@@ -226,6 +226,7 @@ input[type=date]{min-height:42px}
 .ptrack em{display:block;font-style:normal;font-size:9px;color:var(--muted);font-weight:400}
 .proof.need{border-color:#e5484d;color:#b42318;animation:pulse .6s ease 2}
 .viadana{width:100%;font-size:12px;color:#1f4fb3;background:#eaf2ff;border-radius:8px;padding:5px 8px;text-align:center}
+.ongkirinfo{font-size:13px;background:#f1f6ff;color:#1f3f7a;border-radius:10px;padding:9px 11px}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -324,7 +325,7 @@ input[type=date]{min-height:42px}
     </div>
     <div class="row">
       <label>Kategori<select id="s-cat"></select></label>
-      <label>Kota<input id="s-city" required placeholder="cth. Semarang"></label>
+      <label>Kota<input id="s-city" list="kotaDL2" required placeholder="cth. Semarang" autocomplete="off"></label>
     </div>
     <label>Deskripsi<textarea id="s-desc" rows="3" placeholder="Kondisi, kelengkapan, alasan dijual…"></textarea></label>
     <label>Nomor WhatsApp kamu<input id="s-wa" required placeholder="0812xxxxxxx" inputmode="tel"></label>
@@ -365,7 +366,7 @@ input[type=date]{min-height:42px}
       <label>Jenis kelamin<select id="pf-gender"><option value="">—</option><option>Laki-laki</option><option>Perempuan</option></select></label>
       <label>Tanggal lahir<input id="pf-birth" type="date"></label>
     </div>
-    <label>Kota / Kabupaten<input id="pf-city" required maxlength="50" placeholder="cth. Jakarta Timur"></label>
+    <label>Kota / Kabupaten<input id="pf-city" list="kotaDL2" required maxlength="50" placeholder="cth. Jakarta Timur" autocomplete="off"></label>
     <label>Alamat lengkap <small style="color:var(--muted);font-weight:400">(untuk pengiriman)</small><textarea id="pf-addr" rows="3" maxlength="300" placeholder="Jalan, No. rumah, RT/RW, kelurahan, kecamatan, kode pos"></textarea></label>
     <label>Nama toko <small style="color:var(--muted);font-weight:400">(opsional, tampil di iklanmu)</small><input id="pf-shop" maxlength="60" placeholder="cth. Zam Gadget"></label>
     <div class="fee">🔒 Nomor WhatsApp, tanggal lahir & alamat <b>tidak ditampilkan</b> ke pengguna lain. Dipakai untuk mengisi otomatis checkout & pasang iklan.</div>
@@ -469,6 +470,7 @@ function openDetail(id){
       <h3>${esc(x.title)}</h3>
       <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
+      ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
       <div class="seller"><div class="ava">${esc(x.seller[0]).toUpperCase()}</div><div><b>${esc(x.seller)}</b><small>${x.remote?"Penjual PasarRuang":"Dijual oleh admin PasarRuang"} · chat langsung di website</small></div></div>
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
@@ -526,26 +528,54 @@ function resetSell(){priceOk=false;document.getElementById("sellForm").reset();d
 function setView(v,b){view=v;document.querySelectorAll(".navb button").forEach(x=>x.classList.remove("on"));b.classList.add("on");render();window.scrollTo({top:0,behavior:"smooth"});}
 // ===== PEMBAYARAN MANUAL (ubah sesuai rekening kamu) =====
 const BANKS=[{id:"qris",name:"QRIS (semua e-wallet & m-banking)"}];
-const SHIP=[{id:"reg",name:"Reguler (2–4 hari)",fee:15000},{id:"exp",name:"Kilat (1 hari)",fee:30000}];
+const KOTA=[["Jakarta",-6.2088,106.8456,"jawa","jakarta pusat,jakarta selatan,jakarta timur,jakarta barat,jakarta utara,jaksel,jaktim,jakbar,jakut,jakpus,dki"],["Bogor",-6.5971,106.806,"jawa",""],["Depok",-6.4025,106.7942,"jawa",""],["Tangerang Selatan",-6.2886,106.7179,"jawa","tangsel,bintaro,serpong,ciputat,pamulang"],["Tangerang",-6.1783,106.6319,"jawa",""],["Bekasi",-6.2383,106.9756,"jawa","cikarang"],["Serang",-6.1104,106.164,"jawa",""],["Cilegon",-6.0025,106.0111,"jawa",""],["Bandung",-6.9175,107.6191,"jawa",""],["Cimahi",-6.8722,107.5425,"jawa",""],["Sukabumi",-6.9277,106.93,"jawa",""],["Cianjur",-6.82,107.1425,"jawa",""],["Garut",-7.2279,107.9087,"jawa",""],["Tasikmalaya",-7.3274,108.2207,"jawa","tasik"],["Cirebon",-6.7063,108.5571,"jawa",""],["Karawang",-6.3227,107.3376,"jawa",""],["Purwakarta",-6.5569,107.4431,"jawa",""],["Subang",-6.5715,107.7587,"jawa",""],["Indramayu",-6.3264,108.32,"jawa",""],["Kuningan",-6.9759,108.483,"jawa",""],["Majalengka",-6.8364,108.2274,"jawa",""],["Sumedang",-6.838,107.9208,"jawa",""],["Ciamis",-7.3257,108.3534,"jawa",""],["Semarang",-6.9667,110.4167,"jawa",""],["Surakarta",-7.5755,110.8243,"jawa","solo"],["Klaten",-7.7056,110.6066,"jawa",""],["Boyolali",-7.53,110.596,"jawa",""],["Sukoharjo",-7.68,110.84,"jawa",""],["Karanganyar",-7.597,110.95,"jawa",""],["Sragen",-7.43,111.02,"jawa",""],["Wonogiri",-7.8136,110.926,"jawa",""],["Magelang",-7.4797,110.2177,"jawa",""],["Salatiga",-7.3305,110.5084,"jawa",""],["Kudus",-6.8048,110.8405,"jawa",""],["Jepara",-6.589,110.668,"jawa",""],["Pati",-6.755,111.038,"jawa",""],["Demak",-6.894,110.638,"jawa",""],["Kendal",-6.92,110.2,"jawa",""],["Pekalongan",-6.8886,109.6753,"jawa",""],["Tegal",-6.8694,109.1402,"jawa",""],["Brebes",-6.87,109.04,"jawa",""],["Purwokerto",-7.4245,109.2346,"jawa","banyumas"],["Cilacap",-7.7268,109.0094,"jawa",""],["Kebumen",-7.668,109.652,"jawa",""],["Purworejo",-7.713,110.009,"jawa",""],["Wonosobo",-7.36,109.9,"jawa",""],["Temanggung",-7.315,110.175,"jawa",""],["Banjarnegara",-7.397,109.696,"jawa",""],["Purbalingga",-7.388,109.364,"jawa",""],["Rembang",-6.708,111.342,"jawa",""],["Blora",-6.97,111.418,"jawa","cepu"],["Grobogan",-7.087,110.915,"jawa","purwodadi"],["Batang",-6.91,109.73,"jawa",""],["Yogyakarta",-7.7956,110.3695,"jawa","jogja,jogjakarta,yogya,diy"],["Sleman",-7.716,110.355,"jawa",""],["Bantul",-7.888,110.329,"jawa",""],["Kulon Progo",-7.827,110.164,"jawa","wates"],["Gunungkidul",-7.965,110.6,"jawa","wonosari"],["Surabaya",-7.2575,112.7521,"jawa","sby"],["Sidoarjo",-7.4478,112.7183,"jawa",""],["Gresik",-7.155,112.655,"jawa",""],["Malang",-7.9666,112.6326,"jawa",""],["Batu",-7.871,112.526,"jawa",""],["Pasuruan",-7.6453,112.9075,"jawa",""],["Probolinggo",-7.7543,113.2159,"jawa",""],["Mojokerto",-7.4722,112.4338,"jawa",""],["Jombang",-7.546,112.233,"jawa",""],["Kediri",-7.848,112.0178,"jawa",""],["Blitar",-8.0983,112.1681,"jawa",""],["Tulungagung",-8.0657,111.9025,"jawa",""],["Madiun",-7.6298,111.5239,"jawa",""],["Ponorogo",-7.865,111.462,"jawa",""],["Ngawi",-7.404,111.446,"jawa",""],["Magetan",-7.653,111.329,"jawa",""],["Nganjuk",-7.605,111.903,"jawa",""],["Bojonegoro",-7.15,111.8817,"jawa",""],["Tuban",-6.8976,112.0649,"jawa",""],["Lamongan",-7.1167,112.4167,"jawa",""],["Jember",-8.1724,113.7004,"jawa",""],["Banyuwangi",-8.2192,114.3691,"jawa",""],["Lumajang",-8.1335,113.2248,"jawa",""],["Bondowoso",-7.9135,113.8214,"jawa",""],["Situbondo",-7.7066,114.009,"jawa",""],["Pamekasan",-7.1568,113.4746,"jawa","madura"],["Sumenep",-7.0167,113.8667,"jawa",""],["Bangkalan",-7.0455,112.7351,"jawa",""],["Trenggalek",-8.05,111.71,"jawa",""],["Pacitan",-8.205,111.09,"jawa",""],["Denpasar",-8.6705,115.2126,"bali","bali,kuta,seminyak,canggu"],["Badung",-8.5819,115.177,"bali",""],["Gianyar",-8.544,115.325,"bali","ubud"],["Singaraja",-8.112,115.088,"bali","buleleng"],["Tabanan",-8.537,115.124,"bali",""],["Mataram",-8.5833,116.1167,"nusa","lombok"],["Bima",-8.46,118.727,"nusa",""],["Sumbawa Besar",-8.493,117.42,"nusa","sumbawa"],["Kupang",-10.1772,123.607,"nusa",""],["Labuan Bajo",-8.4964,119.8877,"nusa","manggarai"],["Ende",-8.843,121.662,"nusa",""],["Maumere",-8.619,122.212,"nusa","sikka"],["Medan",3.5952,98.6722,"sumatra",""],["Binjai",3.6,98.485,"sumatra",""],["Pematangsiantar",2.9595,99.0687,"sumatra","siantar"],["Tebing Tinggi",3.328,99.1625,"sumatra",""],["Sibolga",1.742,98.779,"sumatra",""],["Padangsidimpuan",1.379,99.273,"sumatra",""],["Banda Aceh",5.5483,95.3238,"sumatra","aceh"],["Lhokseumawe",5.1801,97.1507,"sumatra",""],["Langsa",4.468,97.968,"sumatra",""],["Padang",-0.9471,100.4172,"sumatra",""],["Bukittinggi",-0.3055,100.3692,"sumatra",""],["Payakumbuh",-0.224,100.632,"sumatra",""],["Pekanbaru",0.5071,101.4478,"sumatra",""],["Dumai",1.665,101.447,"sumatra",""],["Batam",1.0456,104.0305,"sumatra",""],["Tanjung Pinang",0.9186,104.4554,"sumatra","tanjungpinang"],["Jambi",-1.6101,103.6131,"sumatra",""],["Palembang",-2.9761,104.7754,"sumatra",""],["Prabumulih",-3.432,104.235,"sumatra",""],["Lubuklinggau",-3.296,102.861,"sumatra",""],["Bengkulu",-3.7928,102.2608,"sumatra",""],["Bandar Lampung",-5.3971,105.2668,"sumatra","lampung"],["Metro",-5.113,105.307,"sumatra",""],["Pangkal Pinang",-2.1291,106.109,"sumatra","pangkalpinang,bangka"],["Tanjung Pandan",-2.75,107.65,"sumatra","belitung"],["Pontianak",-0.0263,109.3425,"kalimantan",""],["Singkawang",0.906,108.985,"kalimantan",""],["Ketapang",-1.853,109.977,"kalimantan",""],["Palangka Raya",-2.2161,113.9135,"kalimantan","palangkaraya"],["Sampit",-2.538,112.95,"kalimantan",""],["Banjarmasin",-3.3186,114.5944,"kalimantan",""],["Banjarbaru",-3.442,114.833,"kalimantan",""],["Balikpapan",-1.2379,116.8529,"kalimantan",""],["Samarinda",-0.5022,117.1536,"kalimantan",""],["Bontang",0.133,117.5,"kalimantan",""],["Tarakan",3.3,117.6333,"kalimantan",""],["Tanjung Selor",2.84,117.37,"kalimantan",""],["Makassar",-5.1477,119.4327,"sulawesi","ujung pandang"],["Parepare",-4.0135,119.6255,"sulawesi",""],["Palopo",-2.9925,120.1969,"sulawesi",""],["Watampone",-4.539,120.326,"sulawesi","bone"],["Manado",1.4748,124.8421,"sulawesi",""],["Bitung",1.44,125.19,"sulawesi",""],["Tomohon",1.325,124.838,"sulawesi",""],["Gorontalo",0.5435,123.0568,"sulawesi",""],["Palu",-0.8917,119.8707,"sulawesi",""],["Kendari",-3.9985,122.513,"sulawesi",""],["Baubau",-5.47,122.61,"sulawesi",""],["Mamuju",-2.677,118.889,"sulawesi",""],["Ambon",-3.6954,128.1814,"timur",""],["Ternate",0.79,127.38,"timur",""],["Sofifi",0.734,127.559,"timur",""],["Tual",-5.627,132.742,"timur",""],["Jayapura",-2.5337,140.7181,"timur",""],["Sorong",-0.8762,131.2558,"timur",""],["Manokwari",-0.861,134.062,"timur",""],["Merauke",-8.4932,140.4018,"timur",""],["Timika",-4.5468,136.8837,"timur","mimika"],["Nabire",-3.366,135.496,"timur",""],["Biak",-1.18,136.08,"timur",""],["Wamena",-4.095,138.94,"timur",""]];
+// ===== ONGKIR BERDASARKAN JARAK (ubah tarif di sini) =====
+const TARIF={
+  // [jarak maksimal km, ongkir reguler]
+  jarak:[[25,10000],[100,15000],[300,20000],[600,28000],[1000,35000],[1800,45000],[99999,60000]],
+  antarPulau:10000,      // tambahan jika beda pulau
+  wilayahTimur:20000,    // tambahan ke/dari Maluku & Papua
+  kilatKali:1.8,         // kilat = reguler × 1.8
+  asalDefault:"Jakarta"  // asal kirim jika kota penjual tidak dikenali
+};
+const normKota=t=>String(t||"").toLowerCase().replace(/\b(kota|kabupaten|kab\.?|provinsi)\b/g," ").replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();
+function cariKota(t){const n=" "+normKota(t)+" ";if(n.trim()==="")return null;let best=null,bl=0;
+  for(const k of KOTA){const keys=[k[0].toLowerCase()].concat(k[4]?k[4].split(","):[]);for(const key of keys){if(key&&n.includes(" "+key+" ")&&key.length>bl){best=k;bl=key.length;}}}
+  return best;}
+function jarakKm(a,b){const R=6371,r=Math.PI/180,dLa=(b[1]-a[1])*r,dLo=(b[2]-a[2])*r;const h=Math.sin(dLa/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))*1.25;}
+function hitungOngkir(asalTxt,tujuanTxt){const A=cariKota(asalTxt)||cariKota(TARIF.asalDefault),B=cariKota(tujuanTxt);
+  if(!B)return {ok:false,reg:TARIF.jarak[3][1],km:null,asal:A&&A[0],tujuan:null};
+  const km=A[0]===B[0]?5:jarakKm(A,B);let reg=TARIF.jarak.find(t=>km<=t[0])[1];
+  if(A[3]!==B[3]){reg+=TARIF.antarPulau;if(A[3]==="timur"||B[3]==="timur")reg+=TARIF.wilayahTimur;}
+  return {ok:true,reg,km:Math.round(km),asal:A[0],tujuan:B[0],beda:A[3]!==B[3]};}
+function etaHari(km,kilat){if(km==null)return kilat?"1–3 hari":"3–6 hari";if(kilat)return km<=100?"1 hari":km<=600?"1–2 hari":"2–3 hari";return km<=25?"1–2 hari":km<=300?"2–3 hari":km<=1000?"3–5 hari":"5–8 hari";}
+function quote(id){const o=P.ongkir||{reg:15000,km:null};const kil=id==="exp";const fee=kil?Math.round(o.reg*TARIF.kilatKali/1000)*1000:o.reg;
+  return {id,name:(kil?"Kilat":"Reguler")+" ("+etaHari(o.km,kil)+")",fee};}
+function updOngkir(){P.ongkir=hitungOngkir(P.item.city,P.city||"");}
+function onCityPay(){keep();updOngkir();drawPay();setTimeout(()=>{const e=document.getElementById("p-city");if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length);}},0);}
+const kotaList=()=>`<datalist id="kotaDL">${KOTA.map(k=>`<option value="${k[0]}">`).join("")}</datalist>`;
+const SHIP=[{id:"reg"},{id:"exp"}];
 const SERVICE=2000; // biaya layanan flat
 let P={};
 function openPay(id){if(!needLogin(()=>openPay(id),"membeli"))return;
   close_('detail');
-  const pp=PROFILE||{};P={item:byId(id),step:1,ship:"reg",bank:"qris",name:pp.name||(USER&&USER.displayName)||"",phone:pp.phone?("0"+String(pp.phone).replace(/^62/,"")):"",addr:pp.address?(pp.address+(pp.city?", "+pp.city:"")):"",code:100+Math.floor(Math.random()*900),proof:null,orderId:"PR"+Date.now().toString().slice(-8)};
+  const pp=PROFILE||{};P={item:byId(id),step:1,ship:"reg",bank:"qris",name:pp.name||(USER&&USER.displayName)||"",phone:pp.phone?("0"+String(pp.phone).replace(/^62/,"")):"",addr:pp.address||"",city:pp.city||"",ongkir:null,code:100+Math.floor(Math.random()*900),proof:null,orderId:"PR"+Date.now().toString().slice(-8)};
   drawPay();document.getElementById("pay").classList.add("open");
 }
-function total(){if(P.fixedTotal)return P.fixedTotal;const s=SHIP.find(x=>x.id===P.ship);return P.item.price+s.fee+SERVICE+P.code;}
+function total(){if(P.fixedTotal)return P.fixedTotal;const s=quote(P.ship);return P.item.price+s.fee+SERVICE+P.code;}
 function stepsBar(){return `<div class="steps">${["Pengiriman","Pembayaran","Konfirmasi"].map((t,i)=>`<span class="${i+1<=P.step?'on':''}">${i+1}. ${t}</span>`).join("")}</div>`;}
 function drawPay(){setTimeout(()=>{if(P.step===2)startPayTimer();},0);
-  const x=P.item, s=SHIP.find(v=>v.id===P.ship), b=BANKS.find(v=>v.id===P.bank), box=document.getElementById("payBox");
+  if(!P.ongkir&&P.step===1)updOngkir();const x=P.item, s=P.fixedTotal?{name:"",fee:0}:quote(P.ship), b=BANKS.find(v=>v.id===P.bank), box=document.getElementById("payBox");
   const head=`<h3>Checkout</h3>${stepsBar()}<div class="sum"><div class="ic" style="background:${COLORS[x.cat]||'#eee'};overflow:hidden">${pic(x)}</div><div><b>${esc(x.title)}</b><div>${pr(x)} · ${esc(x.seller)}</div></div></div>`;
   if(P.step===1){
     box.innerHTML=head+`
       <label>Nama penerima<input id="p-name" value="${esc(P.name)}" placeholder="Nama lengkap"></label>
       <label>No. HP<input id="p-phone" value="${esc(P.phone)}" placeholder="0812xxxxxxx" inputmode="tel"></label>
-      <label>Alamat lengkap<textarea id="p-addr" rows="2" placeholder="Jalan, RT/RW, kecamatan, kota, kode pos">${esc(P.addr)}</textarea></label>
+      <label>Alamat lengkap<textarea id="p-addr" rows="2" placeholder="Jalan, RT/RW, kecamatan, kode pos">${esc(P.addr)}</textarea></label>
+      <label>Kota / Kabupaten tujuan<input id="p-city" list="kotaDL" value="${esc(P.city||"")}" placeholder="Ketik kota tujuan, cth. Bandung" onchange="onCityPay()" autocomplete="off"></label>${kotaList()}
+      <div class="ongkirinfo">${P.ongkir&&P.ongkir.ok?`🚚 Dikirim dari <b>${esc(P.ongkir.asal)}</b> ke <b>${esc(P.ongkir.tujuan)}</b> · ±${P.ongkir.km.toLocaleString("id-ID")} km${P.ongkir.beda?" · antarpulau":""}`:P.city?`⚠️ Kota "${esc(P.city)}" belum dikenali — pilih dari daftar saran supaya ongkir akurat.`:`📍 Isi kota tujuan untuk menghitung ongkir.`}</div>
       <b>Pengiriman</b>
-      <div class="opts">${SHIP.map(v=>`<label class="opt"><input type="radio" name="ship" ${v.id===P.ship?'checked':''} onchange="P.ship='${v.id}';keep();drawPay()">${v.name}<small>${v.fee?rp(v.fee):'Gratis'}</small></label>`).join("")}</div>
+      <div class="opts">${SHIP.map(v=>quote(v.id)).map(v=>`<label class="opt"><input type="radio" name="ship" ${v.id===P.ship?'checked':''} onchange="P.ship='${v.id}';keep();drawPay()">${v.name}<small>${v.fee?rp(v.fee):'Gratis'}</small></label>`).join("")}</div>
       <b>Metode pembayaran</b>
       <div class="opt" style="cursor:default;border-color:var(--brand);background:#e7f6f1;flex-wrap:wrap">📱 QRIS<small>GoPay, OVO, DANA, ShopeePay, m-banking</small></div>
       <div class="lines">
@@ -591,14 +621,15 @@ function drawPay(){setTimeout(()=>{if(P.step===2)startPayTimer();},0);
       <button class="tab" onclick="close_('pay')">Selesai</button>`;
   }
 }
-function keep(){const g=i=>document.getElementById(i);if(g("p-name")){P.name=g("p-name").value;P.phone=g("p-phone").value;P.addr=g("p-addr").value;}}
-function toStep2(){keep();if(!P.name.trim()||!P.phone.trim()||!P.addr.trim()){toast("Lengkapi nama, HP, dan alamat dulu");return;}
+function keep(){const g=i=>document.getElementById(i);if(g("p-name")){P.name=g("p-name").value;P.phone=g("p-phone").value;P.addr=g("p-addr").value;if(g("p-city"))P.city=g("p-city").value;}}
+function toStep2(){keep();updOngkir();if(!P.name.trim()||!P.phone.trim()||!P.addr.trim()||!P.city.trim()){toast("Lengkapi nama, HP, alamat & kota tujuan dulu");return;}
+  if(!P.ongkir.ok){toast("Pilih kota tujuan dari daftar saran dulu");return;}
   const x=P.item; if(USER&&sellerKey(x)===USER.uid){toast("Ini barangmu sendiri 🙂");return;}
   let job=Promise.resolve(), failed=null;
-  if(window.FB&&USER&&!P.oid){ job=(async()=>{const s=SHIP.find(v=>v.id===P.ship);const th=await smallThumb(x);
+  if(window.FB&&USER&&!P.oid){ job=(async()=>{const s=quote(P.ship);const th=await smallThumb(x);
       P.oid=await FB.createOrder({orderNo:P.orderId,buyerName:P.name,buyerEmail:USER.email||"",sellerKey:sellerKey(x),sellerName:x.seller||"Penjual",
         listingId:String(x.id),title:x.title,thumb:th,price:x.price,ship:{id:s.id,name:s.name,fee:s.fee},service:SERVICE,code:P.code,total:total(),
-        recv:{name:P.name,phone:P.phone,addr:P.addr}});})().catch(e=>{failed=e;console.error(e);}); }
+        recv:{name:P.name,phone:P.phone,addr:P.addr+(P.city?", "+P.city:"")}});})().catch(e=>{failed=e;console.error(e);}); }
   let t0=false,j0=false;const go=()=>{if(!t0||!j0)return;if(failed){toast("Gagal membuat pesanan: "+(failed.code||failed.message));P.step=1;drawPay();return;}
     P.step=2;if(!P.deadline)P.deadline=Date.now()+24*3600e3;drawPay();};
   job.then(()=>{j0=true;go();});
@@ -824,6 +855,7 @@ function ordVerify(id){const o=findOrder(id);ordAct(id,async()=>{await FB.orderS
 function ordReject(id){const why=prompt("Kenapa bukti tidak valid? (dikirim ke pembeli)","Nominal tidak sesuai / bukti tidak terbaca");if(why===null)return;
   ordAct(id,()=>FB.orderStatus(id,"menunggu_bayar",{cancelReason:"Bukti ditolak admin: "+why.slice(0,100),proof:""}),"Pembeli diminta upload ulang");}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
+document.body.insertAdjacentHTML("beforeend",kotaList().replace('id="kotaDL"','id="kotaDL2"'));
 renderCats();render();tryOpenHash();
 (function(){const t0=Date.now();const hide=()=>{const sp=document.getElementById("splash");if(!sp||sp.classList.contains("hide"))return;setTimeout(()=>{sp.classList.add("hide");setTimeout(()=>sp.remove(),600);},Math.max(0,900-(Date.now()-t0)));};
   if(document.readyState==="complete")hide();else window.addEventListener("load",hide);setTimeout(hide,2500);
