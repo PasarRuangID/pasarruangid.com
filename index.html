@@ -250,6 +250,11 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .po{background:#fff6e5;border-color:#f5e3a3}.po.ok{background:#e7f6f1;border-color:#bfe6d8}.po small{color:var(--muted)}
 .pacc select,.pacc input{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px;margin-top:6px;font:inherit;background:#fff}
 .pacc .copy{margin-top:6px}
+.pfava{position:relative;width:64px;height:64px;flex-shrink:0;cursor:pointer}
+.pfava #pfAva{width:64px;height:64px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:28px;overflow:hidden}
+.pfava span{position:absolute;right:-4px;bottom:-4px;background:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.cava{width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;overflow:hidden;flex-shrink:0}
+.miniava{position:absolute;right:-6px;bottom:-6px;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;overflow:hidden;border:2px solid #fff}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -322,7 +327,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 15 · nama profil</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 16 · foto profil & jual wajib KTP</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -337,7 +342,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
   <button class="x" onclick="close_('sell')">×</button>
   <form class="form" id="sellForm" onsubmit="return submitSell(event)">
     <h3>Pasang Iklan</h3>
-    <div class="fee">✨ Gratis pasang iklan, 0% komisi. Iklan tayang setelah dicek admin (biasanya &lt; 1×24 jam).</div>
+    <div class="fee">✨ Gratis pasang iklan, 0% komisi. Iklan tayang setelah dicek admin (biasanya &lt; 1×24 jam). Hanya untuk penjual <b>✅ terverifikasi KTP</b>.</div>
     <label>Foto barang (1–4 foto)<div class="pick" onclick="document.getElementById('s-photos').click()"><span id="s-prev">📷 Ketuk untuk pilih foto</span></div></label>
     <input type="file" id="s-photos" accept="image/*" multiple hidden onchange="pickPhotos(this)">
     <label>Nama kamu / nama toko<input id="s-seller" required placeholder="cth. Budi Gadget"></label>
@@ -406,7 +411,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 <div class="modal-bg" id="kyc" onclick="if(event.target===this)close_('kyc')"><div class="modal"><button class="x" onclick="close_('kyc')">×</button>
   <form class="form" onsubmit="return submitKyc(event)">
     <h3>🪪 Verifikasi KTP</h3>
-    <div class="fee">Setelah disetujui admin, profilmu otomatis disesuaikan dengan data KTP & mendapat badge <b>✅ Terverifikasi</b>. Nama, jenis kelamin & tanggal lahir akan dikunci.</div>
+    <div class="fee">Verifikasi KTP <b>wajib untuk berjualan</b>. Setelah disetujui admin, profilmu otomatis disesuaikan dengan data KTP, mendapat badge <b>✅ Terverifikasi</b>, dan kamu bisa langsung pasang iklan. Nama, jenis kelamin & tanggal lahir akan dikunci.</div>
     <label>Foto KTP<div class="pick" onclick="document.getElementById('k-ktp').click()"><span id="k-ktpv">🪪 Ketuk untuk foto / pilih KTP</span></div></label>
     <input type="file" id="k-ktp" accept="image/*" hidden onchange="pickKyc(this,'ktp')">
     <small style="color:var(--muted)">📸 Foto KTP lurus, terang & tidak buram — data akan <b>terisi otomatis</b>. Boleh tutup 6 digit tengah NIK.</small>
@@ -519,7 +524,7 @@ function openDetail(id){
       <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
-      <div class="seller"><div class="ava">${esc(x.seller[0]).toUpperCase()}</div><div><b>${esc(x.seller)}${vbadge(x.uid)}</b><small>${x.remote?"Penjual PasarRuang":"Dijual oleh admin PasarRuang"} · chat langsung di website</small></div></div>
+      <div class="seller"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div><b>${esc(x.seller)}${vbadge(x.uid)}</b><small>${x.remote?"Penjual PasarRuang":"Dijual oleh admin PasarRuang"} · chat langsung di website</small></div></div>
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
         ${x.price&&!x.noBuy&&!x.sold?`<button class="btn buy" onclick="openPay('${x.id}')">Beli Sekarang</button>`:""}
@@ -527,9 +532,18 @@ function openDetail(id){
       ${x.remote&&x.status!=="approved"?"":shareBar(x)}
     </div>`;
   document.getElementById("detail").classList.add("open");
+  if(x.remote&&x.uid&&!(x.uid in AVA))getAva(x.uid).then(a=>{const el=document.getElementById("sellAva");if(a&&el&&OPEN_ID===String(id))el.innerHTML=avaHtml(x.uid,x.seller);});
 }
 function removeAd(id){LIST=LIST.filter(x=>x.id!==id);mine.delete(id);save();close_('detail');renderCats();render();toast("Iklan dihapus");}
-function openSell(){if(!needLogin(openSell,"pasang iklan"))return;resetSell();document.getElementById("sell").classList.add("open");}
+function sellGate(){const box=document.getElementById("acctBox");const pend=KYC&&KYC.status==="pending",rej=KYC&&KYC.status==="rejected";
+  box.innerHTML=`<div class="done" style="padding-top:6px"><div class="big">🪪</div><h3>Verifikasi KTP dulu, yuk!</h3>
+    <div style="color:var(--muted);font-size:14px">Supaya pembeli aman, <b>semua penjual wajib terverifikasi KTP</b>. Kamu tetap bisa <b>belanja</b> tanpa verifikasi.</div></div>
+    ${pend?`<div class="kycb wait"><span class="pulse-dot"></span><div><b>Verifikasi KTP-mu sedang dicek admin</b><small>Setelah disetujui, kamu langsung bisa pasang iklan.</small></div></div>`
+         :`<button class="btn buy" style="background:var(--brand)" onclick="close_('acct');openKyc()">${rej?"Kirim ulang verifikasi KTP":"🪪 Verifikasi KTP sekarang"}</button>${rej?`<div class="warn">Verifikasi sebelumnya ditolak: ${esc(KYC.reason||"")}</div>`:""}`}
+    <button class="tab" onclick="close_('acct')">Nanti saja</button>`;
+  document.getElementById("acct").classList.add("open");}
+const canSell=()=>isAdmin()||(USER&&(isVerified(USER.uid)||(PROFILE&&PROFILE.verified)));
+function openSell(){if(!needLogin(openSell,"pasang iklan"))return;if(AUTH_READY&&USER&&!canSell()){if(!KYC&&window.FB)loadKyc().then(sellGate);else sellGate();return;}resetSell();document.getElementById("sell").classList.add("open");}
 function close_(id){document.getElementById(id).classList.remove("open");if(id==="detail"){OPEN_ID=null;setHash("");}}
 let PHOTOS=[],priceOk=false;
 function loadImg(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{ok(im);URL.revokeObjectURL(u)};im.onerror=no;im.src=u;});}
@@ -714,15 +728,15 @@ function needLogin(cb,why){
 function doLogin(){ if(window.fbLogin) window.fbLogin().catch(e=>toast("Gagal masuk: "+(e.code||e.message))); }
 function onUser(u){
   USER=u; if(window.FB) FB.refresh(); if(u) loadProfile(); else {PROFILE=null;PROF_ASKED=false;} AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex";
-  if(u){ b.className="user-btn"; b.innerHTML=(u.photoURL?`<img src="${u.photoURL}" referrerpolicy="no-referrer" alt="">`:`<span class="av">${esc(myName()[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(myName().split(" ")[0])}</span>`;
+  if(u){ b.className="user-btn"; b.innerHTML=(myPhoto()?`<img src="${myPhoto()}" referrerpolicy="no-referrer" alt="" style="object-fit:cover">`:`<span class="av">${esc(myName()[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(myName().split(" ")[0])}</span>`;
     if(document.getElementById("login").classList.contains("open")){close_("login");toast("Halo, "+(u.displayName||"")+"!");const f=afterLogin;afterLogin=null;if(f)f();}
   } else { b.className="user-btn out"; b.textContent="Masuk"; }
 }
 const myName=()=>((PROFILE&&PROFILE.name)||(USER&&USER.displayName)||"Pengguna");
-function drawUserBtn(){const u=USER,b=document.getElementById("userBtn");if(!u||!b)return;const n=myName();b.innerHTML=(u.photoURL?`<img src="${u.photoURL}" referrerpolicy="no-referrer" alt="">`:`<span class="av">${esc(n[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(n.split(" ")[0])}</span>`;}
+function drawUserBtn(){const u=USER,b=document.getElementById("userBtn");if(!u||!b)return;const n=myName();b.innerHTML=(myPhoto()?`<img src="${myPhoto()}" referrerpolicy="no-referrer" alt="" style="object-fit:cover">`:`<span class="av">${esc(n[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(n.split(" ")[0])}</span>`;}
 const isAdmin=()=>!!(USER&&USER.email&&USER.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
 async function userMenu(){ if(USER&&!PROFILE&&window.FB){try{await loadProfile();}catch(e){}} if(!USER){afterLogin=null;document.getElementById("loginWhy").textContent="Masuk untuk beli & pasang iklan.";document.getElementById("login").classList.add("open");return;}
-  document.getElementById("acctBox").innerHTML=`<h3>Akun</h3><div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div><b>${esc(myName())}${vbadge(USER.uid)}</b><div style="font-size:13px;color:var(--muted)">${esc(USER.email||"")}</div></div></div>
+  document.getElementById("acctBox").innerHTML=`<h3>Akun</h3><div class="sum"><div class="ic" style="border-radius:50%;overflow:hidden;background:var(--brand);color:#fff;font-weight:800;font-size:26px">${avaHtml(USER.uid,myName(),myPhoto())}</div><div><b>${esc(myName())}${vbadge(USER.uid)}</b><div style="font-size:13px;color:var(--muted)">${esc(USER.email||"")}</div></div></div>
     <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openProfile()">👤 Profil Saya ${profDone(PROFILE)?"✅":`<span style="color:#c4541b;font-size:12px">· belum lengkap (${profPct(PROFILE)}%)</span>`}</button>
     <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openOrders('buy')">🧾 Pesanan Saya ${(()=>{const n=BUY.filter(o=>!["selesai","dibatalkan"].includes(o.status)).length;return n?`<span class="cnt">${n}</span>`:""})()}</button>
     <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openOrders('sell')">🏪 Penjualan Saya ${(()=>{const n=SELL.filter(o=>o.status==="dikemas").length;return n?`<span class="cnt red">${n} perlu dikirim</span>`:""})()}</button>
@@ -778,6 +792,7 @@ function admView(fid){const x=ALL.find(i=>i.fid===fid);if(!x)return;if(!byId(x.i
 let CHATS=[],CUR=null,unsubMsgs=null;
 const sellerKey=x=>x.remote?x.uid:"admin";
 const meKeys=()=>USER?[USER.uid].concat(isAdmin()?["admin"]:[]):[];
+const otherUid=c=>{const mine=meKeys();return mine.includes(c.participants[0])?c.participants[1]:c.participants[0];};
 const otherName=c=>{const mine=meKeys();return mine.includes(c.participants[0])?c.sellerName:c.buyerName;};
 const isUnread=c=>{if(!USER||!c.updatedAt||!c.lastFrom||c.lastFrom===USER.uid)return false;const r=(c.lastRead||{})[USER.uid];return !r||r<c.updatedAt;};
 function fmtTime(t){if(!t)return"";const d=new Date(t),n=new Date();return d.toDateString()===n.toDateString()?d.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}):d.toLocaleDateString("id-ID",{day:"numeric",month:"short"});}
@@ -791,11 +806,13 @@ async function startChat(id){const x=byId(id);if(!x)return;
   try{const c=await FB.openChat(x,sk);close_('detail');openThread(c);}catch(e){console.error(e);toast("Gagal membuka chat: "+(e.code||e.message));}}
 function openInbox(){if(!needLogin(openInbox,"melihat pesan"))return;document.getElementById("inbox").classList.add("open");drawInbox();}
 function drawInbox(){const box=document.getElementById("inboxBox");
+  const miss=CHATS.map(otherUid).filter(u=>u&&u!=="admin"&&!(u in AVA));if(miss.length)Promise.all(miss.map(getAva)).then(()=>{if(document.getElementById("inbox").classList.contains("open"))drawInbox();});
   if(!USER){box.innerHTML="<h3>Pesan</h3><p>Masuk dulu dengan Google untuk melihat pesan.</p>";return;}
-  box.innerHTML=`<h3>Pesan</h3>${CHATS.length?CHATS.map(c=>`<div class="lrow crow ${isUnread(c)?'unread':''}" onclick="openThreadId('${c.id}')"><div class="lth">${c.thumb?`<img src="${c.thumb}">`:"💬"}</div><div class="linfo"><b>${esc(otherName(c))}</b><div style="color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📦 ${esc(c.listingTitle||"")}</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.lastFrom===USER.uid?"Kamu: ":""}${esc(c.lastMsg||"Belum ada pesan")}</div></div><small style="color:var(--muted)">${fmtTime(c.updatedAt)}</small></div>`).join(""):`<p style="color:var(--muted)">Belum ada pesan. Buka barang yang kamu minati lalu ketuk <b>💬 Chat Penjual</b>.</p>`}`;}
+  box.innerHTML=`<h3>Pesan</h3>${CHATS.length?CHATS.map(c=>`<div class="lrow crow ${isUnread(c)?'unread':''}" onclick="openThreadId('${c.id}')"><div class="lth" style="position:relative;overflow:visible">${c.thumb?`<img src="${c.thumb}" style="border-radius:10px">`:"💬"}<span class="miniava">${avaHtml(otherUid(c),otherName(c))}</span></div><div class="linfo"><b>${esc(otherName(c))}</b><div style="color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📦 ${esc(c.listingTitle||"")}</div><div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.lastFrom===USER.uid?"Kamu: ":""}${esc(c.lastMsg||"Belum ada pesan")}</div></div><small style="color:var(--muted)">${fmtTime(c.updatedAt)}</small></div>`).join(""):`<p style="color:var(--muted)">Belum ada pesan. Buka barang yang kamu minati lalu ketuk <b>💬 Chat Penjual</b>.</p>`}`;}
 function openThreadId(id){const c=CHATS.find(i=>i.id===id);if(c)openThread(c);}
 function openThread(c){CUR=c;close_('inbox');
-  document.getElementById("chatHead").innerHTML=`<b>${esc(otherName(c))}</b><div class="csub" onclick="if(byId('${c.listingId}')){closeChat();openDetail('${c.listingId}')}">📦 ${esc(c.listingTitle||"")} ›</div>`;
+  document.getElementById("chatHead").innerHTML=`<div style="display:flex;gap:10px;align-items:center"><div class="cava">${avaHtml(otherUid(c),otherName(c))}</div><div style="min-width:0;flex:1"><b>${esc(otherName(c))}</b><div class="csub" onclick="if(byId('${c.listingId}')){closeChat();openDetail('${c.listingId}')}">📦 ${esc(c.listingTitle||"")} ›</div></div></div>`;
+  getAva(otherUid(c)).then(a=>{if(a&&CUR===c){const el=document.querySelector("#chatHead .cava");if(el)el.innerHTML=avaHtml(otherUid(c),otherName(c));}});
   const box=document.getElementById("chatMsgs");box.innerHTML='<p class="cnote">Memuat pesan…</p>';
   document.getElementById("chat").classList.add("open");
   if(unsubMsgs)unsubMsgs();
@@ -812,12 +829,12 @@ let PROFILE=null, PROF_ASKED=false;
 const PF=["name","phone","city","address","gender","birth","shopName"];
 function profPct(p){if(!p)return 0;const need=["name","phone","city","address"],extra=["gender","birth"];let n=need.filter(k=>p[k]).length*20+extra.filter(k=>p[k]).length*10;return Math.min(100,n);}
 const profDone=p=>!!(p&&p.name&&p.phone&&p.city&&p.address);
-async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;loadKyc();try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);toast("Gagal memuat profil: "+(e.code||e.message));return;}drawUserBtn();
+async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;loadKyc();loadMyAva();try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);toast("Gagal memuat profil: "+(e.code||e.message));return;}drawUserBtn();
   if(!profDone(PROFILE)&&!PROF_ASKED&&!isAdmin()){PROF_ASKED=true;setTimeout(()=>{if(!document.querySelector(".modal-bg.open"))openProfile(true);},700);}}
 function openProfile(first){if(!needLogin(()=>openProfile(),"mengatur profil"))return;const p=PROFILE||{},g=i=>document.getElementById(i);
   const pct=profPct(p);
   g("profHead").innerHTML=`<h3>${first?"Lengkapi Akunmu 👋":"Profil Saya"}</h3>
-    <div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div style="flex:1"><b>${esc(USER.email||"")}</b><div class="pbar"><i style="width:${pct}%"></i></div><small style="color:var(--muted)">Profil ${pct}% lengkap</small></div></div>
+    <div class="sum"><label class="pfava" for="pf-ava"><div id="pfAva">${avaHtml(USER.uid,myName(),myPhoto())}</div><span>📷</span></label><input type="file" id="pf-ava" accept="image/*" hidden onchange="pickAvatar(this)"><div style="flex:1"><b>${esc(USER.email||"")}</b><div class="pbar"><i style="width:${pct}%"></i></div><small style="color:var(--muted)">Profil ${pct}% lengkap · <a href="#" onclick="document.getElementById('pf-ava').click();return false" style="color:var(--brand-d)">Ganti foto</a>${MYAVA?` · <a href="#" onclick="removeAvatar();return false" style="color:#b42318">Hapus</a>`:""}</small></div></div>
     ${first?`<p style="color:var(--muted);font-size:14px">Isi data di bawah supaya checkout & pasang iklan jadi lebih cepat.</p>`:""}${kycBlock()}`;
   g("pf-name").value=p.name||USER.displayName||"";g("pf-phone").value=p.phone?("0"+String(p.phone).replace(/^62/,"")):"";g("pf-gender").value=p.gender||"";g("pf-birth").value=p.birth||"";
   g("pf-city").value=p.city||"";g("pf-addr").value=p.address||"";g("pf-shop").value=p.shopName||"";
@@ -974,7 +991,7 @@ const isVerified=uid=>VERIFIED.has(uid);
 function kycBlock(){if(!USER)return"";
   if(isVerified(USER.uid))return `<div class="kycb ok">✅ <div><b>Akun terverifikasi KTP</b><small>Nama, jenis kelamin & tanggal lahir sesuai KTP</small></div></div>`;
   if(KYC&&KYC.status==="pending")return `<div class="kycb wait"><span class="pulse-dot"></span><div><b>Verifikasi KTP sedang dicek admin</b><small>Biasanya kurang dari 1×24 jam</small></div></div>`;
-  return `<div class="kycb">🪪 <div><b>${KYC&&KYC.status==="rejected"?"Verifikasi ditolak":"Belum verifikasi KTP"}</b><small>${KYC&&KYC.status==="rejected"?esc(KYC.reason||"Coba kirim ulang dengan foto lebih jelas"):"Dapatkan badge ✅ Terverifikasi biar pembeli makin percaya"}</small></div><button type="button" class="copy" onclick="openKyc()">${KYC&&KYC.status==="rejected"?"Kirim ulang":"Verifikasi"}</button></div>`;}
+  return `<div class="kycb">🪪 <div><b>${KYC&&KYC.status==="rejected"?"Verifikasi ditolak":"Belum verifikasi KTP"}</b><small>${KYC&&KYC.status==="rejected"?esc(KYC.reason||"Coba kirim ulang dengan foto lebih jelas"):"Wajib untuk berjualan · dapatkan badge ✅ Terverifikasi"}</small></div><button type="button" class="copy" onclick="openKyc()">${KYC&&KYC.status==="rejected"?"Kirim ulang":"Verifikasi"}</button></div>`;}
 function openKyc(){if(!needLogin(openKyc,"verifikasi KTP"))return;close_("prof");KIMG={ktp:"",self:""};
   const p=PROFILE||{},g=i=>document.getElementById(i);g("k-name").value=p.name||"";g("k-birth").value=p.birth||"";g("k-gender").value=p.gender||"";g("k-addr").value=p.address||"";g("k-city").value=p.city||"";g("k-bplace").value="";g("k-ok").checked=false;
   ocrStatus("");["k-name","k-bplace","k-birth","k-gender","k-addr","k-city"].forEach(i=>g(i).classList.remove("ocrfill"));g("k-ktpv").textContent="🪪 Ketuk untuk foto / pilih KTP";g("k-selfv").textContent="🤳 Ketuk untuk foto selfie + KTP";document.getElementById("kyc").classList.add("open");}
@@ -1072,6 +1089,21 @@ async function confirmPayout(){const sid=POUT.sid,a=PAYACC[sid]||{},os=AORD.filt
     close_("pout");toast("Pencairan tercatat ✅ Penjual akan diminta konfirmasi");ADMTAB="payout";drawAdmin();}
   catch(e){toast("Gagal: "+(e.code||e.message));btn.disabled=false;btn.textContent="✔️ Konfirmasi dana sudah dicairkan";}}
 async function sellerConfirm(id){if(!confirmTap("pc"+id))return;try{await FB.payoutConfirm(id);toast("Terima kasih! Dana dikonfirmasi diterima ✅");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+
+// ===== FOTO PROFIL =====
+const AVA={};let MYAVA="";
+function cropSquare(im,size,q){const c=document.createElement("canvas");c.width=c.height=size;const w=im.naturalWidth,h=im.naturalHeight,m=Math.min(w,h);
+  c.getContext("2d").drawImage(im,(w-m)/2,(h-m)/2,m,m,0,0,size,size);return c.toDataURL("image/jpeg",q);}
+function avaHtml(uid,name,photoURL,cls){const src=(uid&&AVA[uid])||photoURL||"";const n=(name||"?").trim()||"?";
+  return src?`<img class="${cls||""}" src="${src}" referrerpolicy="no-referrer" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`:esc(n[0].toUpperCase());}
+const myPhoto=()=>MYAVA||(USER&&USER.photoURL)||"";
+async function getAva(uid){if(!uid||uid==="admin"||!window.FB)return "";if(uid in AVA)return AVA[uid];AVA[uid]="";try{AVA[uid]=(await FB.getAvatar(uid))||"";}catch(e){}return AVA[uid];}
+async function loadMyAva(){MYAVA="";if(!USER||!window.FB)return;MYAVA=await getAva(USER.uid);drawUserBtn();}
+async function pickAvatar(inp){const f=inp.files[0];if(!f)return;try{const im=await loadImg(f);let img=cropSquare(im,320,.8);if(img.length>70000)img=cropSquare(im,240,.7);
+    document.getElementById("pfAva").innerHTML=`<img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    await FB.saveAvatar(img);AVA[USER.uid]=img;MYAVA=img;drawUserBtn();toast("Foto profil diperbarui 📸");}
+  catch(e){toast("Gagal menyimpan foto: "+(e.code||e.message));}}
+async function removeAvatar(){if(!confirmTap("rmava"))return;try{await FB.removeAvatar();AVA[USER.uid]="";MYAVA="";drawUserBtn();openProfile();toast("Foto profil dihapus");}catch(e){toast("Gagal: "+(e.code||e.message));}}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 document.body.insertAdjacentHTML("beforeend",kotaList().replace('id="kotaDL"','id="kotaDL2"'));
 renderCats();render();tryOpenHash();
@@ -1137,6 +1169,9 @@ try{
     async orderStatus(oid,status,extra={}){ await F.updateDoc(F.doc(db,"orders",oid),{...extra,status,
         timeline:F.arrayUnion({s:status,t:Date.now()}),updatedAt:F.serverTimestamp()}); },
     // --- verifikasi KTP ---
+    async getAvatar(uid){ const d=await F.getDoc(F.doc(db,"avatars",uid)); return d.exists()?d.data().img:""; },
+    async saveAvatar(img){ const u=auth.currentUser; await F.setDoc(F.doc(db,"avatars",u.uid),{img,at:F.serverTimestamp()}); },
+    async removeAvatar(){ const u=auth.currentUser; await F.deleteDoc(F.doc(db,"avatars",u.uid)); },
     async getUser(uid){ const d=await F.getDoc(F.doc(db,"users",uid)); return d.exists()?d.data():null; },
     async setUserPay(uid,d){ await F.setDoc(F.doc(db,"users",uid),d,{merge:true}); },
     async payoutConfirm(oid){ await F.updateDoc(F.doc(db,"orders",oid),{"payout.confirmed":true,"payout.confirmedAt":Date.now(),updatedAt:F.serverTimestamp()}); },
