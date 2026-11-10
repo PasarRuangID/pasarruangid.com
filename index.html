@@ -232,6 +232,11 @@ input[type=date]{min-height:42px}
 .consent{display:flex;gap:8px;align-items:flex-start;font-weight:400!important;font-size:13px;background:var(--bg);border-radius:10px;padding:10px}.consent input{width:auto!important;margin-top:2px}
 .vbadge{display:inline-block;font-size:11px;font-weight:700;color:#0b6a53;background:#e7f6f1;border-radius:6px;padding:1px 6px;vertical-align:middle}
 input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
+.ocrbox{align-items:center;gap:10px;background:#fffbe6;border:1px solid #f5e3a3;border-radius:12px;padding:10px 12px;font-size:20px}
+.ocrbox div{flex:1;font-size:14px}.ocrbox small{display:block;color:var(--muted);font-size:12px}
+.ocrbox .pbar2{width:100%;margin:6px 0 2px}
+.ring2{width:26px;height:26px;border-radius:50%;border:3px solid #e2e7ec;border-top-color:var(--brand);animation:spin .8s linear infinite;flex-shrink:0}
+.ocrfill{background:#fff8d6!important;border-color:#e8c766!important}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -387,10 +392,11 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <div class="fee">Setelah disetujui admin, profilmu otomatis disesuaikan dengan data KTP & mendapat badge <b>✅ Terverifikasi</b>. Nama, jenis kelamin & tanggal lahir akan dikunci.</div>
     <label>Foto KTP<div class="pick" onclick="document.getElementById('k-ktp').click()"><span id="k-ktpv">🪪 Ketuk untuk foto / pilih KTP</span></div></label>
     <input type="file" id="k-ktp" accept="image/*" hidden onchange="pickKyc(this,'ktp')">
-    <small style="color:var(--muted)">Boleh tutup 6 digit tengah NIK dengan jari/kertas. Pastikan nama & foto terlihat jelas.</small>
+    <small style="color:var(--muted)">📸 Foto KTP lurus, terang & tidak buram — data akan <b>terisi otomatis</b>. Boleh tutup 6 digit tengah NIK.</small>
+    <div class="ocrbox" id="k-ocr" style="display:none"></div>
     <label>Selfie sambil memegang KTP<div class="pick" onclick="document.getElementById('k-self').click()"><span id="k-selfv">🤳 Ketuk untuk foto selfie + KTP</span></div></label>
     <input type="file" id="k-self" accept="image/*" capture="user" hidden onchange="pickKyc(this,'self')">
-    <b style="margin-top:6px">Data sesuai KTP</b>
+    <b style="margin-top:6px">Data sesuai KTP <small style="font-weight:400;color:var(--muted)">(terisi otomatis, bisa diedit)</small></b>
     <label>Nama lengkap<input id="k-name" required maxlength="60" placeholder="Sesuai KTP"></label>
     <div class="row"><label>Tempat lahir<input id="k-bplace" required maxlength="40"></label><label>Tanggal lahir<input id="k-birth" type="date" required></label></div>
     <label>Jenis kelamin<select id="k-gender" required><option value="">—</option><option>Laki-laki</option><option>Perempuan</option></select></label>
@@ -882,6 +888,53 @@ function ordReject(id){const why=prompt("Kenapa bukti tidak valid? (dikirim ke p
   ordAct(id,()=>FB.orderStatus(id,"menunggu_bayar",{cancelReason:"Bukti ditolak admin: "+why.slice(0,100),proof:""}),"Pembeli diminta upload ulang");}
 
 // ===== VERIFIKASI KTP =====
+function titleCase(t){return String(t||"").toLowerCase().replace(/\s+/g," ").trim().replace(/\b([a-z])/g,(m)=>m.toUpperCase()).replace(/\bRt\b/g,"RT").replace(/\bRw\b/g,"RW").replace(/\bNo\b/g,"No").replace(/\bJl\b/g,"Jl");}
+function parseKtp(raw){
+  const lines=String(raw||"").split(/\n+/).map(l=>l.toUpperCase().replace(/[|`'"“”]/g,"").replace(/\s+/g," ").trim()).filter(Boolean);
+  const out={};
+  const val=(l,re)=>{const m=l.match(re);return m?m[1].replace(/^[\s:;.=\-_~]+/,"").replace(/\s+[:;]\s*/," ").trim():"";};
+  const find=(re)=>{for(let i=0;i<lines.length;i++){const l=lines[i];if(re.test(l))return {i,l};}return null;};
+  // kota / kabupaten (header)
+  for(const l of lines.slice(0,4)){const m=l.match(/\b(KABUPATEN|KOTA|KAB\.?)\s+([A-Z .]{3,})/);if(m&&!/PROVINSI/.test(m[2])){out.city=titleCase(m[2].replace(/[^A-Z ]/g," "));break;}}
+  if(!out.city){const p=find(/PROVINSI\s+DKI|DKI JAKARTA/);if(p)out.city="Jakarta";}
+  // nama
+  let f=find(/^N[AE]M[AE]\b|^NAMA/); if(f)out.name=titleCase(val(f.l,/^N\w{2,3}\W*\s*(.*)$/).replace(/[^A-Z .,']/g,""));
+  // tempat/tgl lahir
+  f=find(/TEMPAT|TGL\s*LAHIR|LAHIR/);
+  if(f){let v=val(f.l,/LAHIR\W*\s*(.*)$/)||val(f.l,/TEMPAT\W*\s*(.*)$/);
+    const d=v.match(/(\d{1,2})\s*[-\/. ]\s*(\d{1,2})\s*[-\/. ]\s*(\d{4})/);
+    if(d){const dd=d[1].padStart(2,"0"),mm=d[2].padStart(2,"0");if(+mm>=1&&+mm<=12&&+dd>=1&&+dd<=31)out.birth=`${d[3]}-${mm}-${dd}`;}
+    const place=v.split(/[,.]|\d/)[0].replace(/[^A-Z ]/g,"").trim(); if(place.length>=3)out.birthPlace=titleCase(place);}
+  // jenis kelamin
+  f=find(/KELAMIN|LAKI|PEREMPUAN/); if(f){if(/LAKI/.test(f.l))out.gender="Laki-laki";else if(/PEREMPUAN|PEREMP/.test(f.l))out.gender="Perempuan";}
+  // alamat + rt/rw + kel + kec
+  const parts=[];
+  f=find(/^AL[AM]{1,2}AT|ALAMAT/);
+  if(f){let a=val(f.l,/AL\w*T\W*\s*(.*)$/); const nx=lines[f.i+1]||""; if(nx&&!/RT|RW|KEL|DESA|KECAMATAN|AGAMA/.test(nx)&&nx.length<40)a+=" "+nx; if(a)parts.push(titleCase(a.replace(/[^A-Z0-9 .,\/-]/g,"")));}
+  f=find(/RT\s*\/?\s*RW/); if(f){const m=f.l.match(/(\d{1,3})\s*\/\s*(\d{1,3})/); if(m)parts.push(`RT ${m[1].padStart(3,"0")}/RW ${m[2].padStart(3,"0")}`);}
+  f=find(/KEL\s*\/?\s*DESA|KELURAHAN|DESA/); if(f){const v=val(f.l,/DESA\W*\s*(.*)$/)||val(f.l,/KEL\w*\W*\s*(.*)$/); if(v)parts.push("Kel. "+titleCase(v.replace(/[^A-Z ]/g,"")));}
+  f=find(/KECAMATAN|KEC\b/); if(f){const v=val(f.l,/KEC\w*\W*\s*(.*)$/); if(v)parts.push("Kec. "+titleCase(v.replace(/[^A-Z ]/g,"")));}
+  if(parts.length)out.address=parts.join(", ");
+  return out;
+}
+
+let OCR_LIB=null;
+function loadOcrLib(){if(window.Tesseract)return Promise.resolve();if(OCR_LIB)return OCR_LIB;
+  OCR_LIB=new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";sc.onload=ok;sc.onerror=()=>{OCR_LIB=null;no(new Error("Gagal memuat pembaca KTP"));};document.head.appendChild(sc);});return OCR_LIB;}
+function prepOcr(im){const c=document.createElement("canvas");const W=1600,k=W/im.naturalWidth;c.width=W;c.height=Math.round(im.naturalHeight*k);const x=c.getContext("2d");x.drawImage(im,0,0,c.width,c.height);
+  const d=x.getImageData(0,0,c.width,c.height),p=d.data;for(let i=0;i<p.length;i+=4){let g=.299*p[i]+.587*p[i+1]+.114*p[i+2];g=(g-128)*1.6+128;g=g<0?0:g>255?255:g;p[i]=p[i+1]=p[i+2]=g;}x.putImageData(d,0,0);return c;}
+function ocrStatus(html){const el=document.getElementById("k-ocr");if(el){el.innerHTML=html;el.style.display=html?"flex":"none";}}
+async function ocrKtp(im){ocrStatus(`<span class="ring2"></span><div><b>Membaca KTP…</b><div class="pbar2"><i id="k-ocrbar" style="width:0;animation:none;transition:width .3s"></i></div><small id="k-ocrtx">Menyiapkan pembaca</small></div>`);
+  try{await loadOcrLib();const bar=()=>document.getElementById("k-ocrbar"),tx=()=>document.getElementById("k-ocrtx");
+    const w=await Tesseract.createWorker("ind",1,{logger:m=>{if(m.status==="recognizing text"){if(bar())bar().style.width=Math.round(m.progress*100)+"%";if(tx())tx().textContent="Mengenali tulisan "+Math.round(m.progress*100)+"%";}else if(tx())tx().textContent="Mengunduh data bahasa (sekali saja)…";}});
+    const r=await w.recognize(prepOcr(im));await w.terminate();
+    const d=parseKtp(r.data.text);const ck=cariKota(d.city||"");if(ck)d.city=ck[0];
+    const map={name:"k-name",birthPlace:"k-bplace",birth:"k-birth",gender:"k-gender",address:"k-addr",city:"k-city"};let n=0;
+    for(const k in map){if(d[k]){const el=document.getElementById(map[k]);el.value=d[k];el.classList.add("ocrfill");el.addEventListener("input",()=>el.classList.remove("ocrfill"),{once:true});n++;}}
+    ocrStatus(n?`✨ <div><b>${n} data terisi otomatis dari KTP</b><small>Periksa lagi kolom yang berwarna kuning — hasil baca bisa keliru.</small></div>`
+              :`⚠️ <div><b>KTP belum terbaca</b><small>Foto lebih dekat, terang & tidak miring, atau isi manual di bawah.</small></div>`);
+  }catch(e){console.warn(e);ocrStatus(`⚠️ <div><b>Pembaca KTP tidak tersedia</b><small>Isi data manual di bawah ya.</small></div>`);}}
+
 let KYC=null, VERIFIED=new Set(), KIMG={ktp:"",self:""}, KYCLIST=[];
 function watermark(im,max,limit){const c=document.createElement("canvas");let w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,max/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);
   const x=c.getContext("2d");x.drawImage(im,0,0,c.width,c.height);x.save();x.translate(c.width/2,c.height/2);x.rotate(-Math.PI/7);
@@ -889,7 +942,7 @@ function watermark(im,max,limit){const c=document.createElement("canvas");let w=
   const t="HANYA UNTUK VERIFIKASI PASARRUANG · "+new Date().toLocaleDateString("id-ID");
   for(let y=-c.height;y<c.height;y+=fs*3){x.strokeText(t,0,y);x.fillText(t,0,y);}x.restore();
   let q=.75,d=c.toDataURL("image/jpeg",q);while(d.length>limit&&q>.35){q-=.08;d=c.toDataURL("image/jpeg",q);}return d;}
-async function pickKyc(inp,k){const f=inp.files[0];if(!f)return;try{const im=await loadImg(f);KIMG[k]=watermark(im,1100,260000);
+async function pickKyc(inp,k){const f=inp.files[0];if(!f)return;try{const im=await loadImg(f);KIMG[k]=watermark(im,1100,260000);if(k==="ktp")ocrKtp(im);
   document.getElementById(k==="ktp"?"k-ktpv":"k-selfv").innerHTML=`<img src="${KIMG[k]}" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px">`;}catch(e){toast("Gagal membaca foto");}}
 async function loadKyc(){KYC=null;if(!USER||!window.FB)return;try{KYC=await FB.getKyc();}catch(e){}}
 const isVerified=uid=>VERIFIED.has(uid);
@@ -899,7 +952,7 @@ function kycBlock(){if(!USER)return"";
   return `<div class="kycb">🪪 <div><b>${KYC&&KYC.status==="rejected"?"Verifikasi ditolak":"Belum verifikasi KTP"}</b><small>${KYC&&KYC.status==="rejected"?esc(KYC.reason||"Coba kirim ulang dengan foto lebih jelas"):"Dapatkan badge ✅ Terverifikasi biar pembeli makin percaya"}</small></div><button type="button" class="copy" onclick="openKyc()">${KYC&&KYC.status==="rejected"?"Kirim ulang":"Verifikasi"}</button></div>`;}
 function openKyc(){if(!needLogin(openKyc,"verifikasi KTP"))return;close_("prof");KIMG={ktp:"",self:""};
   const p=PROFILE||{},g=i=>document.getElementById(i);g("k-name").value=p.name||"";g("k-birth").value=p.birth||"";g("k-gender").value=p.gender||"";g("k-addr").value=p.address||"";g("k-city").value=p.city||"";g("k-bplace").value="";g("k-ok").checked=false;
-  g("k-ktpv").textContent="🪪 Ketuk untuk foto / pilih KTP";g("k-selfv").textContent="🤳 Ketuk untuk foto selfie + KTP";document.getElementById("kyc").classList.add("open");}
+  ocrStatus("");["k-name","k-bplace","k-birth","k-gender","k-addr","k-city"].forEach(i=>g(i).classList.remove("ocrfill"));g("k-ktpv").textContent="🪪 Ketuk untuk foto / pilih KTP";g("k-selfv").textContent="🤳 Ketuk untuk foto selfie + KTP";document.getElementById("kyc").classList.add("open");}
 async function submitKyc(e){e.preventDefault();if(!KIMG.ktp||!KIMG.self){toast("Upload foto KTP & selfie dulu");return false;}
   const g=i=>document.getElementById(i).value.trim();const btn=document.getElementById("k-send");btn.disabled=true;btn.textContent="Mengirim…";
   try{await FB.submitKyc({ktpImg:KIMG.ktp,selfieImg:KIMG.self,data:{name:g("k-name"),birthPlace:g("k-bplace"),birth:g("k-birth"),gender:g("k-gender"),address:g("k-addr"),city:g("k-city")}});
