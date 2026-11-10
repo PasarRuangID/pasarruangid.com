@@ -6,6 +6,12 @@
 <title>PasarRuang — Marketplace Jual Beli</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%23fff%22/%3E%3Cpath%20d%3D%22M14%2030h36v18a4%204%200%200%201-4%204H18a4%204%200%200%201-4-4z%22%20fill%3D%22%230f8a6c%22/%3E%3Crect%20x%3D%2227%22%20y%3D%2237%22%20width%3D%2210%22%20height%3D%2215%22%20rx%3D%222%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2234.5%22%20cy%3D%2245%22%20r%3D%221.2%22%20fill%3D%22%230f8a6c%22/%3E%3Cpath%20d%3D%22M12%2014h40l4%2012H8z%22%20fill%3D%22%23ff7a3d%22/%3E%3Cpath%20d%3D%22M8%2026a6%206%200%200%200%2012%200a6%206%200%200%200%2012%200a6%206%200%200%200%2012%200a6%206%200%200%200%2012%200z%22%20fill%3D%22%23ff7a3d%22/%3E%3Cpath%20d%3D%22M20%2014l-2%2012M32%2014v12M44%2014l2%2012%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20opacity%3D%22.9%22/%3E%3Cpath%20d%3D%22M8%2026a6%206%200%200%200%2012%200%22%20fill%3D%22%23ffb48a%22/%3E%3Cpath%20d%3D%22M32%2026a6%206%200%200%200%2012%200%22%20fill%3D%22%23ffb48a%22/%3E%3C/svg%3E">
 <meta name="theme-color" content="#0f8a6c">
+<meta name="description" content="PasarRuang — jual beli barang baru & bekas tanpa potongan komisi. Pasang iklan gratis, chat langsung dengan penjual.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PasarRuang">
+<meta property="og:title" content="PasarRuang — Marketplace Jual Beli">
+<meta property="og:description" content="Jual beli barang baru & bekas tanpa potongan komisi. Pasang iklan gratis, chat langsung dengan penjual.">
+<meta property="og:image" content="https://pasarruangid.github.io/pasarruangid.com/logo-pasarruang.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f4f6f8;--ink:#14212b;--muted:#6b7a86;--brand:#0f8a6c;--brand-d:#0b6a53;--accent:#ff7a3d;--line:#e2e7ec;--card:#fff}
@@ -94,6 +100,23 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}
 .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1px solid #dadce0;border-radius:12px;padding:13px;font-weight:700;cursor:pointer;width:100%}
 .gbtn svg{width:20px;height:20px}
 @media(max-width:760px){.user-btn .nm{display:none}.user-btn{padding:4px}.user-btn.out{padding:8px 10px}}
+.pick{border:1px dashed var(--line);border-radius:12px;padding:12px;text-align:center;color:var(--muted);cursor:pointer;margin-top:4px;font-weight:400}
+.pick span{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+.pick img{width:64px;height:64px;object-fit:cover;border-radius:8px}
+.pick em{width:100%;font-size:12px;font-style:normal}
+.soldtag{position:absolute;inset:auto 0 0 0;background:rgba(20,33,43,.75);color:#fff;font-weight:800;text-align:center;padding:4px;font-size:12px;letter-spacing:1px}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin:3px 0}
+.lrow{display:flex;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:left}
+.lth{width:64px;height:64px;border-radius:10px;overflow:hidden;background:var(--bg);display:grid;place-items:center;flex-shrink:0}
+.lth img{width:100%;height:100%;object-fit:cover}
+.linfo{flex:1;min-width:0;font-size:13px}
+.linfo b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.linfo small{display:block;color:var(--muted);word-break:break-all}
+.lbtn{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.lbtn .tab{padding:5px 10px;font-size:12px}
+.share{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.sh{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink);text-decoration:none}
+.sh.wa2{border-color:#25D366;color:#128c4a}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -180,7 +203,9 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}
   <button class="x" onclick="close_('sell')">×</button>
   <form class="form" id="sellForm" onsubmit="return submitSell(event)">
     <h3>Pasang Iklan</h3>
-    <div class="fee">✨ Gratis pasang iklan, 0% komisi. Isi data barang, lalu kirim ke admin lewat WhatsApp. Iklan tayang setelah dicek admin.</div>
+    <div class="fee">✨ Gratis pasang iklan, 0% komisi. Iklan tayang setelah dicek admin (biasanya &lt; 1×24 jam).</div>
+    <label>Foto barang (1–4 foto)<div class="pick" onclick="document.getElementById('s-photos').click()"><span id="s-prev">📷 Ketuk untuk pilih foto</span></div></label>
+    <input type="file" id="s-photos" accept="image/*" multiple hidden onchange="pickPhotos(this)">
     <label>Nama kamu / nama toko<input id="s-seller" required placeholder="cth. Budi Gadget"></label>
     <label>Judul barang<input id="s-title" required placeholder="cth. iPhone 13 128GB mulus"></label>
     <div class="row">
@@ -193,7 +218,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}
     </div>
     <label>Deskripsi<textarea id="s-desc" rows="3" placeholder="Kondisi, kelengkapan, alasan dijual…"></textarea></label>
     <label>Nomor WhatsApp kamu<input id="s-wa" required placeholder="0812xxxxxxx" inputmode="tel"></label>
-    <button class="btn buy" type="submit">Lanjut</button>
+    <small style="color:var(--muted)">Nomor WhatsApp akan ditampilkan ke pembeli lewat tombol Chat Penjual.</small>
+    <button class="btn buy" type="submit" id="s-submit">Kirim Iklan</button>
   </form>
   <div class="form" id="sellDone" style="display:none"></div>
 </div></div>
@@ -211,12 +237,16 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}
     <small style="color:var(--muted)">Kami hanya memakai nama & email kamu untuk pesanan.</small>
   </div>
 </div></div>
+<div class="modal-bg" id="acct" onclick="if(event.target===this)close_('acct')"><div class="modal"><button class="x" onclick="close_('acct')">×</button><div class="form" id="acctBox"></div></div></div>
+<div class="modal-bg" id="mine" onclick="if(event.target===this)close_('mine')"><div class="modal"><button class="x" onclick="close_('mine')">×</button><div class="form" id="mineBox"></div></div></div>
+<div class="modal-bg" id="admin" onclick="if(event.target===this)close_('admin')"><div class="modal"><button class="x" onclick="close_('admin')">×</button><div class="form" id="adminBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 // ================= PENGATURAN TOKO =================
 const STORE_NAME="PasarRuang";
 const ADMIN_WA="6285815022066"; // WhatsApp admin (format 62...)
+const ADMIN_EMAIL="farizzamzami075@gmail.com"; // email Google admin (untuk panel admin)
 // ===================================================
 const CATS=[["Semua","🧭"],["Elektronik","📱"],["Fashion","👕"],["Kendaraan","🏍️"],["Properti","🏠"],["Rumah Tangga","🛋️"],["Hobi","🎮"],["Jasa","🛠️"]];
 const COLORS={Elektronik:"#e3edf9",Fashion:"#fbe6ee",Kendaraan:"#e9e6fb",Properti:"#e3f3ea","Rumah Tangga":"#fbf0dc",Hobi:"#e0f4f7",Jasa:"#f1ece4"};
@@ -237,14 +267,20 @@ let LIST=[
  {id:1,title:"Salomon Black Silver GORE-TEX — EUR 42⅔",price:null,priceText:"Rp3.xxx.xxx",cat:"Fashion",cond:"Bekas",city:"Solo",icon:"👟",seller:"Admin "+STORE_NAME,wa:ADMIN_WA,imgs:FOTO_SALOMON,
   desc:"Sepatu Salomon Black Silver GORE-TEX.\n• Size: EUR 42⅔ / UK 8.5 / US M 9\n• Warna: Black Silver\n• Kondisi: Like New\n• Ex 807 Garage\n• Fullset box & kelengkapan (tag GORE-TEX, kartu, dll)\n• Tersedia juga size EUR 43⅓ (tanya via chat)\n\n📍 COD: Solo · 📦 Bisa kirim",days:0}
 ];
+const BASE_TS=Date.parse("2026-11-10T10:00:00+07:00");
+LIST.forEach((x,i)=>{x.id=String(x.id);x.ts=x.ts||BASE_TS-i*60000;});
+const STATIC=LIST.slice(); let REMOTE=[];
+function setRemote(arr){REMOTE=arr;LIST=REMOTE.concat(STATIC);renderCats();render();if(typeof tryOpenHash==="function")tryOpenHash();}
+const byId=id=>LIST.find(i=>String(i.id)===String(id));
 let cat="Semua",cond="Semua",view="all",fav=new Set(),mine=new Set();
-try{const s=JSON.parse(localStorage.getItem("pr_fav")||"[]");fav=new Set(s);}catch(e){}
+try{const s=JSON.parse(localStorage.getItem("pr_fav")||"[]");fav=new Set(s.map(String));}catch(e){}
 function save(){try{localStorage.setItem("pr_fav",JSON.stringify([...fav]))}catch(e){}}
-const pic=(x,cls="")=>(x.imgs||x.img)?`<img src="${x.imgs?x.imgs[0]:x.img}" alt="" style="width:100%;height:100%;object-fit:cover">`:x.icon;
+const pic=(x,cls="")=>{const u=x.imgs?x.imgs[0]:(x.img||x.thumb);return u?`<img src="${u}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:(x.icon||"📦");};
 const pr=x=>x.price?rp(x.price)+(x.nego?" (nego)":""):(x.priceText||"Tanya harga");
 const rp=n=>"Rp"+Number(n).toLocaleString("id-ID");
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const ago=d=>d===0?"Hari ini":d+" hari lalu";
+const ago=x=>{const d=Math.floor((Date.now()-(x.ts||Date.now()))/864e5);return d<=0?"Hari ini":d===1?"Kemarin":d+" hari lalu";};
+const nfoto=x=>x.imgs?x.imgs.length:(x.nphotos||0);
 
 function renderCats(){
   document.getElementById("cats").innerHTML=CATS.map(([n,i])=>`<div class="catb ${n===cat?'active':''}" onclick="cat='${n}';renderCats();render()"><i>${i}</i>${n}</div>`).join("");
@@ -256,22 +292,37 @@ function renderCats(){
 function render(){
   const q=document.getElementById("q").value.toLowerCase(), loc=document.getElementById("loc").value, so=document.getElementById("sort").value;
   let l=LIST.filter(x=>(cat==="Semua"||x.cat===cat)&&(cond==="Semua"||x.cond===cond)&&(!loc||x.city===loc)&&x.title.toLowerCase().includes(q));
-  if(view==="fav")l=l.filter(x=>fav.has(x.id));
+  if(view==="fav")l=l.filter(x=>fav.has(String(x.id)));
   if(view==="mine")l=l.filter(x=>mine.has(x.id));
-  l.sort((a,b)=>so==="low"?a.price-b.price:so==="high"?b.price-a.price:a.days-b.days||b.id-a.id);
+  l.sort((a,b)=>so==="low"?(a.price||0)-(b.price||0):so==="high"?(b.price||0)-(a.price||0):(b.ts||0)-(a.ts||0));
   document.getElementById("title").textContent=view==="fav"?"Favorit kamu":view==="mine"?"Iklan saya":cat==="Semua"?"Rekomendasi untukmu":cat;
   document.getElementById("grid").innerHTML=l.length?l.map(x=>`
-    <div class="card" onclick="openDetail(${x.id})">
+    <div class="card" onclick="openDetail('${x.id}')">
       <div class="thumb" style="background:${COLORS[x.cat]||'#eee'}">${pic(x)}
-        <span class="tag ${x.cond.toLowerCase()}">${x.cond}</span>${x.imgs&&x.imgs.length>1?`<span class="tag" style="left:auto;right:44px;background:rgba(0,0,0,.6);color:#fff">📷 ${x.imgs.length}</span>`:""}
-        <button class="fav" onclick="event.stopPropagation();toggleFav(${x.id})">${fav.has(x.id)?'❤️':'🤍'}</button>
+        <span class="tag ${x.cond.toLowerCase()}">${x.cond}</span>${nfoto(x)>1?`<span class="tag" style="left:auto;right:44px;background:rgba(0,0,0,.6);color:#fff">📷 ${nfoto(x)}</span>`:""}${x.sold?`<span class="soldtag">TERJUAL</span>`:""}
+        <button class="fav" onclick="event.stopPropagation();toggleFav('${x.id}')">${fav.has(String(x.id))?'❤️':'🤍'}</button>
       </div>
-      <div class="cb"><div class="p">${pr(x)}</div><div class="t">${esc(x.title)}</div><div class="m">📍 ${esc(x.city)} · ${ago(x.days)}</div></div>
+      <div class="cb"><div class="p">${pr(x)}</div><div class="t">${esc(x.title)}</div><div class="m">📍 ${esc(x.city)} · ${ago(x)}</div></div>
     </div>`).join(""):`<p class="empty">${view==="mine"?"Belum ada iklan. Tekan “+ Jual” untuk mulai.":view==="fav"?"Belum ada favorit.":"Barang tidak ditemukan."}</p>`;
 }
-function toggleFav(id){fav.has(id)?fav.delete(id):(fav.add(id),toast("Disimpan ke favorit"));save();render();}
+function toggleFav(id){id=String(id);fav.has(id)?fav.delete(id):(fav.add(id),toast("Disimpan ke favorit"));save();render();}
+// ===== BAGIKAN PRODUK =====
+const hashOf=x=>"produk-"+(x.remote?"f-"+x.fid:x.id);
+const linkOf=x=>location.origin+location.pathname+"#"+hashOf(x);
+const shareText=x=>`🛍️ ${x.title}\n💰 ${pr(x)}\n📍 ${x.city}\n\nLihat di ${STORE_NAME}:`;
+function setHash(h){try{history.replaceState(null,"",h?("#"+h):(location.pathname+location.search));}catch(e){}}
+function idFromHash(){const m=(location.hash||"").match(/^#produk-(f-)?([A-Za-z0-9]+)$/);return m?(m[1]?"f_"+m[2]:m[2]):null;}
+let WANT=idFromHash();
+function tryOpenHash(){if(!WANT)return;const x=byId(WANT);if(x){const w=WANT;WANT=null;openDetail(w);}}
+window.addEventListener("hashchange",()=>{WANT=idFromHash();tryOpenHash();});
+async function shareNative(id){const x=byId(id);try{await navigator.share({title:x.title,text:shareText(x),url:linkOf(x)});}catch(e){if(e&&e.name!=="AbortError")copyLink(id);}}
+function copyLink(id){const x=byId(id);copyTxt(linkOf(x),"Link produk disalin");}
+function shareBar(x){const wa=`https://wa.me/?text=${encodeURIComponent(shareText(x)+" "+linkOf(x))}`;
+  return `<div class="share"><span>Bagikan:</span><a class="sh wa2" href="${wa}" target="_blank" rel="noopener">WhatsApp</a><button class="sh" onclick="copyLink('${x.id}')">🔗 Salin link</button>${navigator.share?`<button class="sh" onclick="shareNative('${x.id}')">📤 Lainnya</button>`:""}</div>`;}
+let OPEN_ID=null;
 function openDetail(id){
-  const x=LIST.find(i=>i.id===id);
+  const x=byId(id); if(!x) return; OPEN_ID=String(id); setHash(hashOf(x));
+  if(x.remote&&!x.imgs&&window.FB){ FB.photos(x.fid).then(im=>{ if(im&&im.length){x.imgs=im; if(OPEN_ID===String(id)&&document.getElementById("detail").classList.contains("open")) openDetail(id);} }).catch(()=>{}); }
   const msg=encodeURIComponent(`Halo, saya tertarik dengan "${x.title}" (${pr(x)}) di ${STORE_NAME}. Masih ada? Boleh info harga pastinya?`);
   document.getElementById("detailBox").innerHTML=`
     <button class="x" onclick="close_('detail')">×</button>
@@ -279,33 +330,61 @@ function openDetail(id){
     <div class="d-body">
       <div class="d-price">${pr(x)}</div>
       <h3>${esc(x.title)}</h3>
-      <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x.days)}</span></div>
+      <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
-      <div class="seller"><div class="ava">${esc(x.seller[0]).toUpperCase()}</div><div><b>${esc(x.seller)}</b><small>Hubungi lewat WhatsApp</small></div></div>
+      <div class="seller"><div class="ava">${esc(x.seller[0]).toUpperCase()}</div><div><b>${esc(x.seller)}</b><small>${x.remote?"Penjual PasarRuang · ":""}Hubungi lewat WhatsApp</small></div></div>
       <div class="actions">
-        ${x.noChat?"":`<a class="btn wa" href="https://wa.me/${x.wa}?text=${msg}" target="_blank" rel="noopener">💬 Chat Penjual</a>`}
-        ${x.price&&!x.noBuy?`<button class="btn buy" onclick="openPay(${x.id})">Beli Sekarang</button>`:""}
+        ${x.noChat||x.sold?"":`<a class="btn wa" href="https://wa.me/${x.wa}?text=${msg}" target="_blank" rel="noopener">💬 Chat Penjual</a>`}
+        ${x.price&&!x.noBuy&&!x.sold?`<button class="btn buy" onclick="openPay('${x.id}')">Beli Sekarang</button>`:""}
       </div>
-      
+      ${x.remote&&x.status!=="approved"?"":shareBar(x)}
     </div>`;
   document.getElementById("detail").classList.add("open");
 }
 function removeAd(id){LIST=LIST.filter(x=>x.id!==id);mine.delete(id);save();close_('detail');renderCats();render();toast("Iklan dihapus");}
 function openSell(){if(!needLogin(openSell,"pasang iklan"))return;resetSell();document.getElementById("sell").classList.add("open");}
-function close_(id){document.getElementById(id).classList.remove("open");}
-function submitSell(e){
+function close_(id){document.getElementById(id).classList.remove("open");if(id==="detail"){OPEN_ID=null;setHash("");}}
+let PHOTOS=[];
+function loadImg(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{ok(im);URL.revokeObjectURL(u)};im.onerror=no;im.src=u;});}
+function shrink(im,max,q,limit){const c=document.createElement("canvas");let w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,max/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);let d=c.toDataURL("image/jpeg",q);while(d.length>limit&&q>0.35){q-=0.08;d=c.toDataURL("image/jpeg",q);}return d;}
+async function pickPhotos(inp){const fs=[...inp.files].slice(0,4);if(!fs.length)return;const box=document.getElementById("s-prev");box.textContent="Memproses foto…";
+  try{PHOTOS=[];for(const f of fs){const im=await loadImg(f);PHOTOS.push({full:shrink(im,1000,0.72,210000),thumb:PHOTOS.length?null:shrink(im,420,0.65,45000)});}
+    box.innerHTML=PHOTOS.map(p=>`<img src="${p.full}">`).join("")+`<em>${PHOTOS.length} foto · ketuk untuk ganti</em>`;
+  }catch(e){PHOTOS=[];box.textContent="Gagal membaca foto, coba foto lain";}
+  if(inp.files.length>4)toast("Maksimal 4 foto, dipakai 4 pertama");}
+function normWa(w){w=w.replace(/\D/g,"");if(w.startsWith("0"))w="62"+w.slice(1);if(w.startsWith("8"))w="62"+w;return w;}
+async function submitSell(e){
   e.preventDefault();
   const g=i=>document.getElementById(i).value.trim();
+  if(window.FB&&USER){
+    if(!PHOTOS.length){toast("Tambahkan minimal 1 foto");return false;}
+    const wa=normWa(g("s-wa")); if(wa.length<10||wa.length>15){toast("Nomor WhatsApp tidak valid");return false;}
+    const btn=document.getElementById("s-submit");btn.disabled=true;btn.textContent="Mengirim…";
+    try{
+      await FB.createListing({title:g("s-title").slice(0,100),price:Number(g("s-price"))||null,cond:g("s-cond"),cat:g("s-cat"),city:g("s-city").slice(0,50),
+        desc:g("s-desc").slice(0,2000),wa,seller:g("s-seller").slice(0,60),thumb:PHOTOS[0].thumb,nphotos:PHOTOS.length},PHOTOS.map(p=>p.full));
+      document.getElementById("sellForm").style.display="none";
+      const d=document.getElementById("sellDone");d.style.display="flex";
+      d.innerHTML=`<div class="done"><div class="big">⏳</div><b>Iklan terkirim!</b>
+        <div style="color:var(--muted);font-size:14px">Iklanmu sedang dicek admin dan akan tayang setelah disetujui. Pantau statusnya di menu akun → <b>Iklan Saya</b>.</div></div>
+        <button class="btn buy" onclick="close_('sell');openMine()">Lihat Iklan Saya</button>
+        <button class="tab" onclick="resetSell()">Pasang iklan lain</button>`;
+    }catch(err){console.error(err);toast("Gagal mengirim: "+(err.code||err.message));}
+    btn.disabled=false;btn.textContent="Kirim Iklan";
+    return false;
+  }
+  // cadangan: kirim lewat WhatsApp kalau database belum aktif
   const msg=`Halo Admin ${STORE_NAME}, saya mau pasang iklan:\n\n${who()}Penjual: ${g("s-seller")}\nBarang: ${g("s-title")}\nHarga: ${rp(g("s-price"))}\nKondisi: ${g("s-cond")}\nKategori: ${g("s-cat")}\nKota: ${g("s-city")}\nDeskripsi: ${g("s-desc")||"-"}\nWhatsApp: ${g("s-wa")}\n\n(Foto barang saya kirim di chat ini)`;
   document.getElementById("sellForm").style.display="none";
   const d=document.getElementById("sellDone");d.style.display="flex";
   d.innerHTML=`<div class="done"><div class="big">📸</div><b>Tinggal satu langkah lagi!</b>
-    <div style="color:var(--muted);font-size:14px">Kirim data iklanmu ke admin lewat WhatsApp, lalu lampirkan 1–5 foto barang. Iklan akan tayang setelah dicek.</div></div>
+    <div style="color:var(--muted);font-size:14px">Kirim data iklanmu ke admin lewat WhatsApp, lalu lampirkan foto barang.</div></div>
     <a class="btn wa" href="https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">💬 Kirim ke Admin via WhatsApp</a>
     <button class="tab" onclick="resetSell()">Pasang iklan lain</button>`;
   return false;
 }
-function resetSell(){document.getElementById("sellForm").reset();document.getElementById("sellForm").style.display="flex";document.getElementById("sellDone").style.display="none";}
+function resetSell(){document.getElementById("sellForm").reset();PHOTOS=[];document.getElementById("s-prev").innerHTML="📷 Ketuk untuk pilih foto";if(USER&&!document.getElementById("s-seller").value)document.getElementById("s-seller").value=USER.displayName||"";document.getElementById("sellForm").style.display="flex";document.getElementById("sellDone").style.display="none";}
 function setView(v,b){view=v;document.querySelectorAll(".navb button").forEach(x=>x.classList.remove("on"));b.classList.add("on");render();window.scrollTo({top:0,behavior:"smooth"});}
 // ===== PEMBAYARAN MANUAL (ubah sesuai rekening kamu) =====
 const BANKS=[{id:"qris",name:"QRIS (semua e-wallet & m-banking)"}];
@@ -314,7 +393,7 @@ const SERVICE=2000; // biaya layanan flat
 let P={};
 function openPay(id){if(!needLogin(()=>openPay(id),"membeli"))return;
   close_('detail');
-  P={item:LIST.find(i=>i.id===id),step:1,ship:"reg",bank:"qris",name:"",phone:"",addr:"",code:100+Math.floor(Math.random()*900),proof:null,orderId:"PR"+Date.now().toString().slice(-8)};
+  P={item:byId(id),step:1,ship:"reg",bank:"qris",name:"",phone:"",addr:"",code:100+Math.floor(Math.random()*900),proof:null,orderId:"PR"+Date.now().toString().slice(-8)};
   drawPay();document.getElementById("pay").classList.add("open");
 }
 function total(){const s=SHIP.find(x=>x.id===P.ship);return P.item.price+s.fee+SERVICE+P.code;}
@@ -381,16 +460,52 @@ function needLogin(cb,why){
 }
 function doLogin(){ if(window.fbLogin) window.fbLogin().catch(e=>toast("Gagal masuk: "+(e.code||e.message))); }
 function onUser(u){
-  USER=u; AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex";
+  USER=u; if(window.FB) FB.refresh(); AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex";
   if(u){ b.className="user-btn"; b.innerHTML=(u.photoURL?`<img src="${u.photoURL}" referrerpolicy="no-referrer" alt="">`:`<span class="av">${esc((u.displayName||"?")[0])}</span>`)+`<span class="nm">${esc((u.displayName||"").split(" ")[0])}</span>`;
     if(document.getElementById("login").classList.contains("open")){close_("login");toast("Halo, "+(u.displayName||"")+"!");const f=afterLogin;afterLogin=null;if(f)f();}
   } else { b.className="user-btn out"; b.textContent="Masuk"; }
 }
+const isAdmin=()=>!!(USER&&USER.email&&USER.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
 function userMenu(){ if(!USER){afterLogin=null;document.getElementById("loginWhy").textContent="Masuk untuk beli & pasang iklan.";document.getElementById("login").classList.add("open");return;}
-  if(window.fbLogout){ window.fbLogout(); toast("Kamu sudah keluar"); } }
+  document.getElementById("acctBox").innerHTML=`<h3>Akun</h3><div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div><b>${esc(USER.displayName||"")}</b><div style="font-size:13px;color:var(--muted)">${esc(USER.email||"")}</div></div></div>
+    <button class="btn buy" onclick="close_('acct');openMine()">📦 Iklan Saya</button>
+    ${isAdmin()?`<button class="btn buy" style="background:var(--brand)" onclick="close_('acct');openAdmin()">🛡️ Panel Admin</button>`:""}
+    <button class="tab" onclick="close_('acct');window.fbLogout&&fbLogout();toast('Kamu sudah keluar')">Keluar</button>`;
+  document.getElementById("acct").classList.add("open"); }
+const STATUS={pending:["Menunggu dicek","#fff6e5","#8a5a00"],approved:["Tayang","#e7f6f1","#0b6a53"],rejected:["Ditolak","#fde2e2","#b42318"]};
+const badge=x=>{const s=x.sold?["Terjual","#eef0f2","#44515c"]:(STATUS[x.status]||STATUS.pending);return `<span class="badge" style="background:${s[1]};color:${s[2]}">${s[0]}</span>`;};
+const row=(x,btns)=>`<div class="lrow"><div class="lth">${x.thumb?`<img src="${x.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(x.title)}</b><div>${pr(x)} · ${esc(x.city)}</div>${badge(x)}${x.email?`<small>${esc(x.seller)} · ${esc(x.email)} · wa ${esc(x.wa)}</small>`:""}<div class="lbtn">${btns}</div></div></div>`;
+let MY=[],ALL=[],ADMTAB="pending";
+async function openMine(){ if(!needLogin(openMine,"melihat iklanmu"))return; const box=document.getElementById("mineBox");
+  document.getElementById("mine").classList.add("open");
+  if(!window.FB){box.innerHTML="<h3>Iklan Saya</h3><p>Database belum aktif.</p>";return;}
+  if(!USER){box.innerHTML="<h3>Iklan Saya</h3><p>Masuk dulu dengan Google untuk melihat iklanmu.</p>";return;}
+  box.innerHTML="<h3>Iklan Saya</h3><p style='color:var(--muted)'>Memuat…</p>";
+  try{MY=await FB.mine();}catch(e){box.innerHTML=`<h3>Iklan Saya</h3><p>Gagal memuat: ${esc(e.code||e.message)}</p>`;return;}
+  box.innerHTML=`<h3>Iklan Saya</h3>${MY.length?MY.map(x=>row(x,`${x.status==="approved"&&!x.sold?`<button class="tab" onclick="myShare('${x.fid}')">📤 Bagikan</button><button class="tab" onclick="mySold('${x.fid}')">✅ Tandai terjual</button>`:""}<button class="tab" onclick="myDel('${x.fid}')">🗑️ Hapus</button>`)).join(""):`<p style="color:var(--muted)">Belum ada iklan. Ketuk <b>+ Jual</b> untuk mulai.</p>`}
+    <button class="btn buy" onclick="close_('mine');openSell()">+ Pasang Iklan Baru</button>`;
+}
+function myShare(fid){const x=MY.find(i=>i.fid===fid);if(!x)return;if(!byId(x.id))LIST.push(x);
+  if(navigator.share)shareNative(x.id);else{const wa=`https://wa.me/?text=${encodeURIComponent(shareText(x)+" "+linkOf(x))}`;copyTxt(linkOf(x),"Link disalin — tempel di status/grup");window.open(wa,"_blank");}}
+async function mySold(fid){try{await FB.update(fid,{sold:true});toast("Ditandai terjual");openMine();FB.refresh();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function myDel(fid){if(!confirmTap("del"+fid))return;try{await FB.remove(fid);toast("Iklan dihapus");openMine();FB.refresh();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+let CT={};function confirmTap(k){if(CT[k]&&Date.now()-CT[k]<3000){delete CT[k];return true;}CT[k]=Date.now();toast("Ketuk sekali lagi untuk yakin");return false;}
+async function openAdmin(){ if(!isAdmin()){toast("Khusus admin");return;} const box=document.getElementById("adminBox");
+  document.getElementById("admin").classList.add("open"); box.innerHTML="<h3>Panel Admin</h3><p style='color:var(--muted)'>Memuat…</p>";
+  try{ALL=await FB.all();}catch(e){box.innerHTML=`<h3>Panel Admin</h3><p>Gagal memuat: ${esc(e.code||e.message)}. Pastikan Rules Firestore sudah dipasang.</p>`;return;}
+  drawAdmin();
+}
+function drawAdmin(){ const box=document.getElementById("adminBox"); const cnt=k=>ALL.filter(x=>x.status===k).length;
+  const l=ALL.filter(x=>x.status===ADMTAB).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  box.innerHTML=`<h3>Panel Admin</h3><div class="tabs">${[["pending","Menunggu"],["approved","Tayang"],["rejected","Ditolak"]].map(([k,t])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${cnt(k)})</button>`).join("")}</div>
+    ${l.length?l.map(x=>row(x,`<button class="tab" onclick="admView('${x.fid}')">👁️ Lihat</button>${x.status!=="approved"?`<button class="tab" style="border-color:var(--brand);color:var(--brand-d)" onclick="admSet('${x.fid}','approved')">✔️ Setujui</button>`:""}${x.status!=="rejected"?`<button class="tab" onclick="admSet('${x.fid}','rejected')">✖️ ${x.status==="approved"?"Turunkan":"Tolak"}</button>`:""}<button class="tab" onclick="admDel('${x.fid}')">🗑️</button>`)).join(""):`<p style="color:var(--muted)">Tidak ada iklan di sini.</p>`}`;
+}
+async function admSet(fid,st){try{await FB.update(fid,{status:st});const x=ALL.find(i=>i.fid===fid);if(x)x.status=st;drawAdmin();FB.refresh();toast(st==="approved"?"Iklan disetujui & tayang":"Iklan ditolak");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function admDel(fid){if(!confirmTap("a"+fid))return;try{await FB.remove(fid);ALL=ALL.filter(i=>i.fid!==fid);drawAdmin();FB.refresh();toast("Iklan dihapus");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+function admView(fid){const x=ALL.find(i=>i.fid===fid);if(!x)return;if(!byId(x.id))LIST.push(x);openDetail(x.id);}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 document.getElementById("navAdmin").href=`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent("Halo Admin "+STORE_NAME+", saya mau tanya.")}`;
-renderCats();render();
+renderCats();render();tryOpenHash();
 </script>
 <script type="module">
 // Konfigurasi Firebase project "pasar-ruang"
@@ -412,7 +527,27 @@ try{
     throw e;});
   window.fbLogout=()=>A.signOut(auth);
   A.onAuthStateChanged(auth,u=>onUser(u));
-}catch(e){ console.warn("Login Google tidak tersedia:",e); }
+  // ===== Database iklan (Firestore) =====
+  const F=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  const db=F.getFirestore();
+  const toItem=d=>{const v=d.data();return {id:"f_"+d.id,fid:d.id,remote:true,noBuy:true,title:v.title||"",price:v.price??null,cat:v.cat||"Hobi",cond:v.cond||"Bekas",city:v.city||"-",
+    desc:v.desc||"",seller:v.seller||"Penjual",wa:v.wa||"",thumb:v.thumb||"",nphotos:v.nphotos||1,status:v.status,sold:!!v.sold,uid:v.uid,email:v.email,
+    ts:v.createdAt&&v.createdAt.toMillis?v.createdAt.toMillis():Date.now(),icon:"📦"};};
+  const photoCache={};
+  window.FB={
+    async refresh(){ try{const q=F.query(F.collection(db,"listings"),F.where("status","==","approved"),F.limit(300));
+      const r=await F.getDocs(q); setRemote(r.docs.map(toItem)); }catch(e){console.warn("Gagal memuat iklan:",e);} },
+    async photos(fid){ if(photoCache[fid])return photoCache[fid]; const d=await F.getDoc(F.doc(db,"photos",fid)); return photoCache[fid]=(d.exists()?d.data().imgs:[]); },
+    async createListing(data,imgs){ const u=auth.currentUser; const ref=F.doc(F.collection(db,"listings")); const b=F.writeBatch(db);
+      b.set(ref,{...data,uid:u.uid,email:u.email||"",status:"pending",sold:false,createdAt:F.serverTimestamp()});
+      b.set(F.doc(db,"photos",ref.id),{uid:u.uid,imgs}); await b.commit(); return ref.id; },
+    async mine(){ const u=auth.currentUser; const r=await F.getDocs(F.query(F.collection(db,"listings"),F.where("uid","==",u.uid))); return r.docs.map(toItem).sort((a,b)=>b.ts-a.ts); },
+    async all(){ const r=await F.getDocs(F.query(F.collection(db,"listings"),F.limit(500))); return r.docs.map(toItem); },
+    async update(fid,patch){ await F.updateDoc(F.doc(db,"listings",fid),patch); },
+    async remove(fid){ await F.deleteDoc(F.doc(db,"photos",fid)).catch(()=>{}); await F.deleteDoc(F.doc(db,"listings",fid)); }
+  };
+  FB.refresh();
+}catch(e){ console.warn("Firebase tidak tersedia:",e); }
 </script>
 </body>
 </html>
