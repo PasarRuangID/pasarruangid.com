@@ -378,6 +378,24 @@ p,b,small,div,span{overflow-wrap:anywhere}
   .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
   .modal-bg{padding:24px}
 }
+
+/* ===== v22: rapi di semua ukuran layar & ukuran huruf HP ===== */
+.top>*{flex-shrink:0}.top .logo{flex-shrink:1;min-width:0}.top .searchbox{flex-shrink:1;min-width:0}
+.logo b{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.user-btn.out{width:auto!important;height:38px;min-width:0;padding:0 14px!important;font-size:14px;font-weight:700;justify-content:center;border:1px solid rgba(255,255,255,.35)}
+.sell-btn{display:inline-flex;align-items:center;justify-content:center;height:38px;padding-top:0;padding-bottom:0}
+@media(max-width:380px){.user-btn.out,.sell-btn{height:34px;min-height:34px;font-size:13px}.user-btn.out{padding:0 10px!important}.sell-btn{padding:0 10px}}
+@media(max-width:330px){.logo b{display:none}.top{gap:5px}}
+.actions{flex-wrap:wrap;flex-direction:row!important}.actions .btn{flex:1 1 140px;white-space:nowrap}
+.sbtns{flex-wrap:wrap}.sbtns .btn{flex:1 1 130px;white-space:nowrap}
+.share{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.share::-webkit-scrollbar{display:none}.share>*{flex-shrink:0;white-space:nowrap}
+.otabs::-webkit-scrollbar{display:none}.otabs>button{flex-shrink:0;white-space:nowrap}
+.meta span{white-space:nowrap}
+.seller>div,.linfo,.sum>div,.nrow>div{min-width:0}
+.d-body h3,.linfo b,.card .t,.card b,.seller b,.obox,.cbox,.admbox{overflow-wrap:break-word;word-break:normal}
+@media(max-width:330px){.seller>a,.seller .visit{font-size:11px}}
+.modal{overflow-x:hidden}img{max-width:100%}
+.tab{white-space:normal;line-height:1.3}
 </style>
 </head>
 <body>
@@ -419,7 +437,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 21 · blokir akun, bayar 5 menit</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 22 · rapi semua layar</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
