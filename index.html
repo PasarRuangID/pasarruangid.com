@@ -225,6 +225,7 @@ input[type=date]{min-height:42px}
 .otl.cancel{background:#fde2e2;color:#b42318;border-radius:10px;padding:10px;font-size:14px}
 .ptrack em{display:block;font-style:normal;font-size:9px;color:var(--muted);font-weight:400}
 .proof.need{border-color:#e5484d;color:#b42318;animation:pulse .6s ease 2}
+.viadana{width:100%;font-size:12px;color:#1f4fb3;background:#eaf2ff;border-radius:8px;padding:5px 8px;text-align:center}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -294,7 +295,7 @@ input[type=date]{min-height:42px}
   <section class="info">
     <div><b>🛡️ Transaksi aman</b><span>Bayar lewat rekening bersama, dana diteruskan setelah barang diterima.</span></div>
     <div><b>💬 Chat langsung</b><span>Tanya kondisi barang dan nego harga langsung ke penjual.</span></div>
-    <div><b>🏘️ Komunitas lokal</b><span>Temukan penjual terdekat di kotamu untuk COD.</span></div>
+    <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
 <footer>© 2026 PasarRuang · Jual beli barang baru & bekas</footer>
@@ -397,9 +398,9 @@ let LIST=[
  {id:3,title:"iPhone 12 Pro 128GB Silver — Resmi Bea Cukai",price:5000000,cat:"Elektronik",cond:"Bekas",city:"Tanya penjual",icon:"📱",seller:"Admin "+STORE_NAME,wa:ADMIN_WA,imgs:FOTO_IPHONE12PRO,
   desc:"iPhone 12 Pro 128GB Silver (edisi males benerin)\n• IMEI terdaftar Bea Cukai (Juni 2024), sinyal aman\n• LCD original\n• Battery Health 80-an%\n\nMinus:\n• Speaker atas mati\n• Speaker bawah ngebas\n\n📦 Unit HP saja (tanpa dus & charger)\n💰 Rp5.000.000",days:0},
  {id:2,title:"iPhone 13 128GB Starlight — BH 85%",price:null,priceText:"Tanya harga",cat:"Elektronik",cond:"Bekas",city:"Jakarta Selatan",icon:"📱",seller:"Admin "+STORE_NAME,wa:ADMIN_WA,imgs:FOTO_IPHONE13,
-  desc:"iPhone 13 128GB Starlight\n• Battery Health 85%\n• Fisik 95% mulus\n• Face ID ON, True Tone ON\n• Speaker atas/bawah kencang\n• Fungsional 100% aman\n\nMinus:\n• LCD ganti original (bawaan dari beli)\n• Dus & charger masih di store Ezown Roxy\n\n⚠️ Status: masih ada sisa cicilan ±Rp1.7xx.xxx. Dilunasi saat transaksi, lalu HP di-reset di tempat.\n\n📍 COD di rumah penjual, Lebak Bulus, Jakarta Selatan",days:0},
+  desc:"iPhone 13 128GB Starlight\n• Battery Health 85%\n• Fisik 95% mulus\n• Face ID ON, True Tone ON\n• Speaker atas/bawah kencang\n• Fungsional 100% aman\n\nMinus:\n• LCD ganti original (bawaan dari beli)\n• Dus & charger masih di store Ezown Roxy\n\n⚠️ Status: masih ada sisa cicilan ±Rp1.7xx.xxx. Dilunasi saat transaksi, lalu HP di-reset di tempat.\n\n📍 Lokasi: Lebak Bulus, Jakarta Selatan",days:0},
  {id:1,title:"Salomon Black Silver GORE-TEX — EUR 42⅔",price:null,priceText:"Rp3.xxx.xxx",cat:"Fashion",cond:"Bekas",city:"Solo",icon:"👟",seller:"Admin "+STORE_NAME,wa:ADMIN_WA,imgs:FOTO_SALOMON,
-  desc:"Sepatu Salomon Black Silver GORE-TEX.\n• Size: EUR 42⅔ / UK 8.5 / US M 9\n• Warna: Black Silver\n• Kondisi: Like New\n• Ex 807 Garage\n• Fullset box & kelengkapan (tag GORE-TEX, kartu, dll)\n• Tersedia juga size EUR 43⅓ (tanya via chat)\n\n📍 COD: Solo · 📦 Bisa kirim",days:0}
+  desc:"Sepatu Salomon Black Silver GORE-TEX.\n• Size: EUR 42⅔ / UK 8.5 / US M 9\n• Warna: Black Silver\n• Kondisi: Like New\n• Ex 807 Garage\n• Fullset box & kelengkapan (tag GORE-TEX, kartu, dll)\n• Tersedia juga size EUR 43⅓ (tanya via chat)\n\n📍 Dikirim dari Solo",days:0}
 ];
 const BASE_TS=Date.parse("2026-11-10T10:00:00+07:00");
 LIST.forEach((x,i)=>{x.id=String(x.id);x.ts=x.ts||BASE_TS-i*60000;});
@@ -525,7 +526,7 @@ function resetSell(){priceOk=false;document.getElementById("sellForm").reset();d
 function setView(v,b){view=v;document.querySelectorAll(".navb button").forEach(x=>x.classList.remove("on"));b.classList.add("on");render();window.scrollTo({top:0,behavior:"smooth"});}
 // ===== PEMBAYARAN MANUAL (ubah sesuai rekening kamu) =====
 const BANKS=[{id:"qris",name:"QRIS (semua e-wallet & m-banking)"}];
-const SHIP=[{id:"reg",name:"Reguler (2–4 hari)",fee:15000},{id:"exp",name:"Kilat (1 hari)",fee:30000},{id:"cod",name:"Ambil sendiri / COD ketemuan",fee:0}];
+const SHIP=[{id:"reg",name:"Reguler (2–4 hari)",fee:15000},{id:"exp",name:"Kilat (1 hari)",fee:30000}];
 const SERVICE=2000; // biaya layanan flat
 let P={};
 function openPay(id){if(!needLogin(()=>openPay(id),"membeli"))return;
@@ -546,7 +547,7 @@ function drawPay(){setTimeout(()=>{if(P.step===2)startPayTimer();},0);
       <b>Pengiriman</b>
       <div class="opts">${SHIP.map(v=>`<label class="opt"><input type="radio" name="ship" ${v.id===P.ship?'checked':''} onchange="P.ship='${v.id}';keep();drawPay()">${v.name}<small>${v.fee?rp(v.fee):'Gratis'}</small></label>`).join("")}</div>
       <b>Metode pembayaran</b>
-      <div class="opt" style="cursor:default;border-color:var(--brand);background:#e7f6f1">📱 QRIS<small>GoPay, OVO, DANA, ShopeePay, m-banking</small></div>
+      <div class="opt" style="cursor:default;border-color:var(--brand);background:#e7f6f1;flex-wrap:wrap">📱 QRIS<small>GoPay, OVO, DANA, ShopeePay, m-banking</small></div>
       <div class="lines">
         <div><span>Harga barang</span><span>${pr(x)}</span></div>
         <div><span>Ongkir</span><span>${s.fee?rp(s.fee):'Gratis'}</span></div>
@@ -591,7 +592,7 @@ function drawPay(){setTimeout(()=>{if(P.step===2)startPayTimer();},0);
   }
 }
 function keep(){const g=i=>document.getElementById(i);if(g("p-name")){P.name=g("p-name").value;P.phone=g("p-phone").value;P.addr=g("p-addr").value;}}
-function toStep2(){keep();if(!P.name.trim()||!P.phone.trim()||(P.ship!=="cod"&&!P.addr.trim())){toast("Lengkapi nama, HP, dan alamat dulu");return;}
+function toStep2(){keep();if(!P.name.trim()||!P.phone.trim()||!P.addr.trim()){toast("Lengkapi nama, HP, dan alamat dulu");return;}
   const x=P.item; if(USER&&sellerKey(x)===USER.uid){toast("Ini barangmu sendiri 🙂");return;}
   let job=Promise.resolve(), failed=null;
   if(window.FB&&USER&&!P.oid){ job=(async()=>{const s=SHIP.find(v=>v.id===P.ship);const th=await smallThumb(x);
@@ -753,7 +754,7 @@ const OST={menunggu_bayar:["Belum Bayar","#fff6e5","#8a5a00","💳"],menunggu_ve
   dikirim:["Dikirim","#e3f0ff","#1f4fb3","🚚"],selesai:["Selesai","#eef0f2","#44515c","✅"],dibatalkan:["Dibatalkan","#fde2e2","#b42318","✖️"]};
 const OFLOW=["menunggu_bayar","menunggu_verifikasi","dikemas","dikirim","selesai"];
 const OLABEL={menunggu_bayar:"Dipesan",menunggu_verifikasi:"Dibayar",dikemas:"Dikemas",dikirim:"Dikirim",selesai:"Selesai"};
-const COURIERS=["JNE","J&T Express","SiCepat","AnterAja","POS Indonesia","Ninja Xpress","ID Express","GoSend","GrabExpress","Kurir toko / COD ketemuan"];
+const COURIERS=["JNE","J&T Express","SiCepat","AnterAja","POS Indonesia","Ninja Xpress","ID Express","GoSend","GrabExpress"];
 let BUY=[],SELL=[],AORD=[],ORD_CUR=null,ORD_ROLE="buy",OTAB={buy:"menunggu_bayar",sell:"dikemas"};
 const obadge=st=>{const o=OST[st]||OST.menunggu_bayar;return `<span class="badge" style="background:${o[1]};color:${o[2]}">${o[0]}</span>`;};
 const fmtDT=t=>t?new Date(t).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
@@ -790,7 +791,7 @@ function drawOrder(o){const me=USER?USER.uid:"",isBuyer=o.buyerUid===me,isSeller
   if(isBuyer&&o.status==="dikemas")act+=`<div class="waitpay"><span class="pulse-dot"></span>Penjual sedang menyiapkan barangmu</div>`;
   if(isBuyer&&o.status==="dikirim")act+=`<button class="btn buy" onclick="ordDone('${o.id}')">✅ Pesanan Diterima</button><small style="color:var(--muted);text-align:center">Ketuk hanya jika barang sudah kamu terima & sesuai. Dana akan diteruskan ke penjual.</small>`;
   if(isSeller&&o.status==="dikemas")act+=`<div class="shipf"><b>Kirim pesanan</b><select id="o-cour">${COURIERS.map(c=>`<option>${c}</option>`).join("")}</select>
-      <input id="o-resi" placeholder="Nomor resi (kosongkan jika COD/kurir toko)" maxlength="40"><button class="btn buy" onclick="ordShip('${o.id}')">🚚 Kirim Pesanan</button></div>
+      <input id="o-resi" placeholder="Nomor resi pengiriman" maxlength="40"><button class="btn buy" onclick="ordShip('${o.id}')">🚚 Kirim Pesanan</button></div>
       <button class="tab" onclick="ordCancel('${o.id}','seller')">Tolak / Batalkan (stok habis)</button>`;
   if(isSeller&&(o.status==="menunggu_bayar"||o.status==="menunggu_verifikasi"))act+=`<div class="waitpay"><span class="pulse-dot"></span>Menunggu pembayaran pembeli dicek admin. Jangan kirim barang dulu.</div>`;
   if(adm&&o.status==="menunggu_verifikasi")act+=`<div class="admbox"><b>🛡️ Verifikasi pembayaran</b><div>Cek mutasi QRIS: harus masuk tepat <b>${rp(o.total)}</b> (kode unik ${o.code}).</div>
@@ -818,7 +819,7 @@ function ordCancel(id,who){if(!confirmTap("c"+id))return;const why=who==="buyer"
   ordAct(id,()=>FB.orderStatus(id,"dibatalkan",{cancelReason:why.slice(0,120)}),"Pesanan dibatalkan");}
 function ordDone(id){if(!confirmTap("d"+id))return;ordAct(id,()=>FB.orderStatus(id,"selesai"),"Terima kasih! Pesanan selesai ✅");}
 function ordShip(id){const c=document.getElementById("o-cour").value,r=document.getElementById("o-resi").value.trim();
-  if(!r&&!/COD|toko|GoSend|Grab/.test(c)){toast("Isi nomor resi dulu");return;}ordAct(id,()=>FB.orderStatus(id,"dikirim",{courier:c,resi:r}),"Pesanan dikirim 🚚");}
+  if(!r&&!/GoSend|Grab/.test(c)){toast("Isi nomor resi dulu");return;}ordAct(id,()=>FB.orderStatus(id,"dikirim",{courier:c,resi:r}),"Pesanan dikirim 🚚");}
 function ordVerify(id){const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dikemas",{cancelReason:""});if(o&&String(o.listingId).startsWith("f_"))await FB.update(String(o.listingId).slice(2),{sold:true}).catch(()=>{});FB.refresh();},"Pembayaran valid — penjual diberi tahu");}
 function ordReject(id){const why=prompt("Kenapa bukti tidak valid? (dikirim ke pembeli)","Nominal tidak sesuai / bukti tidak terbaca");if(why===null)return;
   ordAct(id,()=>FB.orderStatus(id,"menunggu_bayar",{cancelReason:"Bukti ditolak admin: "+why.slice(0,100),proof:""}),"Pembeli diminta upload ulang");}
