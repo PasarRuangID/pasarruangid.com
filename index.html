@@ -263,6 +263,24 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .nrow b{font-size:14px;display:block}.nrow small{color:var(--muted)}.nrow>div{flex:1;min-width:0}
 .nrow.unread{background:#f1fbf7;border-color:#bfe6d8}.nrow.unread b::after{content:" •";color:#e5484d}
 .nic{font-size:22px;line-height:1}
+.visit{font-size:12px;font-weight:700;color:var(--brand-d);text-align:right;line-height:1.2;flex-shrink:0}
+.seller:active{background:var(--bg)}
+.shead{display:flex;gap:14px;align-items:center;padding:22px 56px 14px 16px;background:linear-gradient(135deg,#0f8a6c,#13a582);color:#fff;border-radius:18px 18px 0 0}
+.shead b{font-size:19px}.shead small{display:block;opacity:.9;font-size:12px;margin-top:3px}.shead .vbadge{background:rgba(255,255,255,.9)}
+.sava{width:64px;height:64px;border-radius:50%;background:#fff;color:var(--brand);display:grid;place-items:center;font-size:28px;font-weight:800;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,.6)}
+.sava svg{width:80%;height:80%}
+.sstats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:12px 8px;border-bottom:1px solid var(--line)}
+.sstats b{display:block;font-size:18px}.sstats small{color:var(--muted);font-size:12px}
+.sbtns{display:flex;gap:8px;padding:12px 16px}.sbtns .btn{padding:10px}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px 16px 18px}
+.stars{color:#ffb400;letter-spacing:1px;white-space:nowrap}.stars i{color:#d9dee3;font-style:normal}
+.rpick{display:flex;justify-content:center;gap:6px}.rpick button{border:0;background:none;font-size:40px;color:#d9dee3;cursor:pointer;transition:transform .15s}
+.rpick button.on{color:#ffb400}.rpick button:active{transform:scale(1.3)}
+.rcard{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.rcard p{margin:0}.rh{display:flex;gap:10px;align-items:center}.rh b{display:block;font-size:14px}.rh small{color:var(--muted);font-size:11px}
+.rphoto{width:96px;height:96px;object-fit:cover;border-radius:10px;cursor:pointer}.rphoto.big{width:100%;height:auto}
+.rreply{background:var(--bg);border-radius:10px;padding:8px 10px;font-size:13px}.rreply p{margin:2px 0}.rreply small{color:var(--muted)}
+.rsum{display:flex;gap:14px;align-items:center;background:#fffbe6;border-radius:12px;padding:12px}.rsum>b{font-size:36px}.rsum small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -336,7 +354,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 17 · notifikasi</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 18 · halaman toko & ulasan</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -439,6 +457,8 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 </div></div>
 <div class="modal-bg" id="pout" onclick="if(event.target===this)close_('pout')"><div class="modal"><button class="x" onclick="close_('pout')">×</button><div class="form" id="poutBox"></div></div></div>
 <div class="modal-bg" id="notifs" onclick="if(event.target===this)close_('notifs')"><div class="modal"><button class="x" onclick="close_('notifs')">×</button><div class="form" id="notifsBox"></div></div></div>
+<div class="modal-bg" id="shop" onclick="if(event.target===this)close_('shop')"><div class="modal"><button class="x" onclick="close_('shop')">×</button><div id="shopBox"></div></div></div>
+<div class="modal-bg" id="rev" onclick="if(event.target===this)close_('rev')"><div class="modal"><button class="x" onclick="close_('rev')">×</button><div class="form" id="revBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -512,10 +532,12 @@ const hashOf=x=>"produk-"+(x.remote?"f-"+x.fid:x.id);
 const linkOf=x=>location.origin+location.pathname+"#"+hashOf(x);
 const shareText=x=>`🛍️ ${x.title}\n💰 ${pr(x)}\n📍 ${x.city}\n\nLihat di ${STORE_NAME}:`;
 function setHash(h){try{history.replaceState(null,"",h?("#"+h):(location.pathname+location.search));}catch(e){}}
+function shopFromHash(){const m=(location.hash||"").match(/^#toko-([A-Za-z0-9]+)$/);return m?m[1]:null;}
 function idFromHash(){const m=(location.hash||"").match(/^#produk-(f-)?([A-Za-z0-9]+)$/);return m?(m[1]?"f_"+m[2]:m[2]):null;}
 let WANT=idFromHash();
-function tryOpenHash(){if(!WANT)return;const x=byId(WANT);if(x){const w=WANT;WANT=null;openDetail(w);}}
-window.addEventListener("hashchange",()=>{WANT=idFromHash();tryOpenHash();});
+let WANT_SHOP=shopFromHash();
+function tryOpenHash(){if(WANT_SHOP&&(WANT_SHOP==="admin"||shopItems(WANT_SHOP).length)){const k=WANT_SHOP;WANT_SHOP=null;openShop(k);return;}if(!WANT)return;const x=byId(WANT);if(x){const w=WANT;WANT=null;openDetail(w);}}
+window.addEventListener("hashchange",()=>{WANT=idFromHash();WANT_SHOP=shopFromHash();tryOpenHash();});
 async function shareNative(id){const x=byId(id);try{await navigator.share({title:x.title,text:shareText(x),url:linkOf(x)});}catch(e){if(e&&e.name!=="AbortError")copyLink(id);}}
 function copyLink(id){const x=byId(id);copyTxt(linkOf(x),"Link produk disalin");}
 function shareBar(x){const wa=`https://wa.me/?text=${encodeURIComponent(shareText(x)+" "+linkOf(x))}`;
@@ -534,7 +556,7 @@ function openDetail(id){
       <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
-      <div class="seller"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div><b>${esc(x.seller)}${vbadge(x.uid)}</b><small>${x.remote?"Penjual PasarRuang":"Dijual oleh admin PasarRuang"} · chat langsung di website</small></div></div>
+      <div class="seller" style="cursor:pointer" onclick="openShop('${x.remote?x.uid:"admin"}')"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div style="flex:1;min-width:0"><b>${esc(x.seller)}${vbadge(x.uid)}</b><small>${x.remote?"Penjual PasarRuang":"PasarRuang Official"} · ${shopCount(x.remote?x.uid:"admin")} produk</small><small id="sellRate">${(st=>st?`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`:"")(revStat(x.remote?x.uid:"admin"))}</small></div><span class="visit">Kunjungi<br>toko ›</span></div>
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
         ${x.price&&!x.noBuy&&!x.sold?`<button class="btn buy" onclick="openPay('${x.id}')">Beli Sekarang</button>`:""}
@@ -542,6 +564,7 @@ function openDetail(id){
       ${x.remote&&x.status!=="approved"?"":shareBar(x)}
     </div>`;
   document.getElementById("detail").classList.add("open");
+  {const sk=x.remote?x.uid:"admin";if(!REVS[sk])loadRevs(sk).then(()=>{const el=document.getElementById("sellRate"),st=revStat(sk);if(el&&st&&OPEN_ID===String(id))el.innerHTML=`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`;});}
   if(x.remote&&x.uid&&!(x.uid in AVA))getAva(x.uid).then(a=>{const el=document.getElementById("sellAva");if(a&&el&&OPEN_ID===String(id))el.innerHTML=avaHtml(x.uid,x.seller);});
 }
 function removeAd(id){LIST=LIST.filter(x=>x.id!==id);mine.delete(id);save();close_('detail');renderCats();render();toast("Iklan dihapus");}
@@ -554,7 +577,7 @@ function sellGate(){const box=document.getElementById("acctBox");const pend=KYC&
   document.getElementById("acct").classList.add("open");}
 const canSell=()=>isAdmin()||(USER&&(isVerified(USER.uid)||(PROFILE&&PROFILE.verified)));
 function openSell(){if(!needLogin(openSell,"pasang iklan"))return;if(AUTH_READY&&USER&&!canSell()){if(!KYC&&window.FB)loadKyc().then(sellGate);else sellGate();return;}resetSell();document.getElementById("sell").classList.add("open");}
-function close_(id){document.getElementById(id).classList.remove("open");if(id==="detail"){OPEN_ID=null;setHash("");}}
+function close_(id){document.getElementById(id).classList.remove("open");if(id==="detail"){OPEN_ID=null;setHash("");}if(id==="shop"){SHOP_K=null;setHash("");}}
 let PHOTOS=[],priceOk=false;
 function loadImg(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{ok(im);URL.revokeObjectURL(u)};im.onerror=no;im.src=u;});}
 function shrink(im,max,q,limit){const c=document.createElement("canvas");let w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,max/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);
@@ -915,6 +938,7 @@ function drawOrder(o){const me=USER?USER.uid:"",isBuyer=o.buyerUid===me,isSeller
   if(isSeller&&(o.status==="menunggu_bayar"||o.status==="menunggu_verifikasi"))act+=`<div class="waitpay"><span class="pulse-dot"></span>Menunggu pembayaran pembeli dicek admin. Jangan kirim barang dulu.</div>`;
   if(adm&&o.status==="menunggu_verifikasi")act+=`<div class="admbox"><b>🛡️ Verifikasi pembayaran</b><div>Cek mutasi QRIS: harus masuk tepat <b>${rp(o.total)}</b> (kode unik ${o.code}).</div>
       <button class="btn buy" style="background:var(--brand)" onclick="ordVerify('${o.id}')">✔️ Pembayaran Valid</button><button class="tab" onclick="ordReject('${o.id}')">✖️ Bukti Tidak Valid</button></div>`;
+  if(isBuyer&&o.status==="selesai"){const mr=MYREV[o.id];act+=mr?`<div class="obox"><b>Ulasanmu</b>${stars(mr.rating,16)}${mr.text?`<div>${esc(mr.text)}</div>`:""}${mr.reply?`<div class="rreply"><b>💬 Balasan penjual</b><p>${esc(mr.reply)}</p></div>`:""}</div>`:`<button class="btn buy" style="background:#ffb400;color:#3b2a00" onclick="openReview('${o.id}')">⭐ Beri Ulasan</button>`;}
   if((isSeller||adm)&&o.status==="selesai")act+=payoutLine(o);
   if(adm&&needPayout(o))act+=`<button class="tab" onclick="close_('ord');ORD_CUR=null;ADMTAB='payout';openAdmin()">💸 Buka menu Pencairan</button>`;
   if(adm&&!["selesai","dibatalkan"].includes(o.status)&&!isBuyer)act+=`<button class="tab" onclick="ordCancel('${o.id}','admin')">Batalkan sebagai admin</button>`;
@@ -937,7 +961,7 @@ function resumePay(id){const o=findOrder(id);if(!o)return;close_("ord");
 async function ordAct(id,fn,okMsg){try{await fn();toast(okMsg);}catch(e){console.error(e);toast("Gagal: "+(e.code||e.message));}}
 function ordCancel(id,who){if(!confirmTap("c"+id))return;const why=who==="buyer"?"Dibatalkan pembeli":(prompt("Alasan pembatalan:",who==="seller"?"Stok habis":"")||"Dibatalkan "+(who==="seller"?"penjual":"admin"));
   const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dibatalkan",{cancelReason:why.slice(0,120)});if(o){const msg=`"${o.title}" dibatalkan: ${why.slice(0,100)}`;notif(o.buyerUid,"cancel","Pesanan dibatalkan",msg,"order:"+id);notif(o.sellerKey,"cancel","Pesanan dibatalkan",msg,"order:"+id);}},"Pesanan dibatalkan");}
-function ordDone(id){if(!confirmTap("d"+id))return;const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"selesai");if(o)notif(o.sellerKey,"done","Pesanan selesai 🎉",`Pembeli sudah menerima "${o.title}". Dana akan dicairkan admin.`,"order:"+id);},"Terima kasih! Pesanan selesai ✅");}
+function ordDone(id){if(!confirmTap("d"+id))return;const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"selesai");if(o)notif(o.sellerKey,"done","Pesanan selesai 🎉",`Pembeli sudah menerima "${o.title}". Dana akan dicairkan admin.`,"order:"+id);},"Terima kasih! Pesanan selesai ✅");setTimeout(()=>{if(!MYREV[id]){close_("ord");openReview(id);}},900);}
 function ordShip(id){const c=document.getElementById("o-cour").value,r=document.getElementById("o-resi").value.trim();
   if(!r&&!/GoSend|Grab/.test(c)){toast("Isi nomor resi dulu");return;}const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dikirim",{courier:c,resi:r});if(o)notif(o.buyerUid,"shipped","Pesananmu sedang dikirim 🚚",`"${o.title}" dikirim via ${c}${r?" · resi "+r:""}.`,"order:"+id);},"Pesanan dikirim 🚚");}
 function ordVerify(id){const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dikemas",{cancelReason:""});if(o){notif(o.buyerUid,"pay_ok","Pembayaran diterima ✅",`Pembayaran "${o.title}" valid. Penjual sedang menyiapkan barangmu.`,"order:"+id);notif(o.sellerKey,"order_new","Pesanan baru — siap dikirim! 📦",`"${o.title}" sudah dibayar. Kemas & kirim, lalu isi nomor resi.`,"order:"+id);}if(o&&String(o.listingId).startsWith("f_"))await FB.update(String(o.listingId).slice(2),{sold:true}).catch(()=>{});FB.refresh();},"Pembayaran valid — penjual diberi tahu");}
@@ -1124,7 +1148,7 @@ async function removeAvatar(){if(!confirmTap("rmava"))return;try{await FB.remove
 // ===== NOTIFIKASI =====
 let NOTIFS=[],ANNS=[],ANN_SEEN=0;
 try{ANN_SEEN=+localStorage.getItem("pr_ann_seen")||0;}catch(e){}
-const NICON={kyc_ok:"✅",kyc_no:"🪪",ad_ok:"📢",ad_no:"🚫",order_new:"🛒",pay_ok:"💳",pay_no:"⚠️",shipped:"🚚",done:"🎉",cancel:"✖️",payout:"💸",ann:"📣",info:"🔔"};
+const NICON={review:"⭐",kyc_ok:"✅",kyc_no:"🪪",ad_ok:"📢",ad_no:"🚫",order_new:"🛒",pay_ok:"💳",pay_no:"⚠️",shipped:"🚚",done:"🎉",cancel:"✖️",payout:"💸",ann:"📣",info:"🔔"};
 function notif(uid,type,title,body,link){if(!uid||uid==="admin"||!window.FB||!USER||uid===USER.uid)return;FB.notify(uid,{type,title:String(title).slice(0,80),body:String(body||"").slice(0,200),link:link||""}).catch(e=>console.warn("notif",e));}
 function unreadCount(){return NOTIFS.filter(n=>!n.read).length+ANNS.filter(a=>a.at>ANN_SEEN).length;}
 function updBell(){const b=document.getElementById("bellBadge"),n=unreadCount();if(!b)return;b.hidden=!n;b.textContent=n>9?"9+":n;
@@ -1138,12 +1162,68 @@ function drawNotifs(){const all=[...NOTIFS.map(n=>({...n,k:"n"})),...ANNS.map(a=
      :`<div class="oempty"><div>🔔</div>Belum ada notifikasi</div>`}`;}
 function tapNotif(k,id){if(k==="a"){const a=ANNS.find(x=>x.id===id);if(a&&a.at>ANN_SEEN){markAnnSeen(a.at);}return;}
   const n=NOTIFS.find(x=>x.id===id);if(!n)return;if(!n.read)FB.notifRead(id).catch(()=>{});close_("notifs");
-  const [t,v]=(n.link||"").split(":");if(t==="order")openOrder(v);else if(t==="mine")openMine();else if(t==="profile")openProfile();else if(t==="sell")openOrders("sell");else if(t==="kyc")openKyc();else if(t==="item"&&byId(v))openDetail(v);}
+  const [t,v]=(n.link||"").split(":");if(t==="order")openOrder(v);else if(t==="mine")openMine();else if(t==="profile")openProfile();else if(t==="sell")openOrders("sell");else if(t==="kyc")openKyc();else if(t==="item"&&byId(v))openDetail(v);else if(t==="shop")openShop(v);}
 function markAnnSeen(t){ANN_SEEN=Math.max(ANN_SEEN,t);try{localStorage.setItem("pr_ann_seen",ANN_SEEN);}catch(e){}updBell();}
 function readAll(){NOTIFS.filter(n=>!n.read).forEach(n=>FB.notifRead(n.id).catch(()=>{}));if(ANNS.length)markAnnSeen(Math.max(...ANNS.map(a=>a.at||0)));}
 async function postAnn(){const t=document.getElementById("an-t").value.trim(),b=document.getElementById("an-b").value.trim();if(!t){toast("Isi judul pengumuman");return;}
   if(!confirmTap("ann"))return;try{await FB.postAnn({title:t.slice(0,80),body:b.slice(0,300)});toast("Pengumuman terkirim ke semua pengguna 📣");ADMTAB="ann";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
 async function delAnn(id){if(!confirmTap("da"+id))return;try{await FB.delAnn(id);toast("Pengumuman dihapus");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+
+// ===== HALAMAN TOKO PENJUAL =====
+const shopKey=x=>x.remote?x.uid:"admin";
+const shopItems=k=>LIST.filter(x=>shopKey(x)===k);
+const shopCount=k=>shopItems(k).filter(x=>!x.sold).length;
+let SHOP_K=null,SHOP_TAB="all";
+function openShop(k){if(!k)return;SHOP_K=k;SHOP_TAB="all";REPLY_ID=null;loadRevs(k,true).then(()=>{if(SHOP_K===k)drawShop();});close_("detail");drawShop();document.getElementById("shop").classList.add("open");setHash("toko-"+k);
+  if(k!=="admin"&&!(k in AVA))getAva(k).then(()=>{if(SHOP_K===k)drawShop();});}
+function drawShop(){const k=SHOP_K,items=shopItems(k),act=items.filter(x=>!x.sold),sold=items.filter(x=>x.sold);
+  const first=items[0]||{},name=k==="admin"?"PasarRuang Official":(first.seller||"Penjual");
+  const cities=[...new Set(items.map(x=>x.city).filter(c=>c&&c!=="Tanya penjual"))];
+  const since=items.length?Math.min(...items.map(x=>x.ts||Date.now())):Date.now();
+  const list=SHOP_TAB==="sold"?sold:act;const link=location.origin+location.pathname+"#toko-"+k;
+  document.getElementById("shopBox").innerHTML=`<div class="shead"><div class="sava">${k==="admin"?document.querySelector('.logo .mark').innerHTML:avaHtml(k,name)}</div>
+    <div style="min-width:0"><b>${esc(name)}</b>${k==="admin"?` <span class="vbadge">🏪 Official</span>`:vbadge(k)}
+    <small>📍 ${esc(cities.slice(0,2).join(", ")||"Indonesia")} · aktif sejak ${new Date(since).toLocaleDateString("id-ID",{month:"short",year:"numeric"})}</small></div></div>
+   <div class="sstats"><div><b>${act.length}</b><small>Produk</small></div><div><b>${sold.length}</b><small>Terjual</small></div><div>${(st=>st?`<b>⭐ ${st.avg.toFixed(1)}</b><small>${st.n} ulasan</small>`:`<b>—</b><small>Belum ada ulasan</small>`)(revStat(k))}</div></div>
+   <div class="sbtns">${act[0]?`<button class="btn wa" onclick="close_('shop');startChat('${act[0].id}')">💬 Chat</button>`:""}<button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="copyTxt('${link}','Link toko disalin')">🔗 Bagikan toko</button></div>
+   <div class="otabs" style="padding:0 16px"><button class="${SHOP_TAB==="all"?"on":""}" onclick="SHOP_TAB='all';drawShop()">Produk${act.length?`<b style="background:var(--brand)">${act.length}</b>`:""}</button><button class="${SHOP_TAB==="sold"?"on":""}" onclick="SHOP_TAB='sold';drawShop()">Terjual${sold.length?`<b style="background:#44515c">${sold.length}</b>`:""}</button><button class="${SHOP_TAB==="rev"?"on":""}" onclick="SHOP_TAB='rev';drawShop()">⭐ Ulasan${(REVS[k]||[]).length?`<b style="background:#ffb400;color:#3b2a00">${REVS[k].length}</b>`:""}</button></div>
+   ${SHOP_TAB==="rev"?(()=>{const rs=REVS[k]||[],mine=USER&&(USER.uid===k||(k==="admin"&&isAdmin()));const st=revStat(k);
+      return `<div style="padding:12px 16px 18px;display:flex;flex-direction:column;gap:10px">${st?`<div class="rsum"><b>${st.avg.toFixed(1)}</b><div>${stars(st.avg,20)}<small>${st.n} ulasan · ${[5,4,3,2,1].map(i=>`${i}★ ${rs.filter(r=>r.rating===i).length}`).join(" · ")}</small></div></div>`:""}
+        ${rs.length?rs.map(r=>revCard(r,mine)).join(""):`<div class="oempty"><div>⭐</div>Belum ada ulasan</div>`}</div>`;})():`
+   <div class="sgrid">${list.length?list.map(x=>`<div class="card" onclick="close_('shop');openDetail('${x.id}')"><div class="thumb" style="background:${COLORS[x.cat]||'#eee'}">${pic(x)}<span class="tag ${x.cond.toLowerCase()}">${x.cond}</span>${x.sold?`<span class="soldtag">TERJUAL</span>`:""}</div><div class="cb"><div class="p">${pr(x)}</div><div class="t">${esc(x.title)}</div><div class="m">📍 ${esc(x.city)}</div></div></div>`).join("")
+     :`<div class="oempty" style="grid-column:1/-1"><div>📦</div>${SHOP_TAB==="sold"?"Belum ada yang terjual":"Belum ada produk"}</div>`}</div>`}`;
+  const miss=(REVS[k]||[]).map(r=>r.buyerUid).filter(u=>u&&!(u in AVA));if(SHOP_TAB==="rev"&&miss.length)Promise.all(miss.map(getAva)).then(()=>{if(SHOP_K===k&&SHOP_TAB==="rev")drawShop();});}
+
+// ===== ULASAN =====
+const REVS={},MYREV={};let RV={oid:null,rating:0,photo:""},REPLY_ID=null;
+const stars=(n,sz)=>`<span class="stars" style="font-size:${sz||14}px">${"★".repeat(Math.round(n))}<i>${"★".repeat(5-Math.round(n))}</i></span>`;
+function revStat(k){const l=REVS[k]||[];if(!l.length)return null;return {avg:l.reduce((a,r)=>a+r.rating,0)/l.length,n:l.length};}
+async function loadRevs(k,force){if(!k||!window.FB)return [];if(REVS[k]&&!force)return REVS[k];try{REVS[k]=(await FB.sellerReviews(k)).sort((a,b)=>(b.at||0)-(a.at||0));}catch(e){console.warn("ulasan",e);REVS[k]=REVS[k]||[];}return REVS[k];}
+function onMyRevs(list){for(const k in MYREV)delete MYREV[k];list.forEach(r=>MYREV[r.id]=r);if(ORD_CUR&&document.getElementById("ord").classList.contains("open")){const o=findOrder(ORD_CUR);if(o)drawOrder(o);}}
+function openReview(oid){const o=findOrder(oid);if(!o)return;RV={oid,rating:0,photo:""};drawReview();document.getElementById("rev").classList.add("open");}
+function drawReview(){const o=findOrder(RV.oid);const lab=["","Sangat buruk","Kurang","Cukup","Bagus","Sangat bagus! 🤩"];
+  document.getElementById("revBox").innerHTML=`<h3>⭐ Beri Ulasan</h3>
+   <div class="lrow"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${esc(o.sellerName)}</div></div></div>
+   <div class="rpick">${[1,2,3,4,5].map(i=>`<button type="button" class="${i<=RV.rating?"on":""}" onclick="RV.rating=${i};drawReview()">★</button>`).join("")}</div>
+   <div style="text-align:center;font-weight:700;color:var(--brand-d);min-height:20px">${lab[RV.rating]}</div>
+   <label>Ceritakan pengalamanmu<textarea id="rv-text" rows="3" maxlength="500" placeholder="Kualitas barang, kecepatan respon & pengiriman…">${esc(RV.text||"")}</textarea></label>
+   <label class="proof" for="rv-photo">📷 Tambah foto barang (opsional)${RV.photo?`<img src="${RV.photo}">`:""}</label>
+   <input type="file" id="rv-photo" accept="image/*" hidden onchange="pickRevPhoto(this)">
+   <button class="btn buy" style="background:var(--brand)" id="rv-go" onclick="sendReview()">Kirim Ulasan</button>`;}
+async function pickRevPhoto(inp){const f=inp.files[0];if(!f)return;RV.text=document.getElementById("rv-text").value;try{const im=await loadImg(f);RV.photo=shrink(im,800,.7,120000);drawReview();}catch(e){toast("Gagal membaca foto");}}
+async function sendReview(){const o=findOrder(RV.oid);if(!RV.rating){toast("Pilih jumlah bintang dulu ⭐");return;}
+  const text=document.getElementById("rv-text").value.trim().slice(0,500),btn=document.getElementById("rv-go");btn.disabled=true;btn.textContent="Mengirim…";
+  try{await FB.addReview(RV.oid,{sellerKey:o.sellerKey,listingId:String(o.listingId||""),title:o.title.slice(0,100),thumb:(o.thumb||"").length<40000?(o.thumb||""):"",buyerName:myName().slice(0,60),rating:RV.rating,text,photo:RV.photo});
+    delete REVS[o.sellerKey];notif(o.sellerKey,"review",`Ulasan baru ${"★".repeat(RV.rating)}`,`${myName()}: "${text.slice(0,80)||"(tanpa komentar)"}" — ${o.title}`,"shop:"+o.sellerKey);
+    close_("rev");toast("Terima kasih atas ulasanmu! ⭐");}
+  catch(e){toast("Gagal: "+(e.code||e.message));btn.disabled=false;btn.textContent="Kirim Ulasan";}}
+function revCard(r,canReply){return `<div class="rcard"><div class="rh"><div class="cava" style="width:32px;height:32px;font-size:14px">${avaHtml(r.buyerUid,r.buyerName)}</div><div style="flex:1;min-width:0"><b>${esc(r.buyerName||"Pembeli")}</b>${stars(r.rating,13)}</div><small>${fmtDT(r.at)}</small></div>
+  ${r.title?`<small style="color:var(--muted)">📦 ${esc(r.title)}</small>`:""}${r.text?`<p>${esc(r.text)}</p>`:""}${r.photo?`<img src="${r.photo}" class="rphoto" onclick="this.classList.toggle('big')">`:""}
+  ${r.reply?`<div class="rreply"><b>💬 Balasan penjual</b><p>${esc(r.reply)}</p><small>${fmtDT(r.replyAt)}</small></div>`
+    :canReply?(REPLY_ID===r.id?`<div class="rreply"><textarea id="rp-text" rows="2" maxlength="300" placeholder="Tulis balasan untuk pembeli…" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:8px;font:inherit"></textarea><div style="display:flex;gap:6px;margin-top:6px"><button class="copy" onclick="sendReply('${r.id}')">Kirim balasan</button><button class="copy" style="border-color:var(--line);color:var(--muted)" onclick="REPLY_ID=null;drawShop()">Batal</button></div></div>`:`<button class="copy" onclick="REPLY_ID='${r.id}';drawShop()">💬 Balas ulasan</button>`):""}</div>`;}
+async function sendReply(id){const t=(document.getElementById("rp-text").value||"").trim();if(!t){toast("Tulis balasan dulu");return;}
+  const r=(REVS[SHOP_K]||[]).find(x=>x.id===id);try{await FB.replyReview(id,t.slice(0,300));if(r){r.reply=t.slice(0,300);r.replyAt=Date.now();notif(r.buyerUid,"review","Penjual membalas ulasanmu 💬",`"${t.slice(0,100)}"`,"shop:"+SHOP_K);}REPLY_ID=null;drawShop();toast("Balasan terkirim");}
+  catch(e){toast("Gagal: "+(e.code||e.message));}}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 document.body.insertAdjacentHTML("beforeend",kotaList().replace('id="kotaDL"','id="kotaDL2"'));
 renderCats();render();tryOpenHash();
@@ -1209,6 +1289,9 @@ try{
     async orderStatus(oid,status,extra={}){ await F.updateDoc(F.doc(db,"orders",oid),{...extra,status,
         timeline:F.arrayUnion({s:status,t:Date.now()}),updatedAt:F.serverTimestamp()}); },
     // --- verifikasi KTP ---
+    async sellerReviews(k){ const r=await F.getDocs(F.query(F.collection(db,"reviews"),F.where("sellerKey","==",k),F.limit(200))); return r.docs.map(d=>({id:d.id,...d.data(),at:tm(d.data().at),replyAt:tm(d.data().replyAt)})); },
+    async addReview(oid,d){ const u=auth.currentUser; await F.setDoc(F.doc(db,"reviews",oid),{...d,buyerUid:u.uid,reply:"",at:F.serverTimestamp()}); },
+    async replyReview(id,t){ await F.updateDoc(F.doc(db,"reviews",id),{reply:t,replyAt:F.serverTimestamp()}); },
     async notify(uid,n){ const u=auth.currentUser; await F.addDoc(F.collection(db,"notifs",uid,"items"),{...n,from:u.uid,read:false,at:F.serverTimestamp()}); },
     async notifRead(id){ const u=auth.currentUser; await F.updateDoc(F.doc(db,"notifs",u.uid,"items",id),{read:true}); },
     async postAnn(a){ await F.addDoc(F.collection(db,"announcements"),{...a,at:F.serverTimestamp()}); },
@@ -1235,6 +1318,9 @@ try{
   const tm=t=>t&&t.toMillis?t.toMillis():0;
   const toChat=d=>{const v=d.data();const lr={};for(const k in (v.lastRead||{}))lr[k]=tm(v.lastRead[k]);return {id:d.id,...v,updatedAt:tm(v.updatedAt),lastRead:lr};};
   const toOrder=d=>{const v=d.data();return {id:d.id,...v,createdAt:tm(v.createdAt),updatedAt:tm(v.updatedAt)||tm(v.createdAt)};};
+  let rvUnsub=null;
+  A.onAuthStateChanged(auth,u=>{ if(rvUnsub){rvUnsub();rvUnsub=null;} if(!u){onMyRevs([]);return;}
+    rvUnsub=F.onSnapshot(F.query(F.collection(db,"reviews"),F.where("buyerUid","==",u.uid),F.limit(200)),r=>onMyRevs(r.docs.map(d=>({id:d.id,...d.data()}))),e=>console.warn("rev:",e)); });
   let ntUnsub=null;
   F.onSnapshot(F.query(F.collection(db,"announcements"),F.orderBy("at","desc"),F.limit(20)),r=>onAnns(r.docs.map(d=>({id:d.id,...d.data(),at:tm(d.data().at)}))),e=>console.warn("ann:",e));
   A.onAuthStateChanged(auth,u=>{ if(ntUnsub){ntUnsub();ntUnsub=null;} if(!u){onNotifs([]);return;}
