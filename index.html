@@ -255,6 +255,14 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .pfava span{position:absolute;right:-4px;bottom:-4px;background:#fff;border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .cava{width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;overflow:hidden;flex-shrink:0}
 .miniava{position:absolute;right:-6px;bottom:-6px;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;overflow:hidden;border:2px solid #fff}
+.bell{position:relative;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.18);font-size:18px;cursor:pointer;place-items:center;flex-shrink:0}
+.bell .nbadge{top:-3px;right:-3px}
+.bell.ring{animation:ringb 1s ease}
+@keyframes ringb{0%,100%{transform:rotate(0)}20%{transform:rotate(18deg)}40%{transform:rotate(-14deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+.nrow{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:13px}
+.nrow b{font-size:14px;display:block}.nrow small{color:var(--muted)}.nrow>div{flex:1;min-width:0}
+.nrow.unread{background:#f1fbf7;border-color:#bfe6d8}.nrow.unread b::after{content:" •";color:#e5484d}
+.nic{font-size:22px;line-height:1}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -297,6 +305,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <input id="q" placeholder="Cari HP, motor, baju, rumah…" oninput="render()">
     <select id="loc" onchange="render()"><option value="">Semua kota</option></select>
   </div>
+  <button class="bell" id="bellBtn" onclick="openNotifs()" style="display:none" aria-label="Notifikasi">🔔<span class="nbadge" id="bellBadge" hidden></span></button>
   <button class="user-btn" id="userBtn" onclick="userMenu()" style="display:none"></button>
   <button class="sell-btn" onclick="openSell()">+ Jual</button>
 </div></header>
@@ -327,7 +336,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 16 · foto profil & jual wajib KTP</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 17 · notifikasi</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -429,6 +438,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
   </form>
 </div></div>
 <div class="modal-bg" id="pout" onclick="if(event.target===this)close_('pout')"><div class="modal"><button class="x" onclick="close_('pout')">×</button><div class="form" id="poutBox"></div></div></div>
+<div class="modal-bg" id="notifs" onclick="if(event.target===this)close_('notifs')"><div class="modal"><button class="x" onclick="close_('notifs')">×</button><div class="form" id="notifsBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -727,7 +737,7 @@ function needLogin(cb,why){
 }
 function doLogin(){ if(window.fbLogin) window.fbLogin().catch(e=>toast("Gagal masuk: "+(e.code||e.message))); }
 function onUser(u){
-  USER=u; if(window.FB) FB.refresh(); if(u) loadProfile(); else {PROFILE=null;PROF_ASKED=false;} AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex";
+  USER=u; if(window.FB) FB.refresh(); if(u) loadProfile(); else {PROFILE=null;PROF_ASKED=false;} AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex"; document.getElementById("bellBtn").style.display=u?"grid":"none";
   if(u){ b.className="user-btn"; b.innerHTML=(myPhoto()?`<img src="${myPhoto()}" referrerpolicy="no-referrer" alt="" style="object-fit:cover">`:`<span class="av">${esc(myName()[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(myName().split(" ")[0])}</span>`;
     if(document.getElementById("login").classList.contains("open")){close_("login");toast("Halo, "+(u.displayName||"")+"!");const f=afterLogin;afterLogin=null;if(f)f();}
   } else { b.className="user-btn out"; b.textContent="Masuk"; }
@@ -770,9 +780,14 @@ async function openAdmin(){ if(!isAdmin()){toast("Khusus admin");return;} const 
   drawAdmin();
 }
 function admTabs(){const cnt=k=>ALL.filter(x=>x.status===k).length,pv=AORD.filter(o=>o.status==="menunggu_verifikasi").length;
-  return `<div class="tabs" style="flex-wrap:wrap">${[["pay","💳 Pembayaran",pv],["payout","💸 Pencairan",new Set(AORD.filter(needPayout).map(o=>o.sellerKey)).size],["kyc","🪪 KTP",KYCLIST.length],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
+  return `<div class="tabs" style="flex-wrap:wrap">${[["ann","📣 Pengumuman",ANNS.length],["pay","💳 Pembayaran",pv],["payout","💸 Pencairan",new Set(AORD.filter(needPayout).map(o=>o.sellerKey)).size],["kyc","🪪 KTP",KYCLIST.length],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
 function drawAdmin(){ const box=document.getElementById("adminBox"); const cnt=k=>ALL.filter(x=>x.status===k).length;
   const l=ALL.filter(x=>x.status===ADMTAB).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(ADMTAB==="ann"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Kirim pengumuman ke semua pengguna</b>
+      <input id="an-t" maxlength="80" placeholder="Judul, cth. Promo gratis ongkir!" style="border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit">
+      <textarea id="an-b" rows="3" maxlength="300" placeholder="Isi pengumuman…" style="border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit"></textarea>
+      <button class="btn buy" style="background:var(--brand)" onclick="postAnn()">📣 Kirim pengumuman</button>
+      ${ANNS.length?`<b>Pengumuman terkirim</b>${ANNS.map(a=>`<div class="nrow"><span class="nic">📣</span><div><b>${esc(a.title)}</b><div>${esc(a.body||"")}</div><small>${fmtDT(a.at)}</small></div><button class="copy" onclick="delAnn('${a.id}')">Hapus</button></div>`).join("")}`:""}`;return;}
   if(ADMTAB==="payout"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<p style="color:var(--muted)">Memuat rekening…</p>`;
     admPayLoad().then(()=>{if(ADMTAB==="payout"&&document.getElementById("admin").classList.contains("open"))box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}${admPayoutHtml()}`;});return;}
   if(ADMTAB==="kyc"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Menunggu verifikasi KTP (${KYCLIST.length})</b>${KYCLIST.length?KYCLIST.map(k=>`<div class="lrow crow" onclick="admKycView('${k.uid}')"><div class="lth">🪪</div><div class="linfo"><b>${esc((k.data||{}).name||"-")}</b><div>${esc(k.email||"")}</div><small>${fmtDT(k.createdAt)}</small></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}`;return;}
@@ -782,7 +797,7 @@ function drawAdmin(){ const box=document.getElementById("adminBox"); const cnt=k
   box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}
     ${l.length?l.map(x=>row(x,`<button class="tab" onclick="admView('${x.fid}')">👁️ Lihat</button>${x.status!=="approved"?`<button class="tab" style="border-color:var(--brand);color:var(--brand-d)" onclick="admSet('${x.fid}','approved')">✔️ Setujui</button>`:""}${x.status!=="rejected"?`<button class="tab" onclick="admSet('${x.fid}','rejected')">✖️ ${x.status==="approved"?"Turunkan":"Tolak"}</button>`:""}<button class="tab" onclick="admPrice('${x.fid}')">✏️ Harga</button><button class="tab" onclick="admDel('${x.fid}')">🗑️</button>`)).join(""):`<p style="color:var(--muted)">Tidak ada iklan di sini.</p>`}`;
 }
-async function admSet(fid,st){try{await FB.update(fid,{status:st});const x=ALL.find(i=>i.fid===fid);if(x)x.status=st;drawAdmin();FB.refresh();toast(st==="approved"?"Iklan disetujui & tayang":"Iklan ditolak");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function admSet(fid,st){try{await FB.update(fid,{status:st});const x=ALL.find(i=>i.fid===fid);if(x){x.status=st;notif(x.uid,st==="approved"?"ad_ok":"ad_no",st==="approved"?"Iklanmu sudah tayang 🎉":"Iklanmu ditolak",st==="approved"?`"${x.title}" sekarang bisa dilihat pembeli.`:`"${x.title}" tidak lolos pengecekan admin. Cek detail & pasang ulang.`,st==="approved"?"item:"+x.id:"mine");}drawAdmin();FB.refresh();toast(st==="approved"?"Iklan disetujui & tayang":"Iklan ditolak");}catch(e){toast("Gagal: "+(e.code||e.message));}}
 async function admPrice(fid){const x=ALL.find(i=>i.fid===fid);if(!x)return;const v=prompt(`Harga baru untuk "${x.title}" (angka saja, contoh 650000):`,x.price||"");if(v===null)return;const n=Number(String(v).replace(/\D/g,""))||null;
   try{await FB.update(fid,{price:n});x.price=n;drawAdmin();FB.refresh();toast("Harga diperbarui: "+(n?rp(n):"Tanya harga"));}catch(e){toast("Gagal: "+(e.code||e.message));}}
 async function admDel(fid){if(!confirmTap("a"+fid))return;try{await FB.remove(fid);ALL=ALL.filter(i=>i.fid!==fid);drawAdmin();FB.refresh();toast("Iklan dihapus");}catch(e){toast("Gagal: "+(e.code||e.message));}}
@@ -921,13 +936,13 @@ function resumePay(id){const o=findOrder(id);if(!o)return;close_("ord");
   drawPay();document.getElementById("pay").classList.add("open");}
 async function ordAct(id,fn,okMsg){try{await fn();toast(okMsg);}catch(e){console.error(e);toast("Gagal: "+(e.code||e.message));}}
 function ordCancel(id,who){if(!confirmTap("c"+id))return;const why=who==="buyer"?"Dibatalkan pembeli":(prompt("Alasan pembatalan:",who==="seller"?"Stok habis":"")||"Dibatalkan "+(who==="seller"?"penjual":"admin"));
-  ordAct(id,()=>FB.orderStatus(id,"dibatalkan",{cancelReason:why.slice(0,120)}),"Pesanan dibatalkan");}
-function ordDone(id){if(!confirmTap("d"+id))return;ordAct(id,()=>FB.orderStatus(id,"selesai"),"Terima kasih! Pesanan selesai ✅");}
+  const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dibatalkan",{cancelReason:why.slice(0,120)});if(o){const msg=`"${o.title}" dibatalkan: ${why.slice(0,100)}`;notif(o.buyerUid,"cancel","Pesanan dibatalkan",msg,"order:"+id);notif(o.sellerKey,"cancel","Pesanan dibatalkan",msg,"order:"+id);}},"Pesanan dibatalkan");}
+function ordDone(id){if(!confirmTap("d"+id))return;const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"selesai");if(o)notif(o.sellerKey,"done","Pesanan selesai 🎉",`Pembeli sudah menerima "${o.title}". Dana akan dicairkan admin.`,"order:"+id);},"Terima kasih! Pesanan selesai ✅");}
 function ordShip(id){const c=document.getElementById("o-cour").value,r=document.getElementById("o-resi").value.trim();
-  if(!r&&!/GoSend|Grab/.test(c)){toast("Isi nomor resi dulu");return;}ordAct(id,()=>FB.orderStatus(id,"dikirim",{courier:c,resi:r}),"Pesanan dikirim 🚚");}
-function ordVerify(id){const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dikemas",{cancelReason:""});if(o&&String(o.listingId).startsWith("f_"))await FB.update(String(o.listingId).slice(2),{sold:true}).catch(()=>{});FB.refresh();},"Pembayaran valid — penjual diberi tahu");}
+  if(!r&&!/GoSend|Grab/.test(c)){toast("Isi nomor resi dulu");return;}const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dikirim",{courier:c,resi:r});if(o)notif(o.buyerUid,"shipped","Pesananmu sedang dikirim 🚚",`"${o.title}" dikirim via ${c}${r?" · resi "+r:""}.`,"order:"+id);},"Pesanan dikirim 🚚");}
+function ordVerify(id){const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dikemas",{cancelReason:""});if(o){notif(o.buyerUid,"pay_ok","Pembayaran diterima ✅",`Pembayaran "${o.title}" valid. Penjual sedang menyiapkan barangmu.`,"order:"+id);notif(o.sellerKey,"order_new","Pesanan baru — siap dikirim! 📦",`"${o.title}" sudah dibayar. Kemas & kirim, lalu isi nomor resi.`,"order:"+id);}if(o&&String(o.listingId).startsWith("f_"))await FB.update(String(o.listingId).slice(2),{sold:true}).catch(()=>{});FB.refresh();},"Pembayaran valid — penjual diberi tahu");}
 function ordReject(id){const why=prompt("Kenapa bukti tidak valid? (dikirim ke pembeli)","Nominal tidak sesuai / bukti tidak terbaca");if(why===null)return;
-  ordAct(id,()=>FB.orderStatus(id,"menunggu_bayar",{cancelReason:"Bukti ditolak admin: "+why.slice(0,100),proof:""}),"Pembeli diminta upload ulang");}
+  const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"menunggu_bayar",{cancelReason:"Bukti ditolak admin: "+why.slice(0,100),proof:""});if(o)notif(o.buyerUid,"pay_no","Bukti pembayaran ditolak",why.slice(0,100)+". Silakan upload ulang bukti transfer.","order:"+id);},"Pembeli diminta upload ulang");}
 
 // ===== VERIFIKASI KTP =====
 function titleCase(t){return String(t||"").toLowerCase().replace(/\s+/g," ").trim().replace(/\b([a-z])/g,(m)=>m.toUpperCase()).replace(/\bRt\b/g,"RT").replace(/\bRw\b/g,"RW").replace(/\bNo\b/g,"No").replace(/\bJl\b/g,"Jl");}
@@ -1010,9 +1025,9 @@ function admKycView(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k)return;const
     <button class="btn buy" style="background:var(--brand)" onclick="admKycOk('${uid}')">✔️ Setujui & sesuaikan profil</button>
     <button class="tab" onclick="admKycNo('${uid}')">✖️ Tolak</button>`;}
 async function admKycOk(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k||!confirmTap("k"+uid))return;
-  try{await FB.approveKyc(uid,k.data||{});VERIFIED.add(uid);KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Akun terverifikasi ✅ — foto KTP dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+  try{await FB.approveKyc(uid,k.data||{});VERIFIED.add(uid);notif(uid,"kyc_ok","Akun terverifikasi KTP ✅","Selamat! Profilmu sudah disesuaikan dengan KTP dan kamu sekarang bisa pasang iklan.","profile");KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Akun terverifikasi ✅ — foto KTP dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
 async function admKycNo(uid){const why=prompt("Alasan penolakan (dikirim ke pengguna):","Foto KTP kurang jelas / data tidak cocok");if(why===null)return;
-  try{await FB.rejectKyc(uid,why.slice(0,120));KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Verifikasi ditolak — foto dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+  try{await FB.rejectKyc(uid,why.slice(0,120));notif(uid,"kyc_no","Verifikasi KTP ditolak","Alasan: "+why.slice(0,120)+". Silakan kirim ulang.","kyc");KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Verifikasi ditolak — foto dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
 const vbadge=uid=>uid&&isVerified(uid)?` <span class="vbadge">✅ Terverifikasi</span>`:"";
 
 // ===== PENCAIRAN DANA =====
@@ -1086,6 +1101,7 @@ async function confirmPayout(){const sid=POUT.sid,a=PAYACC[sid]||{},os=AORD.filt
   if(!POUT.proof){toast("Upload bukti transfer dulu 🧾");document.querySelector("#poutBox .proof")?.classList.add("need");return;}
   const ref=(document.getElementById("po-ref").value||"").trim().slice(0,40),btn=document.getElementById("po-go");btn.disabled=true;btn.textContent="Menyimpan…";
   try{const at=Date.now();await Promise.all(os.map(o=>FB.orderPayout(o.id,{status:"paid",amount:payAmt(o),bank:a.payBank,no:a.payNo,name:a.payName,ref,proof:POUT.proof,at,confirmed:false})));
+    notif(sid,"payout","Dana sudah dicairkan 💸",`${rp(os.reduce((x,o)=>x+payAmt(o),0))} ditransfer ke ${a.payBank} ${maskNo(a.payNo)}. Cek rekening & konfirmasi.`,os[0]?"order:"+os[0].id:"sell");
     close_("pout");toast("Pencairan tercatat ✅ Penjual akan diminta konfirmasi");ADMTAB="payout";drawAdmin();}
   catch(e){toast("Gagal: "+(e.code||e.message));btn.disabled=false;btn.textContent="✔️ Konfirmasi dana sudah dicairkan";}}
 async function sellerConfirm(id){if(!confirmTap("pc"+id))return;try{await FB.payoutConfirm(id);toast("Terima kasih! Dana dikonfirmasi diterima ✅");}catch(e){toast("Gagal: "+(e.code||e.message));}}
@@ -1104,6 +1120,30 @@ async function pickAvatar(inp){const f=inp.files[0];if(!f)return;try{const im=aw
     await FB.saveAvatar(img);AVA[USER.uid]=img;MYAVA=img;drawUserBtn();toast("Foto profil diperbarui 📸");}
   catch(e){toast("Gagal menyimpan foto: "+(e.code||e.message));}}
 async function removeAvatar(){if(!confirmTap("rmava"))return;try{await FB.removeAvatar();AVA[USER.uid]="";MYAVA="";drawUserBtn();openProfile();toast("Foto profil dihapus");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+
+// ===== NOTIFIKASI =====
+let NOTIFS=[],ANNS=[],ANN_SEEN=0;
+try{ANN_SEEN=+localStorage.getItem("pr_ann_seen")||0;}catch(e){}
+const NICON={kyc_ok:"✅",kyc_no:"🪪",ad_ok:"📢",ad_no:"🚫",order_new:"🛒",pay_ok:"💳",pay_no:"⚠️",shipped:"🚚",done:"🎉",cancel:"✖️",payout:"💸",ann:"📣",info:"🔔"};
+function notif(uid,type,title,body,link){if(!uid||uid==="admin"||!window.FB||!USER||uid===USER.uid)return;FB.notify(uid,{type,title:String(title).slice(0,80),body:String(body||"").slice(0,200),link:link||""}).catch(e=>console.warn("notif",e));}
+function unreadCount(){return NOTIFS.filter(n=>!n.read).length+ANNS.filter(a=>a.at>ANN_SEEN).length;}
+function updBell(){const b=document.getElementById("bellBadge"),n=unreadCount();if(!b)return;b.hidden=!n;b.textContent=n>9?"9+":n;
+  if(document.getElementById("notifs").classList.contains("open"))drawNotifs();}
+let _lastUnread=0;function onNotifs(list){NOTIFS=list;updBell();const n=unreadCount();if(n>_lastUnread){const b=document.getElementById("bellBtn");b.classList.remove("ring");void b.offsetWidth;b.classList.add("ring");}_lastUnread=n;}
+function onAnns(list){ANNS=list;updBell();}
+function openNotifs(){if(!needLogin(openNotifs,"melihat notifikasi"))return;document.getElementById("notifs").classList.add("open");drawNotifs();}
+function drawNotifs(){const all=[...NOTIFS.map(n=>({...n,k:"n"})),...ANNS.map(a=>({...a,type:"ann",k:"a",read:a.at<=ANN_SEEN}))].sort((a,b)=>(b.at||0)-(a.at||0));
+  document.getElementById("notifsBox").innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;padding-right:30px"><h3>🔔 Notifikasi</h3>${unreadCount()?`<button class="copy" onclick="readAll()">Tandai dibaca</button>`:""}</div>
+   ${all.length?all.map(n=>`<div class="nrow ${n.read?"":"unread"}" onclick="tapNotif('${n.k}','${n.id}')"><span class="nic">${NICON[n.type]||"🔔"}</span><div><b>${esc(n.title)}</b><div>${esc(n.body||"")}</div><small>${n.k==="a"?"Pengumuman · ":""}${fmtDT(n.at)}</small></div></div>`).join("")
+     :`<div class="oempty"><div>🔔</div>Belum ada notifikasi</div>`}`;}
+function tapNotif(k,id){if(k==="a"){const a=ANNS.find(x=>x.id===id);if(a&&a.at>ANN_SEEN){markAnnSeen(a.at);}return;}
+  const n=NOTIFS.find(x=>x.id===id);if(!n)return;if(!n.read)FB.notifRead(id).catch(()=>{});close_("notifs");
+  const [t,v]=(n.link||"").split(":");if(t==="order")openOrder(v);else if(t==="mine")openMine();else if(t==="profile")openProfile();else if(t==="sell")openOrders("sell");else if(t==="kyc")openKyc();else if(t==="item"&&byId(v))openDetail(v);}
+function markAnnSeen(t){ANN_SEEN=Math.max(ANN_SEEN,t);try{localStorage.setItem("pr_ann_seen",ANN_SEEN);}catch(e){}updBell();}
+function readAll(){NOTIFS.filter(n=>!n.read).forEach(n=>FB.notifRead(n.id).catch(()=>{}));if(ANNS.length)markAnnSeen(Math.max(...ANNS.map(a=>a.at||0)));}
+async function postAnn(){const t=document.getElementById("an-t").value.trim(),b=document.getElementById("an-b").value.trim();if(!t){toast("Isi judul pengumuman");return;}
+  if(!confirmTap("ann"))return;try{await FB.postAnn({title:t.slice(0,80),body:b.slice(0,300)});toast("Pengumuman terkirim ke semua pengguna 📣");ADMTAB="ann";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function delAnn(id){if(!confirmTap("da"+id))return;try{await FB.delAnn(id);toast("Pengumuman dihapus");}catch(e){toast("Gagal: "+(e.code||e.message));}}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 document.body.insertAdjacentHTML("beforeend",kotaList().replace('id="kotaDL"','id="kotaDL2"'));
 renderCats();render();tryOpenHash();
@@ -1169,6 +1209,10 @@ try{
     async orderStatus(oid,status,extra={}){ await F.updateDoc(F.doc(db,"orders",oid),{...extra,status,
         timeline:F.arrayUnion({s:status,t:Date.now()}),updatedAt:F.serverTimestamp()}); },
     // --- verifikasi KTP ---
+    async notify(uid,n){ const u=auth.currentUser; await F.addDoc(F.collection(db,"notifs",uid,"items"),{...n,from:u.uid,read:false,at:F.serverTimestamp()}); },
+    async notifRead(id){ const u=auth.currentUser; await F.updateDoc(F.doc(db,"notifs",u.uid,"items",id),{read:true}); },
+    async postAnn(a){ await F.addDoc(F.collection(db,"announcements"),{...a,at:F.serverTimestamp()}); },
+    async delAnn(id){ await F.deleteDoc(F.doc(db,"announcements",id)); },
     async getAvatar(uid){ const d=await F.getDoc(F.doc(db,"avatars",uid)); return d.exists()?d.data().img:""; },
     async saveAvatar(img){ const u=auth.currentUser; await F.setDoc(F.doc(db,"avatars",u.uid),{img,at:F.serverTimestamp()}); },
     async removeAvatar(){ const u=auth.currentUser; await F.deleteDoc(F.doc(db,"avatars",u.uid)); },
@@ -1191,6 +1235,10 @@ try{
   const tm=t=>t&&t.toMillis?t.toMillis():0;
   const toChat=d=>{const v=d.data();const lr={};for(const k in (v.lastRead||{}))lr[k]=tm(v.lastRead[k]);return {id:d.id,...v,updatedAt:tm(v.updatedAt),lastRead:lr};};
   const toOrder=d=>{const v=d.data();return {id:d.id,...v,createdAt:tm(v.createdAt),updatedAt:tm(v.updatedAt)||tm(v.createdAt)};};
+  let ntUnsub=null;
+  F.onSnapshot(F.query(F.collection(db,"announcements"),F.orderBy("at","desc"),F.limit(20)),r=>onAnns(r.docs.map(d=>({id:d.id,...d.data(),at:tm(d.data().at)}))),e=>console.warn("ann:",e));
+  A.onAuthStateChanged(auth,u=>{ if(ntUnsub){ntUnsub();ntUnsub=null;} if(!u){onNotifs([]);return;}
+    ntUnsub=F.onSnapshot(F.query(F.collection(db,"notifs",u.uid,"items"),F.orderBy("at","desc"),F.limit(50)),r=>onNotifs(r.docs.map(d=>({id:d.id,...d.data(),at:tm(d.data().at)||Date.now()}))),e=>console.warn("notif:",e)); });
   let ordUnsubs=[];
   A.onAuthStateChanged(auth,u=>{ ordUnsubs.forEach(f=>f()); ordUnsubs=[]; if(!u){onOrders("buy",[]);onOrders("sell",[]);onOrders("all",[]);return;}
     const adm=(u.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase(); const q=(f,v)=>F.query(F.collection(db,"orders"),F.where(f,"==",v),F.limit(200));
