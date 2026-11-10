@@ -131,6 +131,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}
 .cin{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
 .cin input{flex:1;border:1px solid var(--line);border-radius:999px;padding:11px 14px;font:inherit;outline:none}
 .cin button{border:0;background:var(--brand);color:#fff;border-radius:999px;padding:0 16px;font-weight:700;cursor:pointer}
+.pbar{height:6px;background:var(--bg);border-radius:99px;overflow:hidden;margin:6px 0 2px}.pbar i{display:block;height:100%;background:var(--brand);border-radius:99px}
+input[type=date]{min-height:42px}
 .steps{display:flex;gap:6px;font-size:12px;color:var(--muted)}
 .steps span{flex:1;text-align:center;border-bottom:3px solid var(--line);padding-bottom:6px}
 .steps span.on{color:var(--brand-d);border-color:var(--brand);font-weight:700}
@@ -259,6 +261,23 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}
   <div class="chead"><button class="cback" onclick="closeChat()">←</button><div id="chatHead" style="flex:1;min-width:0"></div></div>
   <div class="cmsgs" id="chatMsgs"></div>
   <form class="cin" onsubmit="return sendMsg(event)"><input id="chatInput" placeholder="Tulis pesan…" autocomplete="off" maxlength="1000"><button>Kirim</button></form>
+</div></div>
+<div class="modal-bg" id="prof" onclick="if(event.target===this)close_('prof')"><div class="modal"><button class="x" onclick="close_('prof')">×</button>
+  <form class="form" id="profForm" onsubmit="return saveProfile(event)">
+    <div id="profHead"></div>
+    <label>Nama lengkap<input id="pf-name" required maxlength="60" placeholder="Nama sesuai panggilanmu"></label>
+    <label>Nomor WhatsApp<input id="pf-phone" required inputmode="tel" maxlength="16" placeholder="0812xxxxxxx"></label>
+    <div class="row">
+      <label>Jenis kelamin<select id="pf-gender"><option value="">—</option><option>Laki-laki</option><option>Perempuan</option></select></label>
+      <label>Tanggal lahir<input id="pf-birth" type="date"></label>
+    </div>
+    <label>Kota / Kabupaten<input id="pf-city" required maxlength="50" placeholder="cth. Jakarta Timur"></label>
+    <label>Alamat lengkap <small style="color:var(--muted);font-weight:400">(untuk pengiriman)</small><textarea id="pf-addr" rows="3" maxlength="300" placeholder="Jalan, No. rumah, RT/RW, kelurahan, kecamatan, kode pos"></textarea></label>
+    <label>Nama toko <small style="color:var(--muted);font-weight:400">(opsional, tampil di iklanmu)</small><input id="pf-shop" maxlength="60" placeholder="cth. Zam Gadget"></label>
+    <div class="fee">🔒 Nomor WhatsApp, tanggal lahir & alamat <b>tidak ditampilkan</b> ke pengguna lain. Dipakai untuk mengisi otomatis checkout & pasang iklan.</div>
+    <button class="btn buy" type="submit" id="pf-save">Simpan Profil</button>
+    <button class="tab" type="button" id="pf-skip" onclick="close_('prof')">Nanti saja</button>
+  </form>
 </div></div>
 <div class="toast" id="toast"></div>
 
@@ -405,7 +424,7 @@ async function submitSell(e){
     <button class="tab" onclick="resetSell()">Pasang iklan lain</button>`;
   return false;
 }
-function resetSell(){priceOk=false;document.getElementById("sellForm").reset();document.getElementById("s-pricev").textContent="";PHOTOS=[];document.getElementById("s-prev").innerHTML="📷 Ketuk untuk pilih foto";if(USER&&!document.getElementById("s-seller").value)document.getElementById("s-seller").value=USER.displayName||"";document.getElementById("sellForm").style.display="flex";document.getElementById("sellDone").style.display="none";}
+function resetSell(){priceOk=false;document.getElementById("sellForm").reset();document.getElementById("s-pricev").textContent="";PHOTOS=[];document.getElementById("s-prev").innerHTML="📷 Ketuk untuk pilih foto";document.getElementById("sellForm").style.display="flex";document.getElementById("sellDone").style.display="none";fillSellFromProfile();}
 function setView(v,b){view=v;document.querySelectorAll(".navb button").forEach(x=>x.classList.remove("on"));b.classList.add("on");render();window.scrollTo({top:0,behavior:"smooth"});}
 // ===== PEMBAYARAN MANUAL (ubah sesuai rekening kamu) =====
 const BANKS=[{id:"qris",name:"QRIS (semua e-wallet & m-banking)"}];
@@ -414,7 +433,7 @@ const SERVICE=2000; // biaya layanan flat
 let P={};
 function openPay(id){if(!needLogin(()=>openPay(id),"membeli"))return;
   close_('detail');
-  P={item:byId(id),step:1,ship:"reg",bank:"qris",name:"",phone:"",addr:"",code:100+Math.floor(Math.random()*900),proof:null,orderId:"PR"+Date.now().toString().slice(-8)};
+  const pp=PROFILE||{};P={item:byId(id),step:1,ship:"reg",bank:"qris",name:pp.name||(USER&&USER.displayName)||"",phone:pp.phone?("0"+String(pp.phone).replace(/^62/,"")):"",addr:pp.address?(pp.address+(pp.city?", "+pp.city:"")):"",code:100+Math.floor(Math.random()*900),proof:null,orderId:"PR"+Date.now().toString().slice(-8)};
   drawPay();document.getElementById("pay").classList.add("open");
 }
 function total(){const s=SHIP.find(x=>x.id===P.ship);return P.item.price+s.fee+SERVICE+P.code;}
@@ -481,7 +500,7 @@ function needLogin(cb,why){
 }
 function doLogin(){ if(window.fbLogin) window.fbLogin().catch(e=>toast("Gagal masuk: "+(e.code||e.message))); }
 function onUser(u){
-  USER=u; if(window.FB) FB.refresh(); AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex";
+  USER=u; if(window.FB) FB.refresh(); if(u) loadProfile(); else {PROFILE=null;PROF_ASKED=false;} AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex";
   if(u){ b.className="user-btn"; b.innerHTML=(u.photoURL?`<img src="${u.photoURL}" referrerpolicy="no-referrer" alt="">`:`<span class="av">${esc((u.displayName||"?")[0])}</span>`)+`<span class="nm">${esc((u.displayName||"").split(" ")[0])}</span>`;
     if(document.getElementById("login").classList.contains("open")){close_("login");toast("Halo, "+(u.displayName||"")+"!");const f=afterLogin;afterLogin=null;if(f)f();}
   } else { b.className="user-btn out"; b.textContent="Masuk"; }
@@ -489,6 +508,7 @@ function onUser(u){
 const isAdmin=()=>!!(USER&&USER.email&&USER.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
 function userMenu(){ if(!USER){afterLogin=null;document.getElementById("loginWhy").textContent="Masuk untuk beli & pasang iklan.";document.getElementById("login").classList.add("open");return;}
   document.getElementById("acctBox").innerHTML=`<h3>Akun</h3><div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div><b>${esc(USER.displayName||"")}</b><div style="font-size:13px;color:var(--muted)">${esc(USER.email||"")}</div></div></div>
+    <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openProfile()">👤 Profil Saya ${profDone(PROFILE)?"✅":`<span style="color:#c4541b;font-size:12px">· belum lengkap (${profPct(PROFILE)}%)</span>`}</button>
     <button class="btn buy" onclick="close_('acct');openMine()">📦 Iklan Saya</button>
     ${isAdmin()?`<button class="btn buy" style="background:var(--brand)" onclick="close_('acct');openAdmin()">🛡️ Panel Admin</button>`:""}
     <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openInbox()">💬 Pesan</button>
@@ -561,6 +581,32 @@ function openThread(c){CUR=c;close_('inbox');
 function closeChat(){if(unsubMsgs){unsubMsgs();unsubMsgs=null;}CUR=null;document.getElementById("chat").classList.remove("open");}
 async function sendMsg(e){e.preventDefault();const inp=document.getElementById("chatInput"),t=inp.value.trim();if(!t||!CUR)return false;inp.value="";
   try{await FB.send(CUR.id,t);}catch(err){inp.value=t;toast("Gagal kirim: "+(err.code||err.message));}return false;}
+
+// ===== PROFIL PENGGUNA =====
+let PROFILE=null, PROF_ASKED=false;
+const PF=["name","phone","city","address","gender","birth","shopName"];
+function profPct(p){if(!p)return 0;const need=["name","phone","city","address"],extra=["gender","birth"];let n=need.filter(k=>p[k]).length*20+extra.filter(k=>p[k]).length*10;return Math.min(100,n);}
+const profDone=p=>!!(p&&p.name&&p.phone&&p.city&&p.address);
+async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);return;}
+  if(!profDone(PROFILE)&&!PROF_ASKED){PROF_ASKED=true;setTimeout(()=>{if(!document.querySelector(".modal-bg.open"))openProfile(true);},700);}}
+function openProfile(first){if(!needLogin(()=>openProfile(),"mengatur profil"))return;const p=PROFILE||{},g=i=>document.getElementById(i);
+  const pct=profPct(p);
+  g("profHead").innerHTML=`<h3>${first?"Lengkapi Akunmu 👋":"Profil Saya"}</h3>
+    <div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div style="flex:1"><b>${esc(USER.email||"")}</b><div class="pbar"><i style="width:${pct}%"></i></div><small style="color:var(--muted)">Profil ${pct}% lengkap</small></div></div>
+    ${first?`<p style="color:var(--muted);font-size:14px">Isi data di bawah supaya checkout & pasang iklan jadi lebih cepat. Tidak perlu KTP.</p>`:""}`;
+  g("pf-name").value=p.name||USER.displayName||"";g("pf-phone").value=p.phone?("0"+String(p.phone).replace(/^62/,"")):"";g("pf-gender").value=p.gender||"";g("pf-birth").value=p.birth||"";
+  g("pf-city").value=p.city||"";g("pf-addr").value=p.address||"";g("pf-shop").value=p.shopName||"";
+  g("pf-skip").style.display=first?"block":"none";
+  document.getElementById("prof").classList.add("open");}
+async function saveProfile(e){e.preventDefault();const g=i=>document.getElementById(i).value.trim();
+  const phone=normWa(g("pf-phone"));if(phone.length<10||phone.length>15){toast("Nomor WhatsApp tidak valid");return false;}
+  const data={name:g("pf-name").slice(0,60),phone,gender:g("pf-gender"),birth:g("pf-birth"),city:g("pf-city").slice(0,50),address:g("pf-addr").slice(0,300),shopName:g("pf-shop").slice(0,60)};
+  const btn=document.getElementById("pf-save");btn.disabled=true;btn.textContent="Menyimpan…";
+  try{await FB.saveProfile(data);PROFILE={...(PROFILE||{}),...data};close_("prof");toast(profDone(PROFILE)?"Profil tersimpan ✅":"Profil disimpan");}
+  catch(err){toast("Gagal menyimpan: "+(err.code||err.message));}
+  btn.disabled=false;btn.textContent="Simpan Profil";return false;}
+function fillSellFromProfile(){const p=PROFILE||{};const g=i=>document.getElementById(i);if(!g("s-seller").value&&!p.shopName&&!p.name&&USER)g("s-seller").value=USER.displayName||"";
+  if(!g("s-seller").value)g("s-seller").value=p.shopName||p.name||"";if(!g("s-wa").value&&p.phone)g("s-wa").value="0"+String(p.phone).replace(/^62/,"");if(!g("s-city").value)g("s-city").value=p.city||"";}
 let tt;function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("show"),2200);}
 renderCats();render();tryOpenHash();
 </script>
@@ -613,6 +659,8 @@ try{
     async send(cid,text){ const u=auth.currentUser; const b=F.writeBatch(db);
       b.set(F.doc(F.collection(db,"chats",cid,"messages")),{from:u.uid,text:text.slice(0,1000),at:F.serverTimestamp()});
       b.update(F.doc(db,"chats",cid),{lastMsg:text.slice(0,120),lastFrom:u.uid,updatedAt:F.serverTimestamp(),["lastRead."+u.uid]:F.serverTimestamp()}); await b.commit(); },
+    async getProfile(){ const u=auth.currentUser; const d=await F.getDoc(F.doc(db,"users",u.uid)); return d.exists()?d.data():null; },
+    async saveProfile(p){ const u=auth.currentUser; await F.setDoc(F.doc(db,"users",u.uid),{...p,email:u.email||"",updatedAt:F.serverTimestamp()},{merge:true}); },
     async markRead(cid){ const u=auth.currentUser; await F.updateDoc(F.doc(db,"chats",cid),{["lastRead."+u.uid]:F.serverTimestamp()}); }
   };
   const tm=t=>t&&t.toMillis?t.toMillis():0;
@@ -622,7 +670,7 @@ try{
     const keys=[u.uid]; if((u.email||"").toLowerCase()===ADMIN_EMAIL.toLowerCase()) keys.push("admin");
     const parts={}; keys.forEach(k=>{ chatUnsubs.push(F.onSnapshot(F.query(F.collection(db,"chats"),F.where("participants","array-contains",k),F.limit(200)),
       r=>{parts[k]=r.docs.map(toChat); const m={}; Object.values(parts).flat().forEach(c=>m[c.id]=c); onChats(Object.values(m));},e=>console.warn("chat:",e))); }); });
-  FB.refresh();
+  FB.refresh(); if(auth.currentUser) loadProfile();
 }catch(e){ console.warn("Firebase tidak tersedia:",e); }
 </script>
 </body>
