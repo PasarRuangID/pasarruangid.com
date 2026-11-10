@@ -588,7 +588,7 @@ const PF=["name","phone","city","address","gender","birth","shopName"];
 function profPct(p){if(!p)return 0;const need=["name","phone","city","address"],extra=["gender","birth"];let n=need.filter(k=>p[k]).length*20+extra.filter(k=>p[k]).length*10;return Math.min(100,n);}
 const profDone=p=>!!(p&&p.name&&p.phone&&p.city&&p.address);
 async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);return;}
-  if(!profDone(PROFILE)&&!PROF_ASKED){PROF_ASKED=true;setTimeout(()=>{if(!document.querySelector(".modal-bg.open"))openProfile(true);},700);}}
+  if(!profDone(PROFILE)&&!PROF_ASKED&&!isAdmin()){PROF_ASKED=true;setTimeout(()=>{if(!document.querySelector(".modal-bg.open"))openProfile(true);},700);}}
 function openProfile(first){if(!needLogin(()=>openProfile(),"mengatur profil"))return;const p=PROFILE||{},g=i=>document.getElementById(i);
   const pct=profPct(p);
   g("profHead").innerHTML=`<h3>${first?"Lengkapi Akunmu 👋":"Profil Saya"}</h3>
