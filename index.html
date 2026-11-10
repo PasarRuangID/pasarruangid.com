@@ -322,7 +322,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 14 · konfirmasi pencairan</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 15 · nama profil</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -714,13 +714,15 @@ function needLogin(cb,why){
 function doLogin(){ if(window.fbLogin) window.fbLogin().catch(e=>toast("Gagal masuk: "+(e.code||e.message))); }
 function onUser(u){
   USER=u; if(window.FB) FB.refresh(); if(u) loadProfile(); else {PROFILE=null;PROF_ASKED=false;} AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex";
-  if(u){ b.className="user-btn"; b.innerHTML=(u.photoURL?`<img src="${u.photoURL}" referrerpolicy="no-referrer" alt="">`:`<span class="av">${esc((u.displayName||"?")[0])}</span>`)+`<span class="nm">${esc((u.displayName||"").split(" ")[0])}</span>`;
+  if(u){ b.className="user-btn"; b.innerHTML=(u.photoURL?`<img src="${u.photoURL}" referrerpolicy="no-referrer" alt="">`:`<span class="av">${esc(myName()[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(myName().split(" ")[0])}</span>`;
     if(document.getElementById("login").classList.contains("open")){close_("login");toast("Halo, "+(u.displayName||"")+"!");const f=afterLogin;afterLogin=null;if(f)f();}
   } else { b.className="user-btn out"; b.textContent="Masuk"; }
 }
+const myName=()=>((PROFILE&&PROFILE.name)||(USER&&USER.displayName)||"Pengguna");
+function drawUserBtn(){const u=USER,b=document.getElementById("userBtn");if(!u||!b)return;const n=myName();b.innerHTML=(u.photoURL?`<img src="${u.photoURL}" referrerpolicy="no-referrer" alt="">`:`<span class="av">${esc(n[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(n.split(" ")[0])}</span>`;}
 const isAdmin=()=>!!(USER&&USER.email&&USER.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
-function userMenu(){ if(!USER){afterLogin=null;document.getElementById("loginWhy").textContent="Masuk untuk beli & pasang iklan.";document.getElementById("login").classList.add("open");return;}
-  document.getElementById("acctBox").innerHTML=`<h3>Akun</h3><div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div><b>${esc(USER.displayName||"")}</b><div style="font-size:13px;color:var(--muted)">${esc(USER.email||"")}</div></div></div>
+async function userMenu(){ if(USER&&!PROFILE&&window.FB){try{await loadProfile();}catch(e){}} if(!USER){afterLogin=null;document.getElementById("loginWhy").textContent="Masuk untuk beli & pasang iklan.";document.getElementById("login").classList.add("open");return;}
+  document.getElementById("acctBox").innerHTML=`<h3>Akun</h3><div class="sum"><div class="ic">${USER.photoURL?`<img src="${USER.photoURL}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px">`:"👤"}</div><div><b>${esc(myName())}${vbadge(USER.uid)}</b><div style="font-size:13px;color:var(--muted)">${esc(USER.email||"")}</div></div></div>
     <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openProfile()">👤 Profil Saya ${profDone(PROFILE)?"✅":`<span style="color:#c4541b;font-size:12px">· belum lengkap (${profPct(PROFILE)}%)</span>`}</button>
     <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openOrders('buy')">🧾 Pesanan Saya ${(()=>{const n=BUY.filter(o=>!["selesai","dibatalkan"].includes(o.status)).length;return n?`<span class="cnt">${n}</span>`:""})()}</button>
     <button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="close_('acct');openOrders('sell')">🏪 Penjualan Saya ${(()=>{const n=SELL.filter(o=>o.status==="dikemas").length;return n?`<span class="cnt red">${n} perlu dikirim</span>`:""})()}</button>
@@ -810,7 +812,7 @@ let PROFILE=null, PROF_ASKED=false;
 const PF=["name","phone","city","address","gender","birth","shopName"];
 function profPct(p){if(!p)return 0;const need=["name","phone","city","address"],extra=["gender","birth"];let n=need.filter(k=>p[k]).length*20+extra.filter(k=>p[k]).length*10;return Math.min(100,n);}
 const profDone=p=>!!(p&&p.name&&p.phone&&p.city&&p.address);
-async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;loadKyc();try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);return;}
+async function loadProfile(){PROFILE=null;if(!USER||!window.FB)return;loadKyc();try{PROFILE=await FB.getProfile();}catch(e){console.warn("profil:",e);toast("Gagal memuat profil: "+(e.code||e.message));return;}drawUserBtn();
   if(!profDone(PROFILE)&&!PROF_ASKED&&!isAdmin()){PROF_ASKED=true;setTimeout(()=>{if(!document.querySelector(".modal-bg.open"))openProfile(true);},700);}}
 function openProfile(first){if(!needLogin(()=>openProfile(),"mengatur profil"))return;const p=PROFILE||{},g=i=>document.getElementById(i);
   const pct=profPct(p);
@@ -828,7 +830,7 @@ async function saveProfile(e){e.preventDefault();const g=i=>document.getElementB
   const data={name:g("pf-name").slice(0,60),phone,gender:g("pf-gender"),birth:g("pf-birth"),city:g("pf-city").slice(0,50),address:g("pf-addr").slice(0,300),shopName:g("pf-shop").slice(0,60),payBank:g("pf-bank"),payNo:g("pf-accno").replace(/[^0-9]/g,"").slice(0,20),payName:g("pf-accname").slice(0,60)};
   if((data.payBank||data.payNo)&&(!data.payBank||data.payNo.length<6||!data.payName)){toast("Lengkapi bank, nomor & nama pemilik rekening");return false;}
   const btn=document.getElementById("pf-save");btn.disabled=true;btn.textContent="Menyimpan…";
-  try{await FB.saveProfile(data);PROFILE={...(PROFILE||{}),...data};close_("prof");toast(profDone(PROFILE)?"Profil tersimpan ✅":"Profil disimpan");}
+  try{await FB.saveProfile(data);PROFILE={...(PROFILE||{}),...data};try{const fresh=await FB.getProfile();if(fresh)PROFILE=fresh;}catch(e){}drawUserBtn();close_("prof");toast(profDone(PROFILE)?"Profil tersimpan ✅":"Profil disimpan");}
   catch(err){toast("Gagal menyimpan: "+(err.code||err.message));}
   btn.disabled=false;btn.textContent="Simpan Profil";return false;}
 function fillSellFromProfile(){const p=PROFILE||{};const g=i=>document.getElementById(i);if(!g("s-seller").value&&!p.shopName&&!p.name&&USER)g("s-seller").value=USER.displayName||"";
@@ -1118,7 +1120,7 @@ try{
     // --- chat ---
     async openChat(x,sellerKey){ const u=auth.currentUser; const lid=String(x.id); const id=(lid+"__"+u.uid).replace(/[^A-Za-z0-9_-]/g,"");
       const ref=F.doc(db,"chats",id); let snap=null; try{snap=await F.getDoc(ref);}catch(e){}
-      if(!snap||!snap.exists()){ await F.setDoc(ref,{participants:[u.uid,sellerKey],buyerName:u.displayName||"Pembeli",sellerName:x.seller||"Penjual",
+      if(!snap||!snap.exists()){ await F.setDoc(ref,{participants:[u.uid,sellerKey],buyerName:(PROFILE&&PROFILE.name)||u.displayName||"Pembeli",sellerName:x.seller||"Penjual",
           listingId:lid,listingTitle:x.title||"",thumb:x.thumb||"",lastMsg:"",lastFrom:"",updatedAt:F.serverTimestamp(),lastRead:{}}); snap=await F.getDoc(ref); }
       return toChat(snap); },
     listenMsgs(cid,cb){ return F.onSnapshot(F.query(F.collection(db,"chats",cid,"messages"),F.orderBy("at"),F.limitToLast(200)),
