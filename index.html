@@ -61,7 +61,7 @@ header{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;box-s
 .info div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
 .info b{display:block;margin-bottom:4px}
 .info span{font-size:13px;color:var(--muted)}
-footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 16px}.flinks{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:8px 0}.flinks a{color:var(--muted);text-decoration:underline;cursor:pointer}.legal h4{margin:14px 0 4px;font-size:15px}.legal p,.legal li{font-size:14px;line-height:1.6;color:var(--ink)}.legal ol,.legal ul{padding-left:20px;margin:4px 0}.rptlink{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;align-self:flex-start}.cbox{border:1px solid #f5c2c0;background:#fff7f6;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:14px}.cbox img{max-width:100%;border-radius:8px}.autonote{font-size:12.5px;color:var(--muted);text-align:center}
 .modal-bg{position:fixed;inset:0;background:rgba(10,20,28,.5);display:none;align-items:center;justify-content:center;z-index:30;padding:14px}
 .modal-bg.open{display:flex}
 .modal{background:#fff;border-radius:18px;width:min(560px,100%);max-height:92vh;overflow:auto;position:relative}
@@ -419,7 +419,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<br><small style="opacity:.6">versi 19 · tampilan rapi</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 20 · komplain, S&amp;K, laporan</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -465,7 +465,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <h3>Masuk ke PasarRuang</h3>
     <p style="color:var(--muted);font-size:14px" id="loginWhy">Masuk dulu untuk melanjutkan.</p>
     <button class="gbtn" onclick="doLogin()"><svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Masuk dengan Google</button>
-    <small style="color:var(--muted)">Kami hanya memakai nama & email kamu untuk pesanan.</small>
+    <small style="color:var(--muted)">Kami hanya memakai nama & email kamu untuk pesanan. Dengan masuk, kamu menyetujui <a style="color:var(--brand-d);text-decoration:underline;cursor:pointer" onclick="openLegal('sk')">Syarat &amp; Ketentuan</a> dan <a style="color:var(--brand-d);text-decoration:underline;cursor:pointer" onclick="openLegal('priv')">Kebijakan Privasi</a>.</small>
   </div>
 </div></div>
 <div class="modal-bg" id="acct" onclick="if(event.target===this)close_('acct')"><div class="modal"><button class="x" onclick="close_('acct')">×</button><div class="form" id="acctBox"></div></div></div>
@@ -524,6 +524,9 @@ p,b,small,div,span{overflow-wrap:anywhere}
 <div class="modal-bg" id="notifs" onclick="if(event.target===this)close_('notifs')"><div class="modal"><button class="x" onclick="close_('notifs')">×</button><div class="form" id="notifsBox"></div></div></div>
 <div class="modal-bg" id="shop" onclick="if(event.target===this)close_('shop')"><div class="modal"><button class="x" onclick="close_('shop')">×</button><div id="shopBox"></div></div></div>
 <div class="modal-bg" id="rev" onclick="if(event.target===this)close_('rev')"><div class="modal"><button class="x" onclick="close_('rev')">×</button><div class="form" id="revBox"></div></div></div>
+<div class="modal-bg" id="legal" onclick="if(event.target===this)close_('legal')"><div class="modal"><button class="x" onclick="close_('legal')">×</button><div class="form legal" id="legalBox"></div></div></div>
+<div class="modal-bg" id="cmp" onclick="if(event.target===this)close_('cmp')"><div class="modal"><button class="x" onclick="close_('cmp')">×</button><div class="form" id="cmpBox"></div></div></div>
+<div class="modal-bg" id="rpt" onclick="if(event.target===this)close_('rpt')"><div class="modal"><button class="x" onclick="close_('rpt')">×</button><div class="form" id="rptBox"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -627,6 +630,7 @@ function openDetail(id){
         ${x.price&&!x.noBuy&&!x.sold?`<button class="btn buy" onclick="openPay('${x.id}')">Beli Sekarang</button>`:""}
       </div>
       ${x.remote&&x.status!=="approved"?"":shareBar(x)}
+      ${USER&&x.remote&&x.uid===USER.uid?"":`<button class="rptlink" onclick="openReport('listing','${x.id}')">🚩 Laporkan iklan ini</button>`}
     </div>`;
   document.getElementById("detail").classList.add("open");
   {const sk=x.remote?x.uid:"admin";if(!REVS[sk])loadRevs(sk).then(()=>{const el=document.getElementById("sellRate"),st=revStat(sk);if(el&&st&&OPEN_ID===String(id))el.innerHTML=`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`;});}
@@ -868,11 +872,11 @@ async function myDel(fid){if(!confirmTap("del"+fid))return;try{await FB.remove(f
 let CT={};function confirmTap(k){if(CT[k]&&Date.now()-CT[k]<3000){delete CT[k];return true;}CT[k]=Date.now();toast("Ketuk sekali lagi untuk yakin");return false;}
 async function openAdmin(){ if(!isAdmin()){toast("Khusus admin");return;} const box=document.getElementById("adminBox");
   document.getElementById("admin").classList.add("open"); box.innerHTML="<h3>Panel Admin</h3><p style='color:var(--muted)'>Memuat…</p>";
-  try{[ALL]=await Promise.all([FB.all(),admKycLoad()]);}catch(e){box.innerHTML=`<h3>Panel Admin</h3><p>Gagal memuat: ${esc(e.code||e.message)}. Pastikan Rules Firestore sudah dipasang.</p>`;return;}
+  try{[ALL]=await Promise.all([FB.all(),admKycLoad(),admRptLoad()]);autoComplete();}catch(e){box.innerHTML=`<h3>Panel Admin</h3><p>Gagal memuat: ${esc(e.code||e.message)}. Pastikan Rules Firestore sudah dipasang.</p>`;return;}
   drawAdmin();
 }
 function admTabs(){const cnt=k=>ALL.filter(x=>x.status===k).length,pv=AORD.filter(o=>o.status==="menunggu_verifikasi").length;
-  return `<div class="tabs" style="flex-wrap:wrap">${[["ann","📣 Pengumuman",ANNS.length],["pay","💳 Pembayaran",pv],["payout","💸 Pencairan",new Set(AORD.filter(needPayout).map(o=>o.sellerKey)).size],["kyc","🪪 KTP",KYCLIST.length],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
+  return `<div class="tabs" style="flex-wrap:wrap">${[["ann","📣 Pengumuman",ANNS.length],["pay","💳 Pembayaran",pv],["payout","💸 Pencairan",new Set(AORD.filter(needPayout).map(o=>o.sellerKey)).size],["cmp","⚠️ Komplain",AORD.filter(o=>o.status==="komplain").length],["rpt","🚩 Laporan",RPTS.length],["kyc","🪪 KTP",KYCLIST.length],["pending","Iklan Menunggu",cnt("pending")],["approved","Tayang",cnt("approved")],["rejected","Ditolak",cnt("rejected")]].map(([k,t,n])=>`<button class="tab ${k===ADMTAB?'active':''}" onclick="ADMTAB='${k}';drawAdmin()">${t} (${n})</button>`).join("")}</div>`;}
 function drawAdmin(){ const box=document.getElementById("adminBox"); const cnt=k=>ALL.filter(x=>x.status===k).length;
   const l=ALL.filter(x=>x.status===ADMTAB).sort((a,b)=>(b.ts||0)-(a.ts||0));
   if(ADMTAB==="ann"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Kirim pengumuman ke semua pengguna</b>
@@ -882,6 +886,10 @@ function drawAdmin(){ const box=document.getElementById("adminBox"); const cnt=k
       ${ANNS.length?`<b>Pengumuman terkirim</b>${ANNS.map(a=>`<div class="nrow"><span class="nic">📣</span><div><b>${esc(a.title)}</b><div>${esc(a.body||"")}</div><small>${fmtDT(a.at)}</small></div><button class="copy" onclick="delAnn('${a.id}')">Hapus</button></div>`).join("")}`:""}`;return;}
   if(ADMTAB==="payout"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<p style="color:var(--muted)">Memuat rekening…</p>`;
     admPayLoad().then(()=>{if(ADMTAB==="payout"&&document.getElementById("admin").classList.contains("open"))box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}${admPayoutHtml()}`;});return;}
+  if(ADMTAB==="cmp"){const c=AORD.filter(o=>o.status==="komplain"),h=AORD.filter(o=>o.complaint&&o.status!=="komplain").slice(0,20);
+    const r=o=>`<div class="lrow crow" onclick="openOrder('${o.id}')"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${esc((o.complaint||{}).reason||"")} · ${rp(o.total)}</div>${obadge(o.status)}${o.sellerReply?` <span class="badge" style="background:#eaf2ff;color:#1f4fb3">Penjual menanggapi</span>`:""}<small>${esc(o.buyerName)} → ${esc(o.sellerName)} · ${fmtDT(o.updatedAt)}</small></div></div>`;
+    box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Komplain aktif (${c.length})</b>${c.length?c.map(r).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}${h.length?`<b>Riwayat komplain</b>${h.map(r).join("")}`:""}`;return;}
+  if(ADMTAB==="rpt"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}${admRptHtml()}`;return;}
   if(ADMTAB==="kyc"){box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Menunggu verifikasi KTP (${KYCLIST.length})</b>${KYCLIST.length?KYCLIST.map(k=>`<div class="lrow crow" onclick="admKycView('${k.uid}')"><div class="lth">🪪</div><div class="linfo"><b>${esc((k.data||{}).name||"-")}</b><div>${esc(k.email||"")}</div><small>${fmtDT(k.createdAt)}</small></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}`;return;}
   if(ADMTAB==="pay"){const pv=AORD.filter(o=>o.status==="menunggu_verifikasi"),rest=AORD.filter(o=>o.status!=="menunggu_verifikasi").slice(0,40);
     box.innerHTML=`<h3>Panel Admin</h3>${admTabs()}<b>Perlu verifikasi pembayaran (${pv.length})</b>${pv.length?pv.map(o=>`<div class="lrow crow" onclick="openOrder('${o.id}')"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)} · ${esc(o.buyerName)}</div>${obadge(o.status)}<small>${esc(o.orderNo||"")} · ${fmtDT(o.updatedAt)}</small></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada.</p>`}
@@ -962,7 +970,7 @@ function fillSellFromProfile(){const p=PROFILE||{};const g=i=>document.getElemen
 
 // ===== PESANAN (seperti Shopee) =====
 const OST={menunggu_bayar:["Belum Bayar","#fff6e5","#8a5a00","💳"],menunggu_verifikasi:["Menunggu Verifikasi","#eaf2ff","#1f4fb3","🔎"],dikemas:["Dikemas","#e7f6f1","#0b6a53","📦"],
-  dikirim:["Dikirim","#e3f0ff","#1f4fb3","🚚"],selesai:["Selesai","#eef0f2","#44515c","✅"],dibatalkan:["Dibatalkan","#fde2e2","#b42318","✖️"]};
+  dikirim:["Dikirim","#e3f0ff","#1f4fb3","🚚"],selesai:["Selesai","#eef0f2","#44515c","✅"],komplain:["Dalam Komplain","#fff1e6","#b54708","⚠️"],dibatalkan:["Dibatalkan","#fde2e2","#b42318","✖️"]};
 const OFLOW=["menunggu_bayar","menunggu_verifikasi","dikemas","dikirim","selesai"];
 const OLABEL={menunggu_bayar:"Dipesan",menunggu_verifikasi:"Dibayar",dikemas:"Dikemas",dikirim:"Dikirim",selesai:"Selesai"};
 const COURIERS=["JNE","J&T Express","SiCepat","AnterAja","POS Indonesia","Ninja Xpress","ID Express","GoSend","GrabExpress"];
@@ -971,20 +979,21 @@ const obadge=st=>{const o=OST[st]||OST.menunggu_bayar;return `<span class="badge
 const fmtDT=t=>t?new Date(t).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
 const expired=o=>o.status==="menunggu_bayar"&&o.createdAt&&Date.now()-o.createdAt>24*3600e3;
 function trackerHtml(o){if(o.status==="dibatalkan")return `<div class="otl cancel">✖️ Pesanan dibatalkan${o.cancelReason?` — ${esc(o.cancelReason)}`:""}</div>`;
+  if(o.status==="komplain")return `<div class="otl cancel" style="background:#fff1e6;color:#b54708">⚠️ Pesanan sedang dalam komplain — admin akan memutuskan</div>`;
   const k=OFLOW.indexOf(o.status),tl={};(o.timeline||[]).forEach(e=>{tl[e.s]=e.t;});
   return `<div class="ptrack">${OFLOW.map((st,i)=>`<div class="${i<=k?"on":""} ${i===k&&st!=="selesai"?"now":""}"><i>${i<k||st==="selesai"&&k===i?"✓":i+1}</i>${OLABEL[st]}${tl[st]?`<em>${fmtDT(tl[st])}</em>`:""}</div>`).join("")}</div>`;}
 function onOrders(kind,list){ if(kind==="buy")BUY=list;else if(kind==="sell")SELL=list;else AORD=list;
   [BUY,SELL,AORD].forEach(a=>a.sort((x,y)=>(y.updatedAt||0)-(x.updatedAt||0)));
-  const need=SELL.filter(o=>o.status==="dikemas"||(isPaidOut(o)&&!o.payout.confirmed&&o.sellerKey!=="admin")).length+BUY.filter(o=>o.status==="dikirim").length+(isAdmin()?AORD.filter(o=>o.status==="menunggu_verifikasi").length:0);
+  const need=SELL.filter(o=>o.status==="dikemas"||(o.status==="komplain"&&!o.sellerReply)||(isPaidOut(o)&&!o.payout.confirmed&&o.sellerKey!=="admin")).length+BUY.filter(o=>o.status==="dikirim").length+(isAdmin()?AORD.filter(o=>o.status==="menunggu_verifikasi"||o.status==="komplain").length:0);
   const ub=document.getElementById("userBtn");if(ub)ub.classList.toggle("dot",need>0);
   if(document.getElementById("ords").classList.contains("open"))drawOrders();
   if(ORD_CUR&&document.getElementById("ord").classList.contains("open")){const o=findOrder(ORD_CUR);if(o)drawOrder(o);}
-  if(document.getElementById("admin").classList.contains("open")&&(ADMTAB==="pay"||ADMTAB==="payout"))drawAdmin();}
+  if(document.getElementById("admin").classList.contains("open")&&(ADMTAB==="pay"||ADMTAB==="payout"||ADMTAB==="cmp"))drawAdmin();}
 const findOrder=id=>BUY.find(o=>o.id===id)||SELL.find(o=>o.id===id)||AORD.find(o=>o.id===id);
 function openOrders(role){if(!needLogin(()=>openOrders(role),"melihat pesanan"))return;ORD_ROLE=role;document.getElementById("ords").classList.add("open");drawOrders();}
 function drawOrders(){const role=ORD_ROLE,list=role==="buy"?BUY:SELL,box=document.getElementById("ordsBox");
-  const tabs=role==="buy"?[["menunggu_bayar","Belum Bayar"],["menunggu_verifikasi","Dicek"],["dikemas","Dikemas"],["dikirim","Dikirim"],["selesai","Selesai"],["dibatalkan","Batal"]]
-                         :[["menunggu_verifikasi","Menunggu Bayar"],["dikemas","Perlu Dikirim"],["dikirim","Dikirim"],["selesai","Selesai"],["dibatalkan","Batal"]];
+  const tabs=role==="buy"?[["menunggu_bayar","Belum Bayar"],["menunggu_verifikasi","Dicek"],["dikemas","Dikemas"],["dikirim","Dikirim"],["selesai","Selesai"],["komplain","Komplain"],["dibatalkan","Batal"]]
+                         :[["menunggu_verifikasi","Menunggu Bayar"],["dikemas","Perlu Dikirim"],["dikirim","Dikirim"],["selesai","Selesai"],["komplain","Komplain"],["dibatalkan","Batal"]];
   const inTab=(o,k)=>role==="sell"&&k==="menunggu_verifikasi"?["menunggu_bayar","menunggu_verifikasi"].includes(o.status):o.status===k;
   const cur=OTAB[role],l=list.filter(o=>inTab(o,cur));
   box.innerHTML=`<h3>${role==="buy"?"🧾 Pesanan Saya":"🏪 Penjualan Saya"}</h3>${role==="sell"?sellerWallet():""}
@@ -999,8 +1008,11 @@ function drawOrder(o){const me=USER?USER.uid:"",isBuyer=o.buyerUid===me,isSeller
   if(isBuyer&&o.status==="menunggu_bayar"){act+=expired(o)?`<div class="warn">Batas waktu bayar sudah lewat. Silakan batalkan dan pesan ulang.</div>`:`<button class="btn buy" onclick="resumePay('${o.id}')">💳 Bayar Sekarang</button>`;
     act+=`<button class="tab" onclick="ordCancel('${o.id}','buyer')">Batalkan Pesanan</button>`;}
   if(isBuyer&&o.status==="menunggu_verifikasi")act+=`<div class="waitpay"><span class="pulse-dot"></span>Admin sedang mengecek pembayaranmu</div>`;
-  if(isBuyer&&o.status==="dikemas")act+=`<div class="waitpay"><span class="pulse-dot"></span>Penjual sedang menyiapkan barangmu</div>`;
-  if(isBuyer&&o.status==="dikirim")act+=`<button class="btn buy" onclick="ordDone('${o.id}')">✅ Pesanan Diterima</button><small style="color:var(--muted);text-align:center">Ketuk hanya jika barang sudah kamu terima & sesuai. Dana akan diteruskan ke penjual.</small>`;
+  if(isBuyer&&o.status==="dikemas")act+=`<div class="waitpay"><span class="pulse-dot"></span>Penjual sedang menyiapkan barangmu</div>`+(slowPack(o)?`<button class="tab" onclick="openComplaint('${o.id}')">⚠️ Ajukan Komplain (belum dikirim)</button>`:"");
+  if(isBuyer&&o.status==="dikirim")act+=`<button class="btn buy" onclick="ordDone('${o.id}')">✅ Pesanan Diterima</button><small style="color:var(--muted);text-align:center">Ketuk hanya jika barang sudah kamu terima & sesuai. Dana akan diteruskan ke penjual.</small>
+      <button class="tab" style="border-color:#f5c2c0;color:#b42318" onclick="openComplaint('${o.id}')">⚠️ Ajukan Komplain / Minta Refund</button><div class="autonote">${autoLeft(o)}</div>`;
+  if(o.status==="komplain"||o.complaint)act+=complaintBox(o,isBuyer,isSeller,adm);
+  if(o.refund&&o.refund.status==="paid")act+=`<div class="obox"><b>💸 Refund ke pembeli</b><div>${rp(o.refund.amount||0)} sudah dikembalikan ke ${esc(o.refund.acc||"rekening pembeli")}</div><small>${fmtDT(o.refund.at)}</small>${o.refund.proof?`<img src="${o.refund.proof}" style="max-width:100%;border-radius:8px;margin-top:6px">`:""}</div>`;
   if(isSeller&&o.status==="dikemas")act+=`<div class="shipf"><b>Kirim pesanan</b><select id="o-cour">${COURIERS.map(c=>`<option>${c}</option>`).join("")}</select>
       <input id="o-resi" placeholder="Nomor resi pengiriman" maxlength="40"><button class="btn buy" onclick="ordShip('${o.id}')">🚚 Kirim Pesanan</button></div>
       <button class="tab" onclick="ordCancel('${o.id}','seller')">Tolak / Batalkan (stok habis)</button>`;
@@ -1010,7 +1022,7 @@ function drawOrder(o){const me=USER?USER.uid:"",isBuyer=o.buyerUid===me,isSeller
   if(isBuyer&&o.status==="selesai"){const mr=MYREV[o.id];act+=mr?`<div class="obox"><b>Ulasanmu</b>${stars(mr.rating,16)}${mr.text?`<div>${esc(mr.text)}</div>`:""}${mr.reply?`<div class="rreply"><b>💬 Balasan penjual</b><p>${esc(mr.reply)}</p></div>`:""}</div>`:`<button class="btn buy" style="background:#ffb400;color:#3b2a00" onclick="openReview('${o.id}')">⭐ Beri Ulasan</button>`;}
   if((isSeller||adm)&&o.status==="selesai")act+=payoutLine(o);
   if(adm&&needPayout(o))act+=`<button class="tab" onclick="close_('ord');ORD_CUR=null;ADMTAB='payout';openAdmin()">💸 Buka menu Pencairan</button>`;
-  if(adm&&!["selesai","dibatalkan"].includes(o.status)&&!isBuyer)act+=`<button class="tab" onclick="ordCancel('${o.id}','admin')">Batalkan sebagai admin</button>`;
+  if(adm&&!["selesai","dibatalkan","komplain"].includes(o.status)&&!isBuyer)act+=`<button class="tab" onclick="ordCancel('${o.id}','admin')">Batalkan sebagai admin</button>`;
   const other=isBuyer?o.sellerName:o.buyerName;
   document.getElementById("ordBox").innerHTML=`<div class="ohead" style="background:${st[1]};color:${st[2]}"><span>${st[3]}</span><div><b>${st[0]}</b><small>${esc(o.orderNo||"")}</small></div></div>
     ${trackerHtml(o)}
@@ -1027,6 +1039,133 @@ function resumePay(id){const o=findOrder(id);if(!o)return;close_("ord");
   P={item:{title:o.title,price:o.price,cat:"",seller:o.sellerName,thumb:o.thumb,id:o.listingId},step:2,ship:o.ship?.id||"reg",bank:"qris",name:o.recv?.name||"",phone:o.recv?.phone||"",addr:o.recv?.addr||"",
      code:o.code,proof:null,orderId:o.orderNo,oid:o.id,fixedTotal:o.total,deadline:(o.createdAt||Date.now())+24*3600e3};
   drawPay();document.getElementById("pay").classList.add("open");}
+
+// ===== KOMPLAIN & REFUND =====
+const AUTO_DAYS=7,PACK_DAYS=3;
+const tlTime=(o,st)=>{let t=0;(o.timeline||[]).forEach(e=>{if(e.s===st&&e.t>t)t=e.t;});return t;};
+const slowPack=o=>o.status==="dikemas"&&tlTime(o,"dikemas")&&Date.now()-tlTime(o,"dikemas")>PACK_DAYS*864e5;
+function autoLeft(o){const t=tlTime(o,"dikirim");if(!t)return"";const d=Math.ceil((t+AUTO_DAYS*864e5-Date.now())/864e5);
+  return d>0?`Jika tidak ada konfirmasi/komplain, pesanan otomatis selesai dalam ${d} hari.`:"Batas konfirmasi sudah lewat — pesanan akan diselesaikan otomatis.";}
+const CMP_REASONS=["Barang belum diterima","Barang rusak / cacat","Barang tidak sesuai deskripsi","Barang palsu / tiruan","Jumlah / isi kurang","Penjual tidak mengirim barang","Lainnya"];
+let CMP={oid:null,photo:""};
+function openComplaint(id){const o=findOrder(id);if(!o)return;CMP={oid:id,photo:""};const p=PROFILE||{};
+  document.getElementById("cmpBox").innerHTML=`<h3>⚠️ Ajukan Komplain</h3>
+   <div class="lrow"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.total)}</div><small>${esc(o.orderNo||"")}</small></div></div>
+   <div class="warn" style="background:#fff7e6;color:#8a5a00">Selama komplain diproses, dana <b>ditahan</b> dan tidak diteruskan ke penjual. Admin akan memeriksa dan memutuskan refund atau tidak.</div>
+   <label>Alasan</label><select id="c-why">${CMP_REASONS.map(r=>`<option>${r}</option>`).join("")}</select>
+   <label>Jelaskan masalahnya</label><textarea id="c-txt" rows="4" maxlength="500" placeholder="Cth. layar retak saat paket dibuka, ada video unboxing"></textarea>
+   <label>Foto bukti (disarankan)</label><input type="file" accept="image/*" onchange="pickCmpPhoto(this)"><div id="c-prev"></div>
+   <label>Rekening/e-wallet untuk refund</label><input id="c-acc" maxlength="80" placeholder="Cth. DANA 0812xxxx a.n. Budi" value="${esc(p.payNo?((p.payBank||"")+" "+p.payNo+" a.n. "+(p.payName||"")).trim():"")}">
+   <button class="btn buy" style="background:#b42318" onclick="sendComplaint()">Kirim Komplain</button>
+   <small style="color:var(--muted)">Komplain palsu dapat membuat akunmu dibatasi. Lihat <a style="text-decoration:underline;cursor:pointer" onclick="openLegal('help')">aturan komplain</a>.</small>`;
+  document.getElementById("cmp").classList.add("open");}
+async function pickCmpPhoto(inp){const f=inp.files[0];if(!f)return;try{const im=await loadImg(f);CMP.photo=shrink(im,900,.72,180000);document.getElementById("c-prev").innerHTML=`<img src="${CMP.photo}" style="max-width:100%;border-radius:10px">`;}catch(e){toast("Foto gagal dibaca");}}
+async function sendComplaint(){const o=findOrder(CMP.oid);if(!o)return;const why=document.getElementById("c-why").value,txt=document.getElementById("c-txt").value.trim(),acc=document.getElementById("c-acc").value.trim();
+  if(txt.length<10){toast("Jelaskan masalahnya (min. 10 huruf)");return;}if(acc.length<6){toast("Isi rekening/e-wallet untuk refund");return;}
+  const c={reason:why,text:txt.slice(0,500),photo:CMP.photo||"",refundAcc:acc.slice(0,80),from:o.status,at:Date.now()};
+  ordAct(CMP.oid,async()=>{await FB.orderStatus(CMP.oid,"komplain",{complaint:c});
+    notif(o.sellerKey,"complaint","Pembeli mengajukan komplain ⚠️",`"${o.title}": ${why}. Dana ditahan sampai admin memutuskan. Beri tanggapanmu di detail pesanan.`,"order:"+o.id);
+    notif("admin","complaint","Komplain baru ⚠️",`${o.orderNo||""} "${o.title}": ${why}`,"admin");
+    close_("cmp");},"Komplain terkirim. Admin akan memeriksa.");}
+function complaintBox(o,isBuyer,isSeller,adm){const c=o.complaint||{};let h=`<div class="cbox"><b>⚠️ Komplain pembeli</b><div><b>${esc(c.reason||"")}</b></div><div style="white-space:pre-line">${esc(c.text||"")}</div>${c.photo?`<img src="${c.photo}">`:""}<small>${fmtDT(c.at)}</small>`;
+  if(o.sellerReply)h+=`<div class="rreply"><b>💬 Tanggapan penjual</b><p>${esc(o.sellerReply)}</p></div>`;
+  if(c.result)h+=`<div class="rreply"><b>🛡️ Keputusan admin</b><p>${esc(c.result)}</p></div>`;
+  if(o.status==="komplain"){
+    if(isSeller&&!o.sellerReply&&!adm)h+=`<textarea id="c-rep" rows="3" maxlength="300" placeholder="Tanggapanmu untuk admin (cth. sudah dikirim, resi valid, barang dicek sebelum kirim)"></textarea><button class="btn buy" onclick="sendSellerReply('${o.id}')">Kirim Tanggapan</button>`;
+    if(isBuyer)h+=`<small style="color:var(--muted)">Admin sedang memeriksa. Kamu bisa chat penjual untuk mencari solusi.</small><button class="tab" onclick="cmpWithdraw('${o.id}')">Masalah selesai — batalkan komplain & terima pesanan</button>`;
+    if(adm)h+=`<div class="admbox"><b>🛡️ Keputusan admin</b><div>Refund ke: <b>${esc(c.refundAcc||"-")}</b> · ${rp(o.total)}</div>
+      <button class="btn buy" style="background:#b42318" onclick="openRefund('${o.id}')">💸 Setujui Refund ke Pembeli</button>
+      <button class="tab" onclick="cmpReject('${o.id}')">✖️ Tolak Komplain (pesanan selesai, dana ke penjual)</button></div>`;}
+  return h+`</div>`;}
+async function sendSellerReply(id){const t=(document.getElementById("c-rep").value||"").trim();if(t.length<5){toast("Tulis tanggapanmu");return;}const o=findOrder(id);
+  ordAct(id,async()=>{await FB.sellerReply(id,t.slice(0,300));notif("admin","complaint","Penjual menanggapi komplain",`${o?o.orderNo:""}: ${t.slice(0,100)}`,"admin");},"Tanggapan terkirim");}
+function cmpWithdraw(id){if(!confirmTap("w"+id))return;const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"selesai",{"complaint.result":"Komplain dibatalkan pembeli. Pesanan diterima."});
+  if(o)notif(o.sellerKey,"done","Komplain dibatalkan ✅",`Pembeli membatalkan komplain "${o.title}". Pesanan selesai.`,"order:"+id);},"Komplain dibatalkan, pesanan selesai");}
+async function cmpReject(id){const why=prompt("Alasan komplain ditolak (dikirim ke pembeli):","Bukti tidak cukup / barang sesuai deskripsi");if(!why)return;const o=findOrder(id);
+  ordAct(id,async()=>{await FB.orderStatus(id,"selesai",{"complaint.result":"Ditolak: "+why.slice(0,200)});
+    if(o){notif(o.buyerUid,"cmp_no","Komplain ditolak",why.slice(0,120),"order:"+id);notif(o.sellerKey,"done","Komplain ditolak — pesanan selesai",`Dana "${o.title}" akan dicairkan admin.`,"order:"+id);}},"Komplain ditolak, pesanan selesai");}
+let RF={oid:null,proof:""};
+function openRefund(id){const o=findOrder(id);if(!o)return;RF={oid:id,proof:""};const c=o.complaint||{};
+  document.getElementById("cmpBox").innerHTML=`<h3>💸 Refund ke Pembeli</h3><div class="obox lines"><div><span>Pesanan</span><span>${esc(o.orderNo||"")}</span></div><div><span>Jumlah</span><b>${rp(o.total)}</b></div><div><span>Ke</span><span>${esc(c.refundAcc||"-")}</span></div></div>
+   <ol style="margin:0;padding-left:18px;font-size:14px;line-height:1.6"><li>Transfer <b>${rp(o.total)}</b> ke rekening di atas dari DANA/bankmu.</li><li>Screenshot bukti transfer, upload di bawah.</li><li>Tekan Konfirmasi Refund.</li></ol>
+   <label>Jumlah refund</label><input id="r-amt" type="number" inputmode="numeric" value="${o.total||0}">
+   <label>Bukti transfer</label><input type="file" accept="image/*" onchange="pickRefund(this)"><div id="r-prev"></div>
+   <label>Catatan untuk pembeli</label><input id="r-note" maxlength="150" value="Komplain diterima, dana dikembalikan">
+   <button class="btn buy" style="background:#b42318" onclick="confirmRefund()">✔️ Konfirmasi Refund</button>`;
+  close_("ord");document.getElementById("cmp").classList.add("open");}
+async function pickRefund(inp){const f=inp.files[0];if(!f)return;try{const im=await loadImg(f);RF.proof=shrink(im,900,.72,180000);document.getElementById("r-prev").innerHTML=`<img src="${RF.proof}" style="max-width:100%;border-radius:10px">`;}catch(e){toast("Foto gagal dibaca");}}
+async function confirmRefund(){const o=findOrder(RF.oid);if(!o)return;const amt=Math.round(+document.getElementById("r-amt").value||0),note=document.getElementById("r-note").value.trim()||"Refund disetujui";
+  if(amt<=0){toast("Isi jumlah refund");return;}if(!RF.proof){toast("Upload bukti transfer dulu");return;}
+  ordAct(RF.oid,async()=>{await FB.orderStatus(RF.oid,"dibatalkan",{cancelReason:"Refund ke pembeli: "+note.slice(0,80),"complaint.result":"Refund disetujui: "+note.slice(0,150),
+      refund:{status:"paid",amount:amt,acc:(o.complaint||{}).refundAcc||"",proof:RF.proof,at:Date.now()}});
+    notif(o.buyerUid,"refund","Refund berhasil 💸",`${rp(amt)} untuk "${o.title}" sudah dikembalikan. Cek rekeningmu.`,"order:"+o.id);
+    notif(o.sellerKey,"cancel","Pesanan dibatalkan (refund)",`Komplain "${o.title}" diterima admin, dana dikembalikan ke pembeli.`,"order:"+o.id);
+    close_("cmp");ADMTAB="cmp";if(document.getElementById("admin").classList.contains("open"))drawAdmin();},"Refund tercatat ✅");}
+let AUTO_RUN=false;
+async function autoComplete(){if(AUTO_RUN||!isAdmin())return;AUTO_RUN=true;const due=AORD.filter(o=>o.status==="dikirim"&&tlTime(o,"dikirim")&&Date.now()-tlTime(o,"dikirim")>AUTO_DAYS*864e5);
+  let n=0;for(const o of due){try{await FB.orderStatus(o.id,"selesai",{autoDone:true});n++;
+    notif(o.buyerUid,"done","Pesanan otomatis selesai",`"${o.title}" otomatis selesai karena ${AUTO_DAYS} hari tanpa konfirmasi atau komplain.`,"order:"+o.id);
+    notif(o.sellerKey,"done","Pesanan selesai 🎉",`"${o.title}" otomatis selesai. Dana akan dicairkan admin.`,"order:"+o.id);}catch(e){console.warn(e);}}
+  if(n)toast(`${n} pesanan otomatis diselesaikan (lewat ${AUTO_DAYS} hari)`);}
+
+// ===== LAPORAN =====
+const RPT_REASONS={listing:["Penipuan / harga tidak wajar","Barang terlarang / ilegal","Barang palsu / tiruan","Foto atau deskripsi menyesatkan","Iklan ganda / spam","Konten tidak pantas","Lainnya"],
+  shop:["Penipuan","Tidak mengirim barang","Meminta bayar di luar PasarRuang","Kata-kata kasar / pelecehan","Akun palsu","Lainnya"]};
+let RPT={type:"",target:""};
+function openReport(type,target){if(!needLogin(()=>openReport(type,target),"melaporkan"))return;RPT={type,target};
+  const x=type==="listing"?byId(target):null;const nm=type==="listing"?(x?x.title:""):(SHOP_NAME_OF(target));
+  document.getElementById("rptBox").innerHTML=`<h3>🚩 Laporkan ${type==="listing"?"Iklan":"Penjual"}</h3><div style="color:var(--muted)">${esc(nm||"")}</div>
+   <label>Alasan</label><select id="rp-why">${RPT_REASONS[type].map(r=>`<option>${r}</option>`).join("")}</select>
+   <label>Keterangan (opsional)</label><textarea id="rp-txt" rows="3" maxlength="500" placeholder="Ceritakan singkat apa yang terjadi"></textarea>
+   <button class="btn buy" style="background:#b42318" onclick="sendReport()">Kirim Laporan</button><small style="color:var(--muted)">Laporan bersifat rahasia — penjual tidak tahu siapa yang melapor.</small>`;
+  document.getElementById("rpt").classList.add("open");}
+function SHOP_NAME_OF(k){const x=LIST.find(i=>sellerKey(i)===k);return x?x.seller:"";}
+async function sendReport(){const why=document.getElementById("rp-why").value,txt=document.getElementById("rp-txt").value.trim();const t=RPT;
+  const x=t.type==="listing"?byId(t.target):null;const sk=x?sellerKey(x):t.target;
+  const d={type:t.type,target:String(t.target),fid:x&&x.fid?String(x.fid):"",title:(x?x.title:SHOP_NAME_OF(t.target)||"").slice(0,100),sellerKey:String(sk||""),reason:why,text:txt.slice(0,500)};
+  try{await FB.addReport(d);notif("admin","report","Laporan baru 🚩",`${t.type==="listing"?"Iklan":"Penjual"} "${d.title}": ${why}`,"admin");close_("rpt");toast("Laporan terkirim. Terima kasih!");}
+  catch(e){toast("Gagal: "+(e.code||e.message));}}
+let RPTS=[];
+async function admRptLoad(){try{RPTS=await FB.reports();}catch(e){RPTS=[];console.warn(e);}}
+function admRptHtml(){return `<b>Laporan masuk (${RPTS.length})</b>${RPTS.length?RPTS.map(r=>`<div class="obox"><b>${r.type==="listing"?"📦 Iklan":"🏪 Penjual"}: ${esc(r.title||"-")}</b><div><b>${esc(r.reason)}</b></div>${r.text?`<div style="white-space:pre-line">${esc(r.text)}</div>`:""}<small>Pelapor: ${esc(r.reporterName||"")} · ${fmtDT(r.at)}</small>
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${r.type==="listing"?`<button class="tab" onclick="close_('admin');openDetail('${r.target}')">👁️ Lihat iklan</button>${r.fid?`<button class="tab" onclick="admRptDown('${r.id}','${r.fid}')">⬇️ Turunkan iklan</button>`:""}`:`<button class="tab" onclick="close_('admin');openShop('${r.target}')">👁️ Lihat toko</button>`}<button class="tab" onclick="admRptDone('${r.id}')">✔️ Selesai</button></div></div>`).join(""):`<p style="color:var(--muted)">Tidak ada laporan.</p>`}`;}
+async function admRptDown(id,fid){if(!confirmTap("rd"+id))return;try{if(!ALL.find(i=>i.fid===fid))ALL=await FB.all();await admSet(fid,"rejected");await FB.delReport(id);RPTS=RPTS.filter(r=>r.id!==id);ADMTAB="rpt";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function admRptDone(id){try{await FB.delReport(id);RPTS=RPTS.filter(r=>r.id!==id);toast("Laporan ditandai selesai");drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+
+// ===== S&K / PRIVASI / BANTUAN =====
+const LEGAL={
+ sk:["📜 Syarat & Ketentuan",`<p><small>Berlaku sejak 11 November 2026</small></p>
+  <p>Dengan memakai PasarRuang, kamu setuju dengan ketentuan berikut.</p>
+  <h4>1. Tentang PasarRuang</h4><p>PasarRuang adalah tempat jual beli barang baru dan bekas antar pengguna. PasarRuang bukan pemilik barang yang dijual penjual lain; tanggung jawab atas kondisi barang ada pada penjual.</p>
+  <h4>2. Akun</h4><ul><li>Masuk memakai akun Google. Kamu bertanggung jawab atas aktivitas di akunmu.</li><li>Data profil harus benar. Untuk berjualan wajib verifikasi KTP.</li><li>Satu orang tidak boleh memakai KTP orang lain.</li></ul>
+  <h4>3. Pembayaran (rekening bersama)</h4><ul><li>Pembayaran hanya lewat QRIS resmi PasarRuang di website. Jangan bayar langsung ke penjual atau lewat link di luar website.</li>
+   <li>Dana ditahan PasarRuang dan baru diteruskan ke penjual setelah pembeli menekan "Pesanan Diterima", atau otomatis ${AUTO_DAYS} hari setelah barang dikirim bila tidak ada komplain.</li>
+   <li>Pembayaran di luar PasarRuang tidak dilindungi dan bukan tanggung jawab kami.</li></ul>
+  <h4>4. Kewajiban penjual</h4><ul><li>Foto dan deskripsi harus jujur sesuai barang asli.</li><li>Mengirim barang dan mengisi nomor resi dalam ${PACK_DAYS} hari setelah pesanan dikemas.</li><li>Mengisi rekening pencairan yang benar atas nama sendiri.</li></ul>
+  <h4>5. Barang yang dilarang</h4><p>Narkoba dan obat keras, senjata dan bahan peledak, barang curian, barang palsu/KW, konten dewasa, hewan dilindungi, data pribadi orang lain, akun digital hasil curian, serta barang lain yang melanggar hukum Indonesia. Iklan seperti ini akan diturunkan tanpa pemberitahuan.</p>
+  <h4>6. Komplain & refund</h4><ul><li>Pembeli bisa mengajukan komplain saat pesanan berstatus Dikirim (atau bila belum dikirim lebih dari ${PACK_DAYS} hari).</li><li>Selama komplain, dana ditahan. Admin memeriksa bukti dari kedua pihak lalu memutuskan refund atau menolak komplain.</li><li>Keputusan admin bersifat akhir di dalam platform.</li></ul>
+  <h4>7. Larangan</h4><p>Penipuan, transaksi di luar platform, spam, komplain palsu, kata-kata kasar, dan penyalahgunaan sistem. Pelanggaran bisa berakibat iklan diturunkan atau akun diblokir.</p>
+  <h4>8. Batas tanggung jawab</h4><p>PasarRuang berusaha menjaga keamanan transaksi, tetapi tidak menjamin layanan selalu tanpa gangguan. Kerugian akibat transaksi di luar sistem PasarRuang bukan tanggung jawab kami.</p>
+  <h4>9. Perubahan</h4><p>Ketentuan ini bisa diperbarui. Perubahan penting akan diumumkan lewat notifikasi.</p>
+  <h4>10. Kontak</h4><p>Pertanyaan: WhatsApp admin <b>0858-1502-2066</b>.</p>`],
+ priv:["🔒 Kebijakan Privasi",`<p><small>Berlaku sejak 11 November 2026</small></p>
+  <p>Kami menghormati data pribadimu sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi.</p>
+  <h4>1. Data yang kami kumpulkan</h4><ul><li><b>Akun Google:</b> nama, email, foto profil.</li><li><b>Profil:</b> nama, nomor HP, kota, alamat pengiriman, jenis kelamin, tanggal lahir (opsional).</li>
+   <li><b>Verifikasi penjual:</b> foto KTP dan selfie dengan KTP (diberi watermark), serta data yang terbaca dari KTP.</li><li><b>Transaksi:</b> pesanan, bukti bayar, nomor resi, rekening pencairan/refund, ulasan, chat, laporan.</li></ul>
+  <h4>2. Untuk apa data dipakai</h4><ul><li>Memproses pesanan, pengiriman, pembayaran, pencairan, dan refund.</li><li>Memastikan penjual adalah orang asli (mencegah penipuan).</li><li>Menyelesaikan komplain dan laporan.</li><li>Mengirim notifikasi terkait akunmu.</li></ul>
+  <h4>3. Siapa yang bisa melihat</h4><ul><li><b>Publik:</b> nama toko, foto profil, kota, iklan, ulasan, dan lencana terverifikasi.</li><li><b>Lawan transaksi:</b> nama dan alamat pengiriman pembeli terlihat oleh penjualnya.</li>
+   <li><b>Admin saja:</b> foto KTP, selfie, rekening, laporan.</li><li>Data disimpan di Google Firebase. Kami <b>tidak menjual</b> data ke pihak lain.</li></ul>
+  <h4>4. Berapa lama disimpan</h4><ul><li>Foto KTP dan selfie <b>dihapus</b> setelah verifikasi ditolak, dan dapat dihapus atas permintaan setelah disetujui.</li><li>Data transaksi disimpan selama diperlukan untuk riwayat pesanan dan penyelesaian sengketa.</li></ul>
+  <h4>5. Hak kamu</h4><p>Kamu berhak melihat, memperbaiki, dan meminta penghapusan data serta akunmu. Sebagian data bisa diubah sendiri di menu Profil. Untuk penghapusan, hubungi admin.</p>
+  <h4>6. Keamanan</h4><p>Akses data dibatasi dengan aturan keamanan database. Tetap jaga akun Google-mu dan jangan bagikan kode OTP kepada siapa pun, termasuk yang mengaku admin.</p>
+  <h4>7. Kontak</h4><p>WhatsApp admin <b>0858-1502-2066</b>.</p>`],
+ help:["🛟 Bantuan & Komplain",`<h4>Barang bermasalah?</h4><ol><li>Buka <b>Pesanan Saya</b> → pilih pesanan berstatus <b>Dikirim</b>.</li><li>Ketuk <b>⚠️ Ajukan Komplain / Minta Refund</b>.</li><li>Pilih alasan, jelaskan, upload foto bukti, dan isi rekening untuk refund.</li><li>Penjual akan menanggapi, lalu admin memutuskan.</li></ol>
+  <h4>Hasil komplain</h4><ul><li><b>Disetujui:</b> uang dikembalikan ke rekeningmu dan bukti transfer muncul di detail pesanan.</li><li><b>Ditolak:</b> pesanan selesai dan dana diteruskan ke penjual.</li></ul>
+  <h4>Tips</h4><ul><li>Rekam video saat membuka paket — ini bukti terkuat.</li><li>Jangan tekan "Pesanan Diterima" sebelum barang dicek.</li><li>Pesanan otomatis selesai ${AUTO_DAYS} hari setelah dikirim jika tidak ada komplain.</li></ul>
+  <h4>Menemukan penipu?</h4><p>Ketuk <b>🚩 Laporkan</b> di halaman iklan atau toko. Laporanmu rahasia.</p>`]};
+function openLegal(k){const L=LEGAL[k]||LEGAL.sk;close_("login");document.getElementById("legalBox").innerHTML=`<h3>${L[0]}</h3>
+  <div class="otabs" style="margin:0">${[["sk","S&K"],["priv","Privasi"],["help","Bantuan"]].map(([q,t])=>`<button class="${q===k?"on":""}" onclick="openLegal('${q}')">${t}</button>`).join("")}</div>${L[1]}`;
+  document.getElementById("legal").classList.add("open");document.getElementById("legalBox").scrollTop=0;}
 async function ordAct(id,fn,okMsg){try{await fn();toast(okMsg);}catch(e){console.error(e);toast("Gagal: "+(e.code||e.message));}}
 function ordCancel(id,who){if(!confirmTap("c"+id))return;const why=who==="buyer"?"Dibatalkan pembeli":(prompt("Alasan pembatalan:",who==="seller"?"Stok habis":"")||"Dibatalkan "+(who==="seller"?"penjual":"admin"));
   const o=findOrder(id);ordAct(id,async()=>{await FB.orderStatus(id,"dibatalkan",{cancelReason:why.slice(0,120)});if(o){const msg=`"${o.title}" dibatalkan: ${why.slice(0,100)}`;notif(o.buyerUid,"cancel","Pesanan dibatalkan",msg,"order:"+id);notif(o.sellerKey,"cancel","Pesanan dibatalkan",msg,"order:"+id);}},"Pesanan dibatalkan");}
@@ -1254,7 +1393,7 @@ function drawShop(){const k=SHOP_K,items=shopItems(k),act=items.filter(x=>!x.sol
     <div style="min-width:0"><b>${esc(name)}</b>${k==="admin"?` <span class="vbadge">🏪 Official</span>`:vbadge(k)}
     <small>📍 ${esc(cities.slice(0,2).join(", ")||"Indonesia")} · aktif sejak ${new Date(since).toLocaleDateString("id-ID",{month:"short",year:"numeric"})}</small></div></div>
    <div class="sstats"><div><b>${act.length}</b><small>Produk</small></div><div><b>${sold.length}</b><small>Terjual</small></div><div>${(st=>st?`<b>⭐ ${st.avg.toFixed(1)}</b><small>${st.n} ulasan</small>`:`<b>—</b><small>Belum ada ulasan</small>`)(revStat(k))}</div></div>
-   <div class="sbtns">${act[0]?`<button class="btn wa" onclick="close_('shop');startChat('${act[0].id}')">💬 Chat</button>`:""}<button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="copyTxt('${link}','Link toko disalin')">🔗 Bagikan toko</button></div>
+   <div class="sbtns">${act[0]?`<button class="btn wa" onclick="close_('shop');startChat('${act[0].id}')">💬 Chat</button>`:""}<button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="copyTxt('${link}','Link toko disalin')">🔗 Bagikan toko</button>${k==="admin"||(USER&&USER.uid===k)?"":`<button class="rptlink" style="align-self:center" onclick="openReport('shop','${k}')">🚩 Laporkan</button>`}</div>
    <div class="otabs" style="padding:0 16px"><button class="${SHOP_TAB==="all"?"on":""}" onclick="SHOP_TAB='all';drawShop()">Produk${act.length?`<b style="background:var(--brand)">${act.length}</b>`:""}</button><button class="${SHOP_TAB==="sold"?"on":""}" onclick="SHOP_TAB='sold';drawShop()">Terjual${sold.length?`<b style="background:#44515c">${sold.length}</b>`:""}</button><button class="${SHOP_TAB==="rev"?"on":""}" onclick="SHOP_TAB='rev';drawShop()">⭐ Ulasan${(REVS[k]||[]).length?`<b style="background:#ffb400;color:#3b2a00">${REVS[k].length}</b>`:""}</button></div>
    ${SHOP_TAB==="rev"?(()=>{const rs=REVS[k]||[],mine=USER&&(USER.uid===k||(k==="admin"&&isAdmin()));const st=revStat(k);
       return `<div style="padding:12px 16px 18px;display:flex;flex-direction:column;gap:10px">${st?`<div class="rsum"><b>${st.avg.toFixed(1)}</b><div>${stars(st.avg,20)}<small>${st.n} ulasan · ${[5,4,3,2,1].map(i=>`${i}★ ${rs.filter(r=>r.rating===i).length}`).join(" · ")}</small></div></div>`:""}
@@ -1368,6 +1507,10 @@ try{
     async getAvatar(uid){ const d=await F.getDoc(F.doc(db,"avatars",uid)); return d.exists()?d.data().img:""; },
     async saveAvatar(img){ const u=auth.currentUser; await F.setDoc(F.doc(db,"avatars",u.uid),{img,at:F.serverTimestamp()}); },
     async removeAvatar(){ const u=auth.currentUser; await F.deleteDoc(F.doc(db,"avatars",u.uid)); },
+    async sellerReply(oid,t){ await F.updateDoc(F.doc(db,"orders",oid),{sellerReply:t,updatedAt:F.serverTimestamp()}); },
+    async addReport(d){ const u=auth.currentUser; await F.addDoc(F.collection(db,"reports"),{...d,reporter:u.uid,reporterName:(PROFILE&&PROFILE.name)||u.displayName||"",at:F.serverTimestamp()}); },
+    async reports(){ const r=await F.getDocs(F.query(F.collection(db,"reports"),F.orderBy("at","desc"),F.limit(100))); return r.docs.map(d=>({id:d.id,...d.data(),at:tm(d.data().at)})); },
+    async delReport(id){ await F.deleteDoc(F.doc(db,"reports",id)); },
     async getUser(uid){ const d=await F.getDoc(F.doc(db,"users",uid)); return d.exists()?d.data():null; },
     async setUserPay(uid,d){ await F.setDoc(F.doc(db,"users",uid),d,{merge:true}); },
     async payoutConfirm(oid){ await F.updateDoc(F.doc(db,"orders",oid),{"payout.confirmed":true,"payout.confirmedAt":Date.now(),updatedAt:F.serverTimestamp()}); },
