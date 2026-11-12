@@ -506,7 +506,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 29 · foto banner diam</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 30 · link biasa</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -770,7 +770,7 @@ setTimeout(cartBadge,0);
 function toggleFav(id){id=String(id);fav.has(id)?fav.delete(id):(fav.add(id),toast("Disimpan ke favorit"));save();render();}
 // ===== BAGIKAN PRODUK =====
 const hashOf=x=>"produk-"+(x.remote?"f-"+x.fid:x.id);
-const SHARE_BASE="https://twilight-shape-da5e.farizzamzami075.workers.dev";
+const SHARE_BASE="";
 const linkOf=x=>SHARE_BASE?SHARE_BASE+"/p/"+hashOf(x).replace(/^produk-/,""):location.origin+location.pathname+"#"+hashOf(x);
 const shareText=x=>`🛍️ ${x.title}\n💰 ${pr(x)}\n📍 ${x.city}\n\nLihat di ${STORE_NAME}:`;
 function setHash(h){try{history.replaceState(null,"",h?("#"+h):(location.pathname+location.search));}catch(e){}}
