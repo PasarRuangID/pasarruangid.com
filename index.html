@@ -506,7 +506,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 30 · link biasa</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 32 · bayar 7 menit</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -706,7 +706,7 @@ function cartBadge(){const el=document.getElementById("cartBadge");if(!el)return
 function addCart(id){const x=byId(id);if(!x||x.sold||!x.price||x.noBuy){toast("Barang ini tidak bisa dibeli lewat keranjang");return;}
   if(USER&&sellerKey(x)===USER.uid){toast("Ini barangmu sendiri 🙂");return;}
   const c=CART.find(i=>String(i.id)===String(id)),st=Math.max(1,stockOf(x));
-  if(c){if(c.qty>=st){toast(`Stok cuma ${st} — sudah semua di keranjang`);return;}c.qty++;}else CART.push({id:String(id),qty:1,at:Date.now()});
+  if(c){if(c.qty>=st){toast("Jumlah maksimal untuk barang ini sudah di keranjang");return;}c.qty++;}else CART.push({id:String(id),qty:1,at:Date.now()});
   cartSave();toast("🛒 Masuk keranjang");const b=document.querySelector(".navb #cartBadge");if(b){b.classList.remove("bump");void b.offsetWidth;b.classList.add("bump");}}
 function cartDel(id,silent){CART=CART.filter(i=>String(i.id)!==String(id));cartSave();if(!silent&&document.getElementById("cart").classList.contains("open"))drawCart();}
 function cartQty(id,d){const c=CART.find(i=>String(i.id)===String(id)),x=byId(id);if(!c||!x)return;c.qty=Math.min(Math.max(1,stockOf(x)),Math.max(1,c.qty+d));cartSave();drawCart();}
@@ -720,7 +720,7 @@ function drawCart(){const box=document.getElementById("cartBox"),grp={},na=[];
      return `<div class="cgrp"><b>🏪 ${esc(g.name||"Penjual")}${k==="admin"?` <span class="vbadge">Official</span>`:vbadge(k)}</b>
       ${g.lines.map(({c,x})=>`<div class="cline"><div class="lth" onclick="close_('cart');openDetail('${x.id}')">${x.thumb?`<img src="${x.thumb}">`:pic(x)}</div><div class="ci"><b onclick="close_('cart');openDetail('${x.id}')">${esc(x.title)}</b><span style="color:var(--brand-d);font-weight:700">${rp(x.price)}</span>
         <div class="cr"><div class="qty"><button onclick="cartQty('${x.id}',-1)" ${c.qty<=1?"disabled":""}>−</button><span>${c.qty}</span><button onclick="cartQty('${x.id}',1)" ${c.qty>=stockOf(x)?"disabled":""}>+</button></div>
-        <small style="color:var(--muted)">${stockOf(x)>1?`Stok ${stockOf(x)}`:"Sisa 1"}</small><button class="rm" onclick="cartDel('${x.id}')">Hapus</button></div></div></div>`).join("")}
+        <button class="rm" onclick="cartDel('${x.id}')">Hapus</button></div></div></div>`).join("")}
       <div class="ctot"><span>Subtotal (${n} barang)</span><span>${rp(st)}</span></div>
       <button class="btn buy" onclick="cartCheckout('${k}')">Checkout ${n} barang</button></div>`;}).join("")}
    ${na.length?`<div class="cgrp"><b>Tidak tersedia</b>${na.map(c=>{const x=byId(c.id);return `<div class="cline na"><div class="lth">📦</div><div class="ci"><b>${esc(x?x.title:"Barang sudah dihapus")}</b><div class="cr"><small>${x&&x.sold?"Sudah terjual / stok habis":"Tidak tersedia"}</small><button class="rm" onclick="cartDel('${c.id}')">Hapus</button></div></div></div>`;}).join("")}</div>`:""}`;}
@@ -795,7 +795,7 @@ function openDetail(id){
     <div class="d-body">
       <div class="d-price">${pr(x)}</div>
       <h3>${esc(x.title)}</h3>
-      <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${!x.sold&&stockOf(x)>1?`<span class="stockchip">📦 Stok ${stockOf(x)}</span>`:""}${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
+      <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
       <div class="seller" style="cursor:pointer" onclick="openShop('${x.remote?x.uid:"admin"}')"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div style="flex:1;min-width:0"><b>${esc(x.seller)}${vbadge(x.uid)}</b><small>${x.remote?"Penjual PasarRuang":"PasarRuang Official"} · ${shopCount(x.remote?x.uid:"admin")} produk</small><small id="sellRate">${(st=>st?`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`:"")(revStat(x.remote?x.uid:"admin"))}</small></div><span class="visit">Kunjungi<br>toko ›</span></div>
@@ -969,7 +969,7 @@ function drawPay(){setTimeout(()=>{if(P.step===2)startPayTimer();},0);
       <div style="text-align:center">Transfer <b>tepat</b> sejumlah<div class="amount">${rp(total())}</div>
       <button class="copy" onclick="copyTxt('${total()}','Nominal disalin')">Salin nominal</button></div>
       ${pay}
-      <div class="waitpay"><span class="pulse-dot"></span>Selesaikan pembayaran & upload bukti dalam <b id="payTimer" style="white-space:nowrap">05:00</b></div><small style="color:var(--muted);text-align:center">Lewat 5 menit, pesanan otomatis dibatalkan.</small>
+      <div class="waitpay"><span class="pulse-dot"></span>Selesaikan pembayaran & upload bukti dalam <b id="payTimer" style="white-space:nowrap">07:00</b></div><small style="color:var(--muted);text-align:center">Lewat 7 menit, pesanan otomatis dibatalkan.</small>
       <div class="warn">⚠️ Pastikan nominal sama persis sampai 3 digit terakhir (kode unik ${P.code}) agar pembayaranmu cepat dicek.</div>
       <label class="proof" for="p-proof">📎 Unggah bukti transfer ${P.oid?"<b>(wajib)</b>":"(opsional)"}${P.proof?`<img src="${P.proof}">`:''}</label>
       <input type="file" id="p-proof" accept="image/*" hidden onchange="loadProof(this)">
@@ -1029,10 +1029,10 @@ function startPayTimer(){clearInterval(payTick);const f=()=>{const el=document.g
 async function payTimeout(){if(P.step!==2)return;const oid=P.oid;P.step=9;
   if(oid&&window.FB){try{await FB.orderStatus(oid,"dibatalkan",{cancelReason:TIMEOUT_REASON});}catch(e){console.warn(e);}}
   document.getElementById("payBox").innerHTML=`<div class="oempty" style="padding:30px 10px"><div>⏰</div><b style="font-size:18px;color:var(--ink)">Waktu pembayaran habis</b>
-    <p style="color:var(--muted);margin:8px 0 16px">Pesanan dibatalkan otomatis karena lewat 5 menit. Silakan pesan ulang.</p>
+    <p style="color:var(--muted);margin:8px 0 16px">Pesanan dibatalkan otomatis karena lewat 7 menit. Silakan pesan ulang.</p>
     <p class="warn" style="text-align:left;font-size:14px;margin:0">Sudah terlanjur bayar? Jangan khawatir — chat admin di WhatsApp <b>0858-1502-2066</b> dengan nomor pesanan <b>${esc(P.orderId||"")}</b> dan bukti transfer. Admin akan memulihkan pesananmu.</p>
     <button class="btn buy" style="margin-top:14px" onclick="close_('pay')">Tutup</button></div>`;}
-const TIMEOUT_REASON="Waktu bayar habis (5 menit)";
+const TIMEOUT_REASON="Waktu bayar habis (7 menit)";const isTimeout=o=>String(o.cancelReason||"").startsWith("Waktu bayar habis");
 let AUTO_CANCEL={};
 function autoCancel(list,canDo){if(!window.FB||!USER)return;list.filter(o=>expired(o)&&canDo(o)&&!AUTO_CANCEL[o.id]&&!(P&&P.oid===o.id&&P.step===2)).forEach(o=>{AUTO_CANCEL[o.id]=1;
   FB.orderStatus(o.id,"dibatalkan",{cancelReason:TIMEOUT_REASON}).catch(e=>console.warn("autocancel",e));});}
@@ -1201,7 +1201,7 @@ const COURIERS=["JNE","J&T Express","SiCepat","AnterAja","POS Indonesia","Ninja 
 let BUY=[],SELL=[],AORD=[],ORD_CUR=null,ORD_ROLE="buy",OTAB={buy:"menunggu_bayar",sell:"dikemas"};
 const obadge=st=>{const o=OST[st]||OST.menunggu_bayar;return `<span class="badge" style="background:${o[1]};color:${o[2]}">${o[0]}</span>`;};
 const fmtDT=t=>t?new Date(t).toLocaleString("id-ID",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
-const PAY_MS=5*60e3;const payStart=o=>Math.max(o.createdAt||0,tlTime(o,"menunggu_bayar"));const expired=o=>o.status==="menunggu_bayar"&&payStart(o)>0&&Date.now()-payStart(o)>PAY_MS;
+const PAY_MS=7*60e3;const payStart=o=>Math.max(o.createdAt||0,tlTime(o,"menunggu_bayar"));const expired=o=>o.status==="menunggu_bayar"&&payStart(o)>0&&Date.now()-payStart(o)>PAY_MS;
 function trackerHtml(o){if(o.status==="dibatalkan")return `<div class="otl cancel">✖️ Pesanan dibatalkan${o.cancelReason?` — ${esc(o.cancelReason)}`:""}</div>`;
   if(o.status==="komplain")return `<div class="otl cancel" style="background:#fff1e6;color:#b54708">⚠️ Pesanan sedang dalam komplain — admin akan memutuskan</div>`;
   const k=OFLOW.indexOf(o.status),tl={};(o.timeline||[]).forEach(e=>{tl[e.s]=e.t;});
@@ -1230,15 +1230,15 @@ function drawOrders(){const role=ORD_ROLE,list=role==="buy"?BUY:SELL,box=documen
 function openOrder(id){const o=findOrder(id);if(!o){toast("Pesanan tidak ditemukan");return;}ORD_CUR=id;close_("ords");document.getElementById("ord").classList.add("open");drawOrder(o);}
 function drawOrder(o){const me=USER?USER.uid:"",isBuyer=o.buyerUid===me,isSeller=o.sellerKey===me||(o.sellerKey==="admin"&&isAdmin()),adm=isAdmin();
   const st=OST[o.status]||OST.menunggu_bayar;let act="";
-  if(isBuyer&&o.status==="menunggu_bayar"){act+=expired(o)?`<div class="warn">Batas waktu bayar (5 menit) sudah lewat. Pesanan akan dibatalkan otomatis.</div>`:`<button class="btn buy" onclick="resumePay('${o.id}')">💳 Bayar Sekarang</button>`;
+  if(isBuyer&&o.status==="menunggu_bayar"){act+=expired(o)?`<div class="warn">Batas waktu bayar (7 menit) sudah lewat. Pesanan akan dibatalkan otomatis.</div>`:`<button class="btn buy" onclick="resumePay('${o.id}')">💳 Bayar Sekarang</button>`;
     act+=`<button class="tab" onclick="ordCancel('${o.id}','buyer')">Batalkan Pesanan</button>`;}
   if(isBuyer&&o.status==="menunggu_verifikasi")act+=`<div class="waitpay"><span class="pulse-dot"></span>Admin sedang mengecek pembayaranmu</div>`;
   if(isBuyer&&o.status==="dikemas")act+=`<div class="waitpay"><span class="pulse-dot"></span>Penjual sedang menyiapkan barangmu</div>`+(slowPack(o)?`<button class="tab" onclick="openComplaint('${o.id}')">⚠️ Ajukan Komplain (belum dikirim)</button>`:"");
   if(isBuyer&&o.status==="dikirim")act+=`<button class="btn buy" onclick="ordDone('${o.id}')">✅ Pesanan Diterima</button><small style="color:var(--muted);text-align:center">Ketuk hanya jika barang sudah kamu terima & sesuai. Dana akan diteruskan ke penjual.</small>
       <button class="tab" style="border-color:#f5c2c0;color:#b42318" onclick="openComplaint('${o.id}')">⚠️ Ajukan Komplain / Minta Refund</button><div class="autonote">${autoLeft(o)}</div>`;
   if(o.status==="komplain"||o.complaint)act+=complaintBox(o,isBuyer,isSeller,adm);
-  if(isBuyer&&o.status==="dibatalkan"&&o.cancelReason===TIMEOUT_REASON)act+=`<div class="warn">Sudah terlanjur bayar? Chat admin di WhatsApp <b>0858-1502-2066</b> dengan nomor pesanan <b>${esc(o.orderNo||"")}</b> + bukti transfer.</div>`;
-  if(adm&&o.status==="dibatalkan"&&o.cancelReason===TIMEOUT_REASON)act+=`<div class="admbox"><b>⏰ Dibatalkan karena waktu bayar habis</b><div>Kalau di mutasi QRIS ternyata masuk <b>${rp(o.total)}</b> (kode unik ${o.code}), pulihkan pesanan ini.</div><button class="btn buy" style="background:var(--brand)" onclick="ordRestore('${o.id}')">↩️ Pembeli sudah bayar — lanjut Dikemas</button></div>`;
+  if(isBuyer&&o.status==="dibatalkan"&&isTimeout(o))act+=`<div class="warn">Sudah terlanjur bayar? Chat admin di WhatsApp <b>0858-1502-2066</b> dengan nomor pesanan <b>${esc(o.orderNo||"")}</b> + bukti transfer.</div>`;
+  if(adm&&o.status==="dibatalkan"&&isTimeout(o))act+=`<div class="admbox"><b>⏰ Dibatalkan karena waktu bayar habis</b><div>Kalau di mutasi QRIS ternyata masuk <b>${rp(o.total)}</b> (kode unik ${o.code}), pulihkan pesanan ini.</div><button class="btn buy" style="background:var(--brand)" onclick="ordRestore('${o.id}')">↩️ Pembeli sudah bayar — lanjut Dikemas</button></div>`;
   if(adm&&!isBuyer)act+=`<div style="display:flex;gap:6px;flex-wrap:wrap">${o.buyerUid?`<button class="tab" onclick="admBan('${o.buyerUid}','${esc(o.buyerName||"").replace(/'/g,"")}')">🚫 Blokir pembeli</button>`:""}${o.sellerKey&&o.sellerKey!=="admin"?`<button class="tab" onclick="admBan('${o.sellerKey}','${esc(o.sellerName||"").replace(/'/g,"")}')">🚫 Blokir penjual</button>`:""}</div>`;
   if(o.refund&&o.refund.status==="paid")act+=`<div class="obox"><b>💸 Refund ke pembeli</b><div>${rp(o.refund.amount||0)} sudah dikembalikan ke ${esc(o.refund.acc||"rekening pembeli")}</div><small>${fmtDT(o.refund.at)}</small>${o.refund.proof?`<img src="${o.refund.proof}" style="max-width:100%;border-radius:8px;margin-top:6px">`:""}</div>`;
   if(isSeller&&o.status==="dikemas")act+=`<div class="shipf"><b>Kirim pesanan</b><select id="o-cour">${COURIERS.map(c=>`<option>${c}</option>`).join("")}</select>
