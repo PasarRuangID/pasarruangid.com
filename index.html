@@ -508,7 +508,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 47 · acc Mall Ori saat verifikasi KTP</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 48 · badge Mall Ori di bawah logo toko</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -1701,7 +1701,7 @@ function drawShop(){const k=SHOP_K,items=shopItems(k),act=items.filter(x=>!x.sol
   const cities=[...new Set(items.map(x=>x.city).filter(c=>c&&c!=="Tanya penjual"))];
   const since=items.length?Math.min(...items.map(x=>x.ts||Date.now())):Date.now();
   const list=SHOP_TAB==="sold"?sold:act;const link=SHARE_BASE?SHARE_BASE+"/p/t-"+k:location.origin+location.pathname+"#toko-"+k;
-  document.getElementById("shopBox").innerHTML=`<div class="shead"><div class="sava">${k==="admin"?document.querySelector('.logo .mark').innerHTML:avaHtml(k,name)}</div>
+  document.getElementById("shopBox").innerHTML=`<div class="shead"><div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0"><div class="sava">${k==="admin"?document.querySelector('.logo .mark').innerHTML:avaHtml(k,name)}</div>${isMall(k)?`<span class="mbadge" style="background:#fff;color:#1f3f7a">Mall Ori</span>`:""}</div>
     <div style="min-width:0"><b>${esc(name)}</b>${k==="admin"?` <span class="vbadge">🏪 Official</span>`:vbadge(k)}${mbadge(k)}
     <small>📍 ${esc(cities.slice(0,2).join(", ")||"Indonesia")} · aktif sejak ${new Date(since).toLocaleDateString("id-ID",{month:"short",year:"numeric"})}</small></div></div>
    <div class="sstats" style="grid-template-columns:repeat(${(FOL[k]||0)>=FOL_MIN?4:3},1fr)"><div><b>${act.length}</b><small>Produk</small></div>${(FOL[k]||0)>=FOL_MIN?`<div><b>${FOL[k].toLocaleString("id-ID")}</b><small>Pengikut</small></div>`:""}<div><b>${sold.length}</b><small>Terjual</small></div><div>${(st=>st?`<b>⭐ ${st.avg.toFixed(1)}</b><small>${st.n} ulasan</small>`:`<b>—</b><small>Belum ada ulasan</small>`)(revStat(k))}</div></div>
