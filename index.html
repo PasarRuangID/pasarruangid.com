@@ -253,6 +253,7 @@ input[type=date]{min-height:42px}
 .kycb{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:22px;margin-top:4px}
 .kycb div{flex:1;font-size:14px}.kycb small{display:block;color:var(--muted);font-size:12px}.kycb.ok{background:#e7f6f1;border-color:#bfe6d8}.kycb.wait{background:#eaf2ff;border-color:#cfe0ff}
 .consent{display:flex;gap:8px;align-items:flex-start;font-weight:400!important;font-size:13px;background:var(--bg);border-radius:10px;padding:10px}.consent input{width:auto!important;margin-top:2px}
+.szwrap{margin:12px 0}.szwrap>b{display:block;margin-bottom:7px;font-size:13.5px}.szrow{display:flex;flex-wrap:wrap;gap:8px}.szb{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 15px;font:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer}.szb.on{border-color:var(--brand);color:var(--brand-d);background:#e7f6f1}
 .mbadge{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:#1f3f7a;border-radius:6px;padding:1px 6px;vertical-align:middle;white-space:nowrap}.mtag{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:#1f3f7a;border-radius:4px;padding:0 5px;margin-right:4px;vertical-align:1px}.mallbox{font-size:13px;background:#eef3fc;color:#1f3f7a;border:1px solid #c9d8f3;border-radius:10px;padding:9px 11px}
 .vbadge{display:inline-block;font-size:11px;font-weight:700;color:#0b6a53;background:#e7f6f1;border-radius:6px;padding:1px 6px;vertical-align:middle}
 input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
@@ -508,7 +509,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 50 · foto produk maks 8</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 53 · ukuran (banyak varian)</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -534,10 +535,11 @@ p,b,small,div,span{overflow-wrap:anywhere}
       <label>Kondisi<select id="s-cond"><option>Bekas</option><option>Baru</option></select></label>
     </div>
     <div class="row">
-      <label>Kategori<select id="s-cat"></select></label>
+      <label>Kategori<select id="s-cat" onchange="toggleSizeField()"></select></label>
       <label>Kota<input id="s-city" list="kotaDL2" required placeholder="cth. Semarang" autocomplete="off"></label>
     </div>
     <label>Stok (jumlah barang)<input id="s-stock" type="number" min="1" max="9999" value="1" inputmode="numeric"><small style="color:var(--muted);font-weight:400">Barang bekas biasanya 1. Stok berkurang otomatis tiap ada yang beli.</small></label>
+    <div id="s-sizes-wrap" style="display:none"><label>Ukuran / varian<input id="s-sizes" placeholder="cth. 39, 40, 41 atau S, M, L — pisahkan koma"><small style="color:var(--muted);font-weight:400">Khusus baju & sepatu. Pisahkan tiap ukuran dengan koma. Kosongkan kalau tidak perlu.</small></label></div>
     <label>Deskripsi<textarea id="s-desc" rows="3" placeholder="Kondisi, kelengkapan, alasan dijual…"></textarea></label>
     <label>Nomor WhatsApp kamu<input id="s-wa" required placeholder="0812xxxxxxx" inputmode="tel"></label>
     <small style="color:var(--muted)">Nomor WhatsApp hanya untuk admin (tidak ditampilkan ke pembeli). Pembeli akan chat kamu langsung di website — cek menu 💬 Chat.</small>
@@ -660,7 +662,7 @@ function save(){try{localStorage.setItem("pr_fav",JSON.stringify([...fav]))}catc
 const pic=(x,cls="")=>{const u=x.imgs?x.imgs[0]:(x.img||x.thumb);return u?`<img src="${u}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:(x.icon||"📦");};
 const pr=x=>x.price?rp(x.price)+(x.nego?" (nego)":""):(x.priceText||"Tanya harga");
 const rp=n=>"Rp"+Number(n).toLocaleString("id-ID");
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc=s=>String(s).replace(/[\uFFFC\uFEFF\u200B-\u200D\u2060]/g,"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ago=x=>{const d=Math.floor((Date.now()-(x.ts||Date.now()))/864e5);return d<=0?"Hari ini":d===1?"Kemarin":d+" hari lalu";};
 const nfoto=x=>x.imgs?x.imgs.length:(x.nphotos||0);
 
@@ -708,8 +710,8 @@ function cartSave(){try{localStorage.setItem("pr_cart",JSON.stringify(CART));}ca
 function cartBadge(){const el=document.getElementById("cartBadge");if(!el)return;const n=CART.reduce((a,c)=>a+(c.qty||1),0);el.hidden=!n;el.textContent=n>99?"99+":n;}
 function addCart(id){const x=byId(id);if(!x||x.sold||!x.price||x.noBuy){toast("Barang ini tidak bisa dibeli lewat keranjang");return;}
   if(USER&&sellerKey(x)===USER.uid){toast("Ini barangmu sendiri 🙂");return;}
-  const c=CART.find(i=>String(i.id)===String(id)),st=Math.max(1,stockOf(x));
-  if(c){if(c.qty>=st){toast("Jumlah maksimal untuk barang ini sudah di keranjang");return;}c.qty++;}else CART.push({id:String(id),qty:1,at:Date.now()});
+  const size=SIZEPICK[id]||"";const c=CART.find(i=>String(i.id)===String(id)&&(i.size||"")===size),st=Math.max(1,stockOf(x));
+  if(c){if(c.qty>=st){toast("Jumlah maksimal untuk barang ini sudah di keranjang");return;}c.qty++;}else CART.push({id:String(id),qty:1,size,at:Date.now()});
   cartSave();toast("🛒 Masuk keranjang");const b=document.querySelector(".navb #cartBadge");if(b){b.classList.remove("bump");void b.offsetWidth;b.classList.add("bump");}}
 function cartDel(id,silent){CART=CART.filter(i=>String(i.id)!==String(id));cartSave();if(!silent&&document.getElementById("cart").classList.contains("open"))drawCart();}
 function cartQty(id,d){const c=CART.find(i=>String(i.id)===String(id)),x=byId(id);if(!c||!x)return;c.qty=Math.min(Math.max(1,stockOf(x)),Math.max(1,c.qty+d));cartSave();drawCart();}
@@ -721,13 +723,13 @@ function drawCart(){const box=document.getElementById("cartBox"),grp={},na=[];
    ${keys.length>1?`<small style="color:var(--muted)">Checkout dilakukan per toko — 1 toko = 1 paket & 1 ongkir.</small>`:""}
    ${keys.map(k=>{const g=grp[k],st=g.lines.reduce((a,{c,x})=>a+x.price*c.qty,0),n=g.lines.reduce((a,{c})=>a+c.qty,0);
      return `<div class="cgrp"><b>🏪 ${esc(g.name||"Penjual")}${k==="admin"?` <span class="vbadge">Official</span>`:vbadge(k)}</b>
-      ${g.lines.map(({c,x})=>`<div class="cline"><div class="lth" onclick="close_('cart');openDetail('${x.id}')">${x.thumb?`<img src="${x.thumb}">`:pic(x)}</div><div class="ci"><b onclick="close_('cart');openDetail('${x.id}')">${esc(x.title)}</b><span style="color:var(--brand-d);font-weight:700">${rp(x.price)}</span>
+      ${g.lines.map(({c,x})=>`<div class="cline"><div class="lth" onclick="close_('cart');openDetail('${x.id}')">${x.thumb?`<img src="${x.thumb}">`:pic(x)}</div><div class="ci"><b onclick="close_('cart');openDetail('${x.id}')">${esc(x.title)}</b>${c.size?` <small style="color:var(--muted)">Ukuran ${esc(c.size)}</small>`:""}<span style="color:var(--brand-d);font-weight:700">${rp(x.price)}</span>
         <div class="cr"><div class="qty"><button onclick="cartQty('${x.id}',-1)" ${c.qty<=1?"disabled":""}>−</button><span>${c.qty}</span><button onclick="cartQty('${x.id}',1)" ${c.qty>=stockOf(x)?"disabled":""}>+</button></div>
         <button class="rm" onclick="cartDel('${x.id}')">Hapus</button></div></div></div>`).join("")}
       <div class="ctot"><span>Subtotal (${n} barang)</span><span>${rp(st)}</span></div>
       <button class="btn buy" onclick="cartCheckout('${k}')">Checkout ${n} barang</button></div>`;}).join("")}
    ${na.length?`<div class="cgrp"><b>Tidak tersedia</b>${na.map(c=>{const x=byId(c.id);return `<div class="cline na"><div class="lth">📦</div><div class="ci"><b>${esc(x?x.title:"Barang sudah dihapus")}</b><div class="cr"><small>${x&&x.sold?"Sudah terjual / stok habis":"Tidak tersedia"}</small><button class="rm" onclick="cartDel('${c.id}')">Hapus</button></div></div></div>`;}).join("")}</div>`:""}`;}
-function cartCheckout(k){const ls=CART.filter(c=>{const x=byId(c.id);return x&&!x.sold&&sellerKey(x)===k;}).map(c=>({id:c.id,qty:c.qty}));if(ls.length)openPayLines(ls,true);}
+function cartCheckout(k){const ls=CART.filter(c=>{const x=byId(c.id);return x&&!x.sold&&sellerKey(x)===k;}).map(c=>({id:c.id,qty:c.qty,size:c.size||""}));if(ls.length)openPayLines(ls,true);}
 // ===== FILTER HARGA & KOTA =====
 let FLT={min:null,max:null,avail:false};
 const myCity=()=>(PROFILE&&PROFILE.city)||"";
@@ -788,6 +790,13 @@ function copyLink(id){const x=byId(id);copyTxt(linkOf(x),"Link produk disalin");
 function shareBar(x){const wa=`https://wa.me/?text=${encodeURIComponent(shareText(x)+" "+linkOf(x))}`;
   return `<div class="share"><span>Bagikan:</span><a class="sh wa2" href="${wa}" target="_blank" rel="noopener">WhatsApp</a><button class="sh" onclick="copyLink('${x.id}')">🔗 Salin link</button>${navigator.share?`<button class="sh" onclick="shareNative('${x.id}')">📤 Lainnya</button>`:""}</div>`;}
 let OPEN_ID=null;
+const sizesOf=x=>String(x&&x.sizes||"").split(/[,\n]/).map(z=>z.trim()).filter(Boolean);
+let SIZEPICK={};
+function toggleSizeField(){const w=document.getElementById("s-sizes-wrap"),c=document.getElementById("s-cat");if(w)w.style.display=(c&&c.value==="Fashion")?"":"none";}
+function pickSize(id,z){SIZEPICK[id]=z;document.querySelectorAll('#detailBox .szb').forEach(b=>b.classList.toggle('on',b.dataset.s===z));}
+function needSize(id){const x=byId(id);if(x&&x.cat==="Fashion"&&sizesOf(x).length&&!SIZEPICK[id]){toast("Pilih ukuran dulu");return false;}return true;}
+function buyNow(id){if(!needSize(id))return;openPay(id);}
+function cartAdd(id){if(!needSize(id))return;addCart(id);}
 function openDetail(id){
   const x=byId(id); if(!x) return; OPEN_ID=String(id); setHash(hashOf(x));
   if(x.remote&&!x.imgs&&window.FB){ FB.photos(x.fid).then(im=>{ if(im&&im.length){x.imgs=im; if(OPEN_ID===String(id)&&document.getElementById("detail").classList.contains("open")) openDetail(id);} }).catch(()=>{}); }
@@ -802,9 +811,10 @@ function openDetail(id){
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
       <div class="seller" style="cursor:pointer" onclick="openShop('${x.remote?x.uid:"admin"}')"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div style="flex:1;min-width:0"><b>${esc(x.seller)}${vbadge(x.uid)}${mbadge(mk(x))}</b><small>${x.remote?"Penjual PasarRuang":"PasarRuang Official"} · ${shopCount(x.remote?x.uid:"admin")} produk</small><small id="sellRate">${(st=>st?`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`:"")(revStat(x.remote?x.uid:"admin"))}</small></div><span class="visit">Kunjungi<br>toko ›</span></div>
+      ${(()=>{const ss=x.cat==="Fashion"?sizesOf(x):[];return ss.length&&!x.sold&&x.price&&!x.noBuy?`<div class="szwrap"><b>Pilih ukuran</b><div class="szrow">${ss.map(z=>`<button class="szb${SIZEPICK[x.id]===z?' on':''}" data-s="${esc(z)}" onclick="pickSize('${x.id}','${esc(z).replace(/'/g,"")}')">${esc(z)}</button>`).join("")}</div></div>`:""})()}
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
-        ${x.price&&!x.noBuy&&!x.sold?`<button class="btn cartb" onclick="addCart('${x.id}')" aria-label="Tambah ke keranjang">🛒</button><button class="btn buy" onclick="openPay('${x.id}')">Beli Sekarang</button>`:""}
+        ${x.price&&!x.noBuy&&!x.sold?`<button class="btn cartb" onclick="cartAdd('${x.id}')" aria-label="Tambah ke keranjang">🛒</button><button class="btn buy" onclick="buyNow('${x.id}')">Beli Sekarang</button>`:""}
       </div>
       ${x.remote&&x.status!=="approved"?"":shareBar(x)}
       ${USER&&x.remote&&x.uid===USER.uid?"":`<button class="rptlink" onclick="openReport('listing','${x.id}')">🚩 Laporkan iklan ini</button>`}
@@ -848,7 +858,7 @@ async function submitSell(e){
     const btn=document.getElementById("s-submit");btn.disabled=true;btn.textContent="Mengirim…";
     try{
       await FB.createListing({title:g("s-title").slice(0,100),price:Number(g("s-price"))||null,cond:g("s-cond"),cat:g("s-cat"),city:g("s-city").slice(0,50),
-        desc:g("s-desc").slice(0,2000),wa,seller:g("s-seller").slice(0,60),thumb:PHOTOS[0].thumb,nphotos:PHOTOS.length,stock:Math.min(9999,Math.max(1,Math.round(Number(g("s-stock"))||1)))},PHOTOS.map(p=>p.full));
+        desc:g("s-desc").slice(0,2000),wa,seller:g("s-seller").slice(0,60),sizes:g("s-sizes").slice(0,500),thumb:PHOTOS[0].thumb,nphotos:PHOTOS.length,stock:Math.min(9999,Math.max(1,Math.round(Number(g("s-stock"))||1)))},PHOTOS.map(p=>p.full));
       document.getElementById("sellForm").style.display="none";
       const d=document.getElementById("sellDone");d.style.display="flex";
       d.innerHTML=`<div class="done"><div class="big">⏳</div><b>Iklan terkirim!</b>
@@ -873,7 +883,7 @@ async function submitSell(e){
 // ===== EDIT IKLAN =====
 let EDIT=null;
 function openEdit(fid){if(banGate())return;const x=MY.find(i=>i.fid===fid);if(!x)return;resetSell();EDIT={fid,orig:x};const v=(i,val)=>{document.getElementById(i).value=val??"";};
-  v("s-seller",x.seller);v("s-title",x.title);v("s-price",x.price);document.getElementById("s-pricev").textContent=x.price?rp(x.price):"";v("s-cond",x.cond);v("s-cat",x.cat);v("s-city",x.city);v("s-desc",x.desc);
+  v("s-seller",x.seller);v("s-title",x.title);v("s-price",x.price);document.getElementById("s-pricev").textContent=x.price?rp(x.price):"";v("s-cond",x.cond);v("s-cat",x.cat);v("s-sizes",x.sizes);toggleSizeField();v("s-city",x.city);v("s-desc",x.desc);
   v("s-wa",x.wa?"0"+String(x.wa).replace(/^62/,""):"");v("s-stock",stockOf(x)||1);
   document.getElementById("sellH").textContent="✏️ Edit Iklan";document.querySelector("#sellForm .fee").style.display="none";
   const n=document.getElementById("editNote");n.style.display="block";n.innerHTML=x.status==="approved"?"Ubah <b>harga atau stok saja</b> → iklan tetap tayang.<br>Ubah judul, foto, atau deskripsi → iklan dicek ulang admin dulu (sementara tidak tayang).":x.status==="rejected"?"Iklan ini ditolak. Perbaiki lalu simpan — iklan akan dicek ulang admin.":"Iklan ini masih menunggu dicek admin.";
@@ -882,7 +892,7 @@ function openEdit(fid){if(banGate())return;const x=MY.find(i=>i.fid===fid);if(!x
 async function saveEdit(){const g=i=>document.getElementById(i).value.trim(),x=EDIT.orig;
   const price=Number(g("s-price"))||null;if(price&&price<10000&&!priceOk&&price!==x.price){priceOk=true;toast(`Harga ${rp(price)}? Kalau maksudnya ${rp(price*1000)}, tulis ${price*1000}. Ketuk Simpan lagi kalau sudah benar.`);return false;}
   const wa=normWa(g("s-wa"));if(wa.length<10||wa.length>15){toast("Nomor WhatsApp tidak valid");return false;}
-  const d={title:g("s-title").slice(0,100),price,cond:g("s-cond"),cat:g("s-cat"),city:g("s-city").slice(0,50),desc:g("s-desc").slice(0,2000),wa,seller:g("s-seller").slice(0,60),stock:Math.min(9999,Math.max(0,Math.round(Number(g("s-stock"))||0)))};
+  const d={title:g("s-title").slice(0,100),price,cond:g("s-cond"),cat:g("s-cat"),city:g("s-city").slice(0,50),desc:g("s-desc").slice(0,2000),wa,seller:g("s-seller").slice(0,60),sizes:g("s-sizes").slice(0,500),stock:Math.min(9999,Math.max(0,Math.round(Number(g("s-stock"))||0)))};
   const patch={};Object.keys(d).forEach(k=>{if((d[k]??null)!==(x[k]??null))patch[k]=d[k];});
   if(PHOTOS.length){patch.thumb=PHOTOS[0].thumb;patch.nphotos=PHOTOS.length;}
   if(!Object.keys(patch).length){toast("Belum ada yang diubah");return false;}
@@ -894,9 +904,9 @@ async function saveEdit(){const g=i=>document.getElementById(i).value.trim(),x=E
       <button class="btn buy" onclick="close_('sell');openMine()">Lihat Iklan Saya</button>`;
     FB.refresh();}catch(err){console.error(err);toast("Gagal menyimpan: "+(err.code||err.message));}
   btn.disabled=false;btn.textContent="💾 Simpan Perubahan";return false;}
-function resetSell(){priceOk=false;EDIT=null;SEDIT=null;document.getElementById("sellH").textContent="Pasang Iklan";document.getElementById("editNote").style.display="none";document.getElementById("s-submit").textContent="Kirim Iklan";document.querySelector("#sellForm .fee").style.display="";document.getElementById("sellForm").reset();document.getElementById("s-pricev").textContent="";PHOTOS=[];document.getElementById("s-prev").innerHTML="📷 Ketuk untuk pilih foto";document.getElementById("sellForm").style.display="flex";document.getElementById("sellDone").style.display="none";fillSellFromProfile();}
+function resetSell(){priceOk=false;EDIT=null;SEDIT=null;setTimeout(toggleSizeField,0);document.getElementById("sellH").textContent="Pasang Iklan";document.getElementById("editNote").style.display="none";document.getElementById("s-submit").textContent="Kirim Iklan";document.querySelector("#sellForm .fee").style.display="";document.getElementById("sellForm").reset();document.getElementById("s-pricev").textContent="";PHOTOS=[];document.getElementById("s-prev").innerHTML="📷 Ketuk untuk pilih foto";document.getElementById("sellForm").style.display="flex";document.getElementById("sellDone").style.display="none";fillSellFromProfile();}
 function openStaticEdit(id){ if(!isAdmin()){toast("Khusus admin");return;} if(banGate())return; const x=byId(id); if(!x)return; resetSell(); SEDIT={id,orig:x}; const v=(i,val)=>{document.getElementById(i).value=val??"";};
-  v("s-seller",x.seller||STORE_NAME); v("s-title",x.title); v("s-price",x.price); document.getElementById("s-pricev").textContent=x.price?rp(x.price):""; v("s-cond",x.cond); v("s-cat",x.cat); v("s-city",x.city); v("s-desc",x.desc);
+  v("s-seller",x.seller||STORE_NAME); v("s-title",x.title); v("s-price",x.price); document.getElementById("s-pricev").textContent=x.price?rp(x.price):""; v("s-cond",x.cond); v("s-cat",x.cat);v("s-sizes",x.sizes);toggleSizeField(); v("s-city",x.city); v("s-desc",x.desc);
   v("s-wa",x.wa?"0"+String(x.wa).replace(/^62/,""):""); v("s-stock",stockOf(x)||1);
   document.getElementById("sellH").textContent="✏️ Edit Produk Bawaan"; document.querySelector("#sellForm .fee").style.display="none";
   const n=document.getElementById("editNote"); n.style.display="block"; n.innerHTML="Produk bawaan web. Perubahan <b>langsung tayang</b> untuk semua pengunjung (tanpa cek admin).";
@@ -904,7 +914,7 @@ function openStaticEdit(id){ if(!isAdmin()){toast("Khusus admin");return;} if(ba
   document.getElementById("s-submit").textContent="💾 Simpan Perubahan"; close_("mine"); document.getElementById("sell").classList.add("open"); }
 async function saveStaticEdit(){ const g=i=>document.getElementById(i).value.trim(),x=SEDIT.orig;
   const price=Number(g("s-price"))||null; if(price&&price<10000&&!priceOk&&price!==x.price){priceOk=true;toast(`Harga ${rp(price)}? Kalau maksudnya ${rp(price*1000)}, tulis ${price*1000}. Ketuk Simpan lagi kalau sudah benar.`);return false;}
-  const patch={title:g("s-title").slice(0,100),price,cond:g("s-cond"),city:g("s-city").slice(0,50),desc:g("s-desc").slice(0,2000),seller:g("s-seller").slice(0,60)};
+  const patch={title:g("s-title").slice(0,100),price,cond:g("s-cond"),cat:g("s-cat"),city:g("s-city").slice(0,50),desc:g("s-desc").slice(0,2000),seller:g("s-seller").slice(0,60),sizes:g("s-sizes").slice(0,500)};
   const wa=normWa(g("s-wa")); if(wa.length>=10&&wa.length<=15)patch.wa=wa;
   if(PHOTOS.length)patch.imgs=PHOTOS.map(p=>p.full);
   const btn=document.getElementById("s-submit");btn.disabled=true;btn.textContent="Menyimpan…";
@@ -949,9 +959,9 @@ const kotaList=()=>`<datalist id="kotaDL">${KOTA.map(k=>`<option value="${k[0]}"
 const SHIP=[{id:"reg"},{id:"exp"}];
 const SERVICE=2000; // biaya layanan flat
 let P={};
-function openPay(id){openPayLines([{id,qty:1}]);}
+function openPay(id){openPayLines([{id,qty:1,size:SIZEPICK[id]||""}]);}
 function openPayLines(ls,fromCart){if(!needLogin(()=>openPayLines(ls,fromCart),"membeli"))return;if(banGate())return;
-  const lines=ls.map(l=>({x:byId(l.id),qty:Math.max(1,l.qty|0)})).filter(l=>l.x&&!l.x.sold);if(!lines.length){toast("Barang tidak tersedia");return;}
+  const lines=ls.map(l=>({x:byId(l.id),qty:Math.max(1,l.qty|0),size:l.size||""})).filter(l=>l.x&&!l.x.sold);if(!lines.length){toast("Barang tidak tersedia");return;}
   if(USER&&lines.some(l=>sellerKey(l.x)===USER.uid)){toast("Ini barangmu sendiri 🙂");return;}
   lines.forEach(l=>{l.qty=Math.min(l.qty,Math.max(1,stockOf(l.x)));});
   close_('detail');close_('cart');
@@ -963,7 +973,7 @@ const nItems=()=>(P.lines||[{qty:1}]).reduce((a,l)=>a+l.qty,0);
 function total(){if(P.fixedTotal)return P.fixedTotal;const s=quote(P.ship);return sub()+s.fee+SERVICE+P.code;}
 function payQty(i,d){keep();const l=P.lines[i];if(!l)return;l.qty=Math.min(Math.max(1,stockOf(l.x)),Math.max(1,l.qty+d));drawPay();}
 function plinesHtml(edit){const ls=P.lines||[{x:P.item,qty:1}];return `<div class="plines">${ls.map((l,i)=>`<div class="pline"><div class="ic" style="background:${COLORS[l.x.cat]||'#eee'}">${pic(l.x)}</div>
-  <div><b>${esc(l.x.title)}</b><small>${rp(l.x.price||0)}${l.qty>1&&!edit?` × ${l.qty}`:""}</small></div>
+  <div><b>${esc(l.x.title)}</b><small>${rp(l.x.price||0)}${l.qty>1&&!edit?` × ${l.qty}`:""}${l.size?` · Ukuran ${esc(l.size)}`:""}</small></div>
   ${edit&&stockOf(l.x)>1?`<div class="qty"><button onclick="payQty(${i},-1)" ${l.qty<=1?"disabled":""}>−</button><span>${l.qty}</span><button onclick="payQty(${i},1)" ${l.qty>=stockOf(l.x)?"disabled":""}>+</button></div>`:`<small><b>${l.qty}×</b></small>`}</div>`).join("")}</div>`;}
 function stepsBar(){return `<div class="steps">${["Pengiriman","Pembayaran","Konfirmasi"].map((t,i)=>`<span class="${i+1<=P.step?'on':''}">${i+1}. ${t}</span>`).join("")}</div>`;}
 function drawPay(){setTimeout(()=>{if(P.step===2)startPayTimer();},0);
@@ -1032,7 +1042,7 @@ function toStep2(){keep();updOngkir();if(!P.name.trim()||!P.phone.trim()||!P.add
   if(window.FB&&USER&&!P.oid){ job=(async()=>{const s=quote(P.ship);const th=await smallThumb(x);
       P.oid=await FB.createOrder({orderNo:P.orderId,buyerName:P.name,buyerEmail:USER.email||"",sellerKey:sellerKey(x),sellerName:x.seller||"Penjual",
         listingId:String(x.id),title:x.title+(P.lines.length>1?` +${P.lines.length-1} barang lain`:P.lines[0].qty>1?` (${P.lines[0].qty}×)`:""),thumb:th,price:sub(),
-        items:P.lines.map(l=>({id:String(l.x.id),title:String(l.x.title).slice(0,100),price:l.x.price||0,qty:l.qty})),qty:nItems(),ship:{id:s.id,name:s.name,fee:s.fee,realFee:s.realFee,promo:!!s.promo},service:SERVICE,code:P.code,total:total(),
+        items:P.lines.map(l=>({id:String(l.x.id),title:String(l.x.title).slice(0,100),price:l.x.price||0,qty:l.qty,size:l.size||""})),variant:P.lines.map(l=>l.size).filter(Boolean).join(", "),qty:nItems(),ship:{id:s.id,name:s.name,fee:s.fee,realFee:s.realFee,promo:!!s.promo},service:SERVICE,code:P.code,total:total(),
         recv:{name:P.name,phone:P.phone,addr:P.addr+(P.city?", "+P.city:"")}});})().catch(e=>{failed=e;console.error(e);}); }
   let t0=false,j0=false;const go=()=>{if(!t0||!j0)return;if(failed){toast("Gagal membuat pesanan: "+(failed.code||failed.message));P.step=1;drawPay();return;}
     if(P.fromCart&&P.oid){P.lines.forEach(l=>cartDel(l.x.id,true));}P.step=2;if(!P.deadline)P.deadline=Date.now()+PAY_MS;drawPay();};
@@ -1311,6 +1321,7 @@ function drawOrder(o){const me=USER?USER.uid:"",isBuyer=o.buyerUid===me,isSeller
     <div class="lrow"><div class="lth">${o.thumb?`<img src="${o.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(o.title)}</b><div>${rp(o.price||0)}</div><small>${isBuyer?"Penjual":"Pembeli"}: ${esc(other)}</small></div></div>
     ${o.items&&(o.items.length>1||(o.items[0].qty||1)>1)?`<div class="obox lines"><b>🛍️ Rincian barang (${o.qty||o.items.length})</b>${o.items.map(i=>`<div><span>${i.qty||1}× ${esc(i.title)}</span><span>${rp((i.price||0)*(i.qty||1))}</span></div>`).join("")}</div>`:""}
     ${o.resi||o.courier?`<div class="obox"><b>🚚 Pengiriman</b><div>${esc(o.courier||"")}</div>${o.resi?`<div class="resi">${esc(o.resi)} <button class="copy" onclick="copyTxt('${esc(o.resi)}','Resi disalin')">Salin</button></div>`:""}</div>`:""}
+    ${o.variant?`<div class="obox"><b>📏 Ukuran/Varian</b><div>${esc(o.variant)}</div></div>`:""}
     <div class="obox"><b>📍 Alamat penerima</b><div>${esc(o.recv?.name||"")} · ${esc(o.recv?.phone||"")}</div><div>${esc(o.recv?.addr||"")}</div><div style="color:var(--muted)">${esc(o.ship?.name||"")}</div></div>
     <div class="obox lines"><div><span>Harga barang</span><span>${rp(o.price||0)}</span></div><div><span>Ongkir</span><span>${o.ship?.promo?`<s style="color:var(--muted)">${rp(o.ship.realFee||0)}</s> GRATIS`:(o.ship?.fee?rp(o.ship.fee):"Gratis")}</span></div>${o.ship?.promo?`<div style="color:var(--brand-d);font-size:12px">🎉 Promo gratis ongkir pembelian pertama — ongkir ${rp(o.ship.realFee||0)} ditanggung PasarRuang.</div>`:""}
       <div><span>Biaya layanan + kode unik</span><span>${rp((o.service||0)+(o.code||0))}</span></div><div class="tot"><span>Total</span><span>${rp(o.total)}</span></div></div>
