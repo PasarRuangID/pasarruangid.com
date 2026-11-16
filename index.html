@@ -509,7 +509,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 54 · ukuran untuk semua kategori</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 55 · perbaikan baca ukuran</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -1135,7 +1135,7 @@ let OVR={},SEDIT=null;
 function applyOverrides(){ STATIC.forEach(x=>{ const o=OVR[x.id]; if(!o)return;
   if(o.title!=null)x.title=o.title; if("price" in o)x.price=o.price; if(o.cond!=null)x.cond=o.cond;
   if(o.city!=null)x.city=o.city; if(o.desc!=null)x.desc=o.desc; if(o.seller!=null)x.seller=o.seller;
-  if(o.wa!=null)x.wa=o.wa; if("sold" in o)x.sold=!!o.sold;
+  if(o.wa!=null)x.wa=o.wa; if(o.sizes!=null)x.sizes=o.sizes; if("sold" in o)x.sold=!!o.sold;
   if(o.imgs&&o.imgs.length){x.imgs=o.imgs;x.thumb=o.imgs[0];} }); }
 function admMineRows(){ if(!isAdmin())return ""; const a=STATIC.filter(x=>sellerKey(x)==="admin"); if(!a.length)return "";
   return `<div style="font-size:12.5px;color:var(--muted);margin:2px 0 6px">📌 Produk bawaan web (${a.length})</div>`+
@@ -1792,7 +1792,7 @@ try{
   const F=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
   const db=F.getFirestore();
   const toItem=d=>{const v=d.data();return {id:"f_"+d.id,fid:d.id,remote:true,noBuy:["Kendaraan","Properti"].includes(v.cat),title:v.title||"",price:v.price??null,cat:v.cat||"Hobi",cond:v.cond||"Bekas",city:v.city||"-",
-    desc:v.desc||"",seller:v.seller||"Penjual",wa:v.wa||"",thumb:v.thumb||"",nphotos:v.nphotos||1,status:v.status,sold:!!v.sold||v.stock===0,stock:v.stock??1,uid:v.uid,email:v.email,
+    desc:v.desc||"",seller:v.seller||"Penjual",wa:v.wa||"",thumb:v.thumb||"",nphotos:v.nphotos||1,status:v.status,sold:!!v.sold||v.stock===0,stock:v.stock??1,sizes:v.sizes||"",uid:v.uid,email:v.email,
     ts:v.createdAt&&v.createdAt.toMillis?v.createdAt.toMillis():Date.now(),icon:"📦"};};
   const photoCache={};
   window.FB={
