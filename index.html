@@ -509,7 +509,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 53 · ukuran (banyak varian)</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 54 · ukuran untuk semua kategori</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -539,7 +539,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
       <label>Kota<input id="s-city" list="kotaDL2" required placeholder="cth. Semarang" autocomplete="off"></label>
     </div>
     <label>Stok (jumlah barang)<input id="s-stock" type="number" min="1" max="9999" value="1" inputmode="numeric"><small style="color:var(--muted);font-weight:400">Barang bekas biasanya 1. Stok berkurang otomatis tiap ada yang beli.</small></label>
-    <div id="s-sizes-wrap" style="display:none"><label>Ukuran / varian<input id="s-sizes" placeholder="cth. 39, 40, 41 atau S, M, L — pisahkan koma"><small style="color:var(--muted);font-weight:400">Khusus baju & sepatu. Pisahkan tiap ukuran dengan koma. Kosongkan kalau tidak perlu.</small></label></div>
+    <div id="s-sizes-wrap"><label>Ukuran / varian (opsional)<input id="s-sizes" placeholder="cth. 39, 40, 41 atau S, M, L — pisahkan koma"><small style="color:var(--muted);font-weight:400">Khusus baju & sepatu. Pisahkan tiap ukuran dengan koma. Kosongkan kalau tidak perlu.</small></label></div>
     <label>Deskripsi<textarea id="s-desc" rows="3" placeholder="Kondisi, kelengkapan, alasan dijual…"></textarea></label>
     <label>Nomor WhatsApp kamu<input id="s-wa" required placeholder="0812xxxxxxx" inputmode="tel"></label>
     <small style="color:var(--muted)">Nomor WhatsApp hanya untuk admin (tidak ditampilkan ke pembeli). Pembeli akan chat kamu langsung di website — cek menu 💬 Chat.</small>
@@ -792,9 +792,9 @@ function shareBar(x){const wa=`https://wa.me/?text=${encodeURIComponent(shareTex
 let OPEN_ID=null;
 const sizesOf=x=>String(x&&x.sizes||"").split(/[,\n]/).map(z=>z.trim()).filter(Boolean);
 let SIZEPICK={};
-function toggleSizeField(){const w=document.getElementById("s-sizes-wrap"),c=document.getElementById("s-cat");if(w)w.style.display=(c&&c.value==="Fashion")?"":"none";}
+function toggleSizeField(){const w=document.getElementById("s-sizes-wrap");if(w)w.style.display="";}
 function pickSize(id,z){SIZEPICK[id]=z;document.querySelectorAll('#detailBox .szb').forEach(b=>b.classList.toggle('on',b.dataset.s===z));}
-function needSize(id){const x=byId(id);if(x&&x.cat==="Fashion"&&sizesOf(x).length&&!SIZEPICK[id]){toast("Pilih ukuran dulu");return false;}return true;}
+function needSize(id){const x=byId(id);if(x&&sizesOf(x).length&&!SIZEPICK[id]){toast("Pilih ukuran dulu");return false;}return true;}
 function buyNow(id){if(!needSize(id))return;openPay(id);}
 function cartAdd(id){if(!needSize(id))return;addCart(id);}
 function openDetail(id){
@@ -811,7 +811,7 @@ function openDetail(id){
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
       <div class="seller" style="cursor:pointer" onclick="openShop('${x.remote?x.uid:"admin"}')"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div style="flex:1;min-width:0"><b>${esc(x.seller)}${vbadge(x.uid)}${mbadge(mk(x))}</b><small>${x.remote?"Penjual PasarRuang":"PasarRuang Official"} · ${shopCount(x.remote?x.uid:"admin")} produk</small><small id="sellRate">${(st=>st?`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`:"")(revStat(x.remote?x.uid:"admin"))}</small></div><span class="visit">Kunjungi<br>toko ›</span></div>
-      ${(()=>{const ss=x.cat==="Fashion"?sizesOf(x):[];return ss.length&&!x.sold&&x.price&&!x.noBuy?`<div class="szwrap"><b>Pilih ukuran</b><div class="szrow">${ss.map(z=>`<button class="szb${SIZEPICK[x.id]===z?' on':''}" data-s="${esc(z)}" onclick="pickSize('${x.id}','${esc(z).replace(/'/g,"")}')">${esc(z)}</button>`).join("")}</div></div>`:""})()}
+      ${(()=>{const ss=sizesOf(x);return ss.length&&!x.sold&&x.price&&!x.noBuy?`<div class="szwrap"><b>Pilih ukuran</b><div class="szrow">${ss.map(z=>`<button class="szb${SIZEPICK[x.id]===z?' on':''}" data-s="${esc(z)}" onclick="pickSize('${x.id}','${esc(z).replace(/'/g,"")}')">${esc(z)}</button>`).join("")}</div></div>`:""})()}
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
         ${x.price&&!x.noBuy&&!x.sold?`<button class="btn cartb" onclick="cartAdd('${x.id}')" aria-label="Tambah ke keranjang">🛒</button><button class="btn buy" onclick="buyNow('${x.id}')">Beli Sekarang</button>`:""}
