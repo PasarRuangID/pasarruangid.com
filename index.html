@@ -508,7 +508,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 44 · ikuti toko + pengikut</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 47 · acc Mall Ori saat verifikasi KTP</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -654,7 +654,7 @@ let LOADING=true;
 function setRemote(arr){LOADING=false;REMOTE=arr;LIST=REMOTE.concat(STATIC);renderCats();render();if(typeof tryOpenHash==="function")tryOpenHash();}
 const byId=id=>LIST.find(i=>String(i.id)===String(id));
 let cat="Semua",cond="Semua",view="all",fav=new Set(),mine=new Set();
-let MALL=new Set(),mallOnly=false;const mk=x=>x.remote?x.uid:"admin",isMall=k=>!!k&&MALL.has(k),mbadge=k=>isMall(k)?` <span class="mbadge">🏬 Mall Ori</span>`:"";
+let MALL=new Set(),mallOnly=false;const mk=x=>x.remote?x.uid:"admin",isMall=k=>!!k&&MALL.has(k),mbadge=k=>isMall(k)?` <span class="mbadge">Mall Ori</span>`:"";
 try{const s=JSON.parse(localStorage.getItem("pr_fav")||"[]");fav=new Set(s.map(String));}catch(e){}
 function save(){try{localStorage.setItem("pr_fav",JSON.stringify([...fav]))}catch(e){}}
 const pic=(x,cls="")=>{const u=x.imgs?x.imgs[0]:(x.img||x.thumb);return u?`<img src="${u}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:(x.icon||"📦");};
@@ -666,7 +666,7 @@ const nfoto=x=>x.imgs?x.imgs.length:(x.nphotos||0);
 
 function renderCats(){
   document.getElementById("cats").innerHTML=CATS.map(([n,i])=>`<div class="catb ${n===cat?'active':''}" onclick="cat='${n}';renderCats();render()"><i>${i}</i>${n}</div>`).join("");
-  document.getElementById("conds").innerHTML=["Semua","Baru","Bekas"].map(c=>`<button class="tab ${c===cond?'active':''}" onclick="cond='${c}';renderCats();render()">${c}</button>`).join("")+`<button class="tab ${mallOnly?'active':''}" onclick="mallOnly=!mallOnly;renderCats();render()">🏬 Mall Ori</button>`;
+  document.getElementById("conds").innerHTML=["Semua","Baru","Bekas"].map(c=>`<button class="tab ${c===cond?'active':''}" onclick="cond='${c}';renderCats();render()">${c}</button>`).join("")+`<button class="tab ${mallOnly?'active':''}" onclick="mallOnly=!mallOnly;renderCats();render()">Mall Ori</button>`;
   const cities=[...new Set(LIST.map(x=>x.city))].sort(), sel=document.getElementById("loc"), v=sel.value;
   sel.innerHTML='<option value="">Semua kota</option>'+cities.map(c=>`<option ${c===v?'selected':''}>${esc(c)}</option>`).join("");
   document.getElementById("s-cat").innerHTML=CATS.slice(1).map(([n])=>`<option>${n}</option>`).join("");
@@ -681,7 +681,7 @@ function render(){
   if(so==="near"){const me=myCity();if(!me){toast("Isi kota di profilmu dulu untuk urutan terdekat");document.getElementById("sort").value="new";}
     else{const km={};l.forEach(x=>{const o=cariKota(x.city)?hitungOngkir(x.city,me):null;km[x.id]=o&&o.ok?o.km:1e9;});l.sort((a,b)=>km[a.id]-km[b.id]||(b.ts||0)-(a.ts||0));}}
   if(so!=="near"||!myCity())l.sort((a,b)=>so==="low"?(a.price??1e15)-(b.price??1e15):so==="high"?(b.price||0)-(a.price||0):(b.ts||0)-(a.ts||0));
-  document.getElementById("title").textContent=view==="fav"?"Favorit kamu":view==="mine"?"Iklan saya":mallOnly?"🏬 Mall Ori — dijamin original":cat==="Semua"?"Rekomendasi untukmu":cat;
+  document.getElementById("title").textContent=view==="fav"?"Favorit kamu":view==="mine"?"Iklan saya":mallOnly?"Mall Ori":cat==="Semua"?"Rekomendasi untukmu":cat;
   const skel=LOADING&&view==="all"?Array.from({length:4},()=>`<div class="skel"><div class="sb s1"></div><div class="sb s2"></div><div class="sb s3"></div></div>`).join(""):"";
   document.getElementById("grid").innerHTML=skel+(l.length?l.map((x,i)=>`
     <div class="card" style="--i:${Math.min(i,12)}" onclick="openDetail('${x.id}')">
@@ -801,7 +801,6 @@ function openDetail(id){
       <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
-      ${isMall(mk(x))?`<div class="mallbox">🏬 <b>Mall Ori</b> — toko ini sudah dicek admin & produknya dijamin <b>100% original</b>. Kalau terbukti palsu, uang kembali lewat komplain pesanan.</div>`:""}
       <div class="seller" style="cursor:pointer" onclick="openShop('${x.remote?x.uid:"admin"}')"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div style="flex:1;min-width:0"><b>${esc(x.seller)}${vbadge(x.uid)}${mbadge(mk(x))}</b><small>${x.remote?"Penjual PasarRuang":"PasarRuang Official"} · ${shopCount(x.remote?x.uid:"admin")} produk</small><small id="sellRate">${(st=>st?`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`:"")(revStat(x.remote?x.uid:"admin"))}</small></div><span class="visit">Kunjungi<br>toko ›</span></div>
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
@@ -1107,7 +1106,8 @@ const badge=x=>{const s=x.sold?["Terjual","#eef0f2","#44515c"]:(STATUS[x.status]
 const row=(x,btns)=>`<div class="lrow"><div class="lth">${x.thumb?`<img src="${x.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(x.title)}</b><div>${pr(x)} · ${esc(x.city)}</div>${badge(x)}${x.email?`<small>${esc(x.seller)} · ${esc(x.email)} · wa ${esc(x.wa)}</small>`:""}<div class="lbtn">${btns}</div></div></div>`;
 let MY=[],ALL=[],ADMTAB="pending";
 async function admMall(k){if(!isAdmin())return;const on=!isMall(k);if(!confirmTap("mall"+k))return;const name=k==="admin"?"PasarRuang Official":((shopItems(k)[0]||{}).seller||"Toko");
-  try{await FB.setMall(k,on,name);if(on)MALL.add(k);else MALL.delete(k);if(k!=="admin")notif(k,"mall",on?"Tokomu masuk Mall Ori 🏬":"Status Mall Ori dicabut",on?"Selamat! Tokomu kini berlencana Mall Ori. Jaga keaslian semua produkmu.":"Lencana Mall Ori tokomu dicabut admin.","shop:"+k);render();if(SHOP_K===k)drawShop();toast(on?"Toko dijadikan Mall Ori":"Mall Ori dicabut");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+  try{await FB.setMall(k,on,name);if(on)MALL.add(k);else MALL.delete(k);if(k!=="admin")notif(k,"mall",on?"Tokomu masuk Mall Ori":"Status Mall Ori dicabut",on?"Selamat! Tokomu kini berlencana Mall Ori. Jaga keaslian semua produkmu.":"Lencana Mall Ori tokomu dicabut admin.","shop:"+k);render();if(SHOP_K===k)drawShop();toast(on?"Toko dijadikan Mall Ori":"Mall Ori dicabut");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+const FOL_MIN=10000; // jumlah pengikut baru ditampilkan kalau sudah mencapai angka ini
 let FOL={},MYFOL=new Set(),FOL_BUSY=false;
 function loadFol(k){if(!window.FB)return;FB.followCount(k).then(n=>{FOL[k]=n||0;if(SHOP_K===k)drawShop();}).catch(e=>{console.warn("fol:",e);FOL[k]=FOL[k]||0;if(SHOP_K===k)drawShop();});}
 function loadMyFol(){if(!window.FB||!USER)return;FB.myFollows().then(a=>{MYFOL=new Set(a||[]);if(SHOP_K)drawShop();}).catch(e=>console.warn("myfol:",e));}
@@ -1561,9 +1561,15 @@ function admKycView(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k)return;const
     <b>Foto KTP</b><img src="${k.ktpImg}" style="width:100%;border-radius:12px"><b>Selfie + KTP</b><img src="${k.selfieImg}" style="width:100%;border-radius:12px">
     <div class="warn">Cocokkan: nama & tanggal lahir di form = di KTP, wajah di selfie = foto KTP, KTP terlihat asli.</div>
     <button class="btn buy" style="background:var(--brand)" onclick="admKycOk('${uid}')">✔️ Setujui & sesuaikan profil</button>
+    <button class="btn buy" style="background:#1f3f7a" onclick="admKycOkMall('${uid}')">✔️ Setujui + jadikan Mall Ori</button>
     <button class="tab" onclick="admKycNo('${uid}')">✖️ Tolak</button>`;}
 async function admKycOk(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k||!confirmTap("k"+uid))return;
   try{await FB.approveKyc(uid,k.data||{});VERIFIED.add(uid);notif(uid,"kyc_ok","Akun terverifikasi KTP ✅","Selamat! Profilmu sudah disesuaikan dengan KTP dan kamu sekarang bisa pasang iklan.","profile");KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Akun terverifikasi ✅ — foto KTP dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
+async function admKycOkMall(uid){const k=KYCLIST.find(i=>i.uid===uid);if(!k||!confirmTap("km"+uid))return;const nm=(k.data&&k.data.name)||"Toko";
+  try{await FB.approveKyc(uid,k.data||{});VERIFIED.add(uid);await FB.setMall(uid,true,nm);MALL.add(uid);
+    notif(uid,"kyc_ok","Akun terverifikasi & masuk Mall Ori","Selamat! Akunmu terverifikasi KTP dan tokomu kini berlabel Mall Ori.","profile");
+    KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Terverifikasi + Mall Ori ✅");ADMTAB="kyc";drawAdmin();if(typeof render==="function")render();}
+  catch(e){toast("Gagal: "+(e.code||e.message));}}
 async function admKycNo(uid){const why=prompt("Alasan penolakan (dikirim ke pengguna):","Foto KTP kurang jelas / data tidak cocok");if(why===null)return;
   try{await FB.rejectKyc(uid,why.slice(0,120));notif(uid,"kyc_no","Verifikasi KTP ditolak","Alasan: "+why.slice(0,120)+". Silakan kirim ulang.","kyc");KYCLIST=KYCLIST.filter(i=>i.uid!==uid);toast("Verifikasi ditolak — foto dihapus");ADMTAB="kyc";drawAdmin();}catch(e){toast("Gagal: "+(e.code||e.message));}}
 const vbadge=uid=>uid&&isVerified(uid)?` <span class="vbadge">✅ Terverifikasi</span>`:"";
@@ -1698,8 +1704,8 @@ function drawShop(){const k=SHOP_K,items=shopItems(k),act=items.filter(x=>!x.sol
   document.getElementById("shopBox").innerHTML=`<div class="shead"><div class="sava">${k==="admin"?document.querySelector('.logo .mark').innerHTML:avaHtml(k,name)}</div>
     <div style="min-width:0"><b>${esc(name)}</b>${k==="admin"?` <span class="vbadge">🏪 Official</span>`:vbadge(k)}${mbadge(k)}
     <small>📍 ${esc(cities.slice(0,2).join(", ")||"Indonesia")} · aktif sejak ${new Date(since).toLocaleDateString("id-ID",{month:"short",year:"numeric"})}</small></div></div>
-   <div class="sstats"><div><b>${act.length}</b><small>Produk</small></div><div><b>${k in FOL?FOL[k].toLocaleString("id-ID"):"…"}</b><small>Pengikut</small></div><div><b>${sold.length}</b><small>Terjual</small></div><div>${(st=>st?`<b>⭐ ${st.avg.toFixed(1)}</b><small>${st.n} ulasan</small>`:`<b>—</b><small>Belum ada ulasan</small>`)(revStat(k))}</div></div>
-   <div class="sbtns">${(USER&&(USER.uid===k||(k==="admin"&&isAdmin())))?"":`<button class="btn buy" style="${MYFOL.has(k)?"background:#fff;color:var(--brand-d);border:1px solid var(--brand)":""}" onclick="toggleFollow('${k}')">${MYFOL.has(k)?"✓ Mengikuti":"➕ Ikuti"}</button>`}${act[0]?`<button class="btn wa" onclick="close_('shop');startChat('${act[0].id}')">💬 Chat</button>`:""}<button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="shareShop('${k}')">🔗 Bagikan toko</button>${isAdmin()?`<button class="tab" onclick="admMall('${k}')">${isMall(k)?"❌ Cabut Mall Ori":"🏬 Jadikan Mall Ori"}</button>`:""}${k==="admin"||(USER&&USER.uid===k)?"":isAdmin()?(isBannedK(k)?`<button class="tab" onclick="admUnban('${k}')">🔓 Buka blokir</button>`:`<button class="tab" style="border-color:#f5c2c0;color:#b42318" onclick="admBan('${k}','${esc(name).replace(/'/g,"")}')">🚫 Blokir</button>`):`<button class="rptlink" style="align-self:center" onclick="openReport('shop','${k}')">🚩 Laporkan</button>`}</div>
+   <div class="sstats" style="grid-template-columns:repeat(${(FOL[k]||0)>=FOL_MIN?4:3},1fr)"><div><b>${act.length}</b><small>Produk</small></div>${(FOL[k]||0)>=FOL_MIN?`<div><b>${FOL[k].toLocaleString("id-ID")}</b><small>Pengikut</small></div>`:""}<div><b>${sold.length}</b><small>Terjual</small></div><div>${(st=>st?`<b>⭐ ${st.avg.toFixed(1)}</b><small>${st.n} ulasan</small>`:`<b>—</b><small>Belum ada ulasan</small>`)(revStat(k))}</div></div>
+   <div class="sbtns">${(USER&&(USER.uid===k||(k==="admin"&&isAdmin())))?"":`<button class="btn buy" style="${MYFOL.has(k)?"background:#fff;color:var(--brand-d);border:1px solid var(--brand)":""}" onclick="toggleFollow('${k}')">${MYFOL.has(k)?"✓ Mengikuti":"➕ Ikuti"}</button>`}${act[0]?`<button class="btn wa" onclick="close_('shop');startChat('${act[0].id}')">💬 Chat</button>`:""}<button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="shareShop('${k}')">🔗 Bagikan toko</button>${isAdmin()?`<button class="tab" onclick="admMall('${k}')">${isMall(k)?"Cabut Mall Ori":"Jadikan Mall Ori"}</button>`:""}${k==="admin"||(USER&&USER.uid===k)?"":isAdmin()?(isBannedK(k)?`<button class="tab" onclick="admUnban('${k}')">🔓 Buka blokir</button>`:`<button class="tab" style="border-color:#f5c2c0;color:#b42318" onclick="admBan('${k}','${esc(name).replace(/'/g,"")}')">🚫 Blokir</button>`):`<button class="rptlink" style="align-self:center" onclick="openReport('shop','${k}')">🚩 Laporkan</button>`}</div>
    <div class="otabs" style="padding:0 16px"><button class="${SHOP_TAB==="all"?"on":""}" onclick="SHOP_TAB='all';drawShop()">Produk${act.length?`<b style="background:var(--brand)">${act.length}</b>`:""}</button><button class="${SHOP_TAB==="sold"?"on":""}" onclick="SHOP_TAB='sold';drawShop()">Terjual${sold.length?`<b style="background:#44515c">${sold.length}</b>`:""}</button><button class="${SHOP_TAB==="rev"?"on":""}" onclick="SHOP_TAB='rev';drawShop()">⭐ Ulasan${(REVS[k]||[]).length?`<b style="background:#ffb400;color:#3b2a00">${REVS[k].length}</b>`:""}</button></div>
    ${SHOP_TAB==="rev"?(()=>{const rs=REVS[k]||[],mine=USER&&(USER.uid===k||(k==="admin"&&isAdmin()));const st=revStat(k);
       return `<div style="padding:12px 16px 18px;display:flex;flex-direction:column;gap:10px">${st?`<div class="rsum"><b>${st.avg.toFixed(1)}</b><div>${stars(st.avg,20)}<small>${st.n} ulasan · ${[5,4,3,2,1].map(i=>`${i}★ ${rs.filter(r=>r.rating===i).length}`).join(" · ")}</small></div></div>`:""}
