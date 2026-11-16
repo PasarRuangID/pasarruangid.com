@@ -508,7 +508,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 48 · badge Mall Ori di bawah logo toko</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 50 · foto produk maks 8</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -826,13 +826,15 @@ function openSell(){if(!needLogin(openSell,"pasang iklan"))return;if(banGate())r
 function close_(id){document.getElementById(id).classList.remove("open");if(id==="sell"&&typeof EDIT!=="undefined"&&EDIT)resetSell();if(id==="detail"){OPEN_ID=null;setHash("");}if(id==="shop"){SHOP_K=null;setHash("");}}
 let PHOTOS=[],priceOk=false;
 function loadImg(f){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{ok(im);URL.revokeObjectURL(u)};im.onerror=no;im.src=u;});}
-function shrink(im,max,q,limit){const c=document.createElement("canvas");let w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,max/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);
-  c.getContext("2d").drawImage(im,0,0,c.width,c.height);let d=c.toDataURL("image/jpeg",q);while(d.length>limit&&q>0.35){q-=0.08;d=c.toDataURL("image/jpeg",q);}return d;}
-async function pickPhotos(inp){const fs=[...inp.files].slice(0,4);if(!fs.length)return;const box=document.getElementById("s-prev");box.textContent="Memproses foto…";
-  try{PHOTOS=[];for(const f of fs){const im=await loadImg(f);PHOTOS.push({full:shrink(im,1000,0.72,210000),thumb:PHOTOS.length?null:shrink(im,420,0.65,45000)});}
+function shrink(im,max,q,limit){const c=document.createElement("canvas");let w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,max/Math.max(w,h));c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);let qq=q,d=c.toDataURL("image/jpeg",qq);while(d.length>limit&&qq>0.35){qq-=0.08;d=c.toDataURL("image/jpeg",qq);}
+  if(d.length>limit&&max>320)return shrink(im,Math.round(max*0.82),q,limit);return d;}
+async function pickPhotos(inp){const fs=[...inp.files].slice(0,8);if(!fs.length)return;const box=document.getElementById("s-prev");box.textContent="Memproses foto…";
+  const budget=Math.min(210000,Math.floor(960000/fs.length)),maxpx=1000;
+  try{PHOTOS=[];for(const f of fs){const im=await loadImg(f);PHOTOS.push({full:shrink(im,maxpx,0.72,budget),thumb:PHOTOS.length?null:shrink(im,420,0.65,45000)});}
     box.innerHTML=PHOTOS.map(p=>`<img src="${p.full}">`).join("")+`<em>${PHOTOS.length} foto · ketuk untuk ganti</em>`;
   }catch(e){PHOTOS=[];box.textContent="Gagal membaca foto, coba foto lain";}
-  if(inp.files.length>4)toast("Maksimal 4 foto, dipakai 4 pertama");}
+  if(inp.files.length>8)toast("Maksimal 8 foto, dipakai 8 pertama");}
 function normWa(w){w=w.replace(/\D/g,"");if(w.startsWith("0"))w="62"+w.slice(1);if(w.startsWith("8"))w="62"+w;return w;}
 async function submitSell(e){
   e.preventDefault();
