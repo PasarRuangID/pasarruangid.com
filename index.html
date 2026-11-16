@@ -253,6 +253,7 @@ input[type=date]{min-height:42px}
 .kycb{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:22px;margin-top:4px}
 .kycb div{flex:1;font-size:14px}.kycb small{display:block;color:var(--muted);font-size:12px}.kycb.ok{background:#e7f6f1;border-color:#bfe6d8}.kycb.wait{background:#eaf2ff;border-color:#cfe0ff}
 .consent{display:flex;gap:8px;align-items:flex-start;font-weight:400!important;font-size:13px;background:var(--bg);border-radius:10px;padding:10px}.consent input{width:auto!important;margin-top:2px}
+.mbadge{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:#1f3f7a;border-radius:6px;padding:1px 6px;vertical-align:middle;white-space:nowrap}.mtag{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:#1f3f7a;border-radius:4px;padding:0 5px;margin-right:4px;vertical-align:1px}.mallbox{font-size:13px;background:#eef3fc;color:#1f3f7a;border:1px solid #c9d8f3;border-radius:10px;padding:9px 11px}
 .vbadge{display:inline-block;font-size:11px;font-weight:700;color:#0b6a53;background:#e7f6f1;border-radius:6px;padding:1px 6px;vertical-align:middle}
 input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .ocrbox{align-items:center;gap:10px;background:#fffbe6;border:1px solid #f5e3a3;border-radius:12px;padding:10px 12px;font-size:20px}
@@ -292,7 +293,7 @@ input:disabled,select:disabled{background:#f1f3f5!important;color:#44515c}
 .shead b{font-size:19px}.shead small{display:block;opacity:.9;font-size:12px;margin-top:3px}.shead .vbadge{background:rgba(255,255,255,.9)}
 .sava{width:64px;height:64px;border-radius:50%;background:#fff;color:var(--brand);display:grid;place-items:center;font-size:28px;font-weight:800;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,.6)}
 .sava svg{width:80%;height:80%}
-.sstats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:12px 8px;border-bottom:1px solid var(--line)}
+.sstats{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;padding:12px 8px;border-bottom:1px solid var(--line)}
 .sstats b{display:block;font-size:18px}.sstats small{color:var(--muted);font-size:12px}
 .sbtns{display:flex;gap:8px;padding:12px 16px}.sbtns .btn{padding:10px}
 .sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px 16px 18px}
@@ -507,7 +508,7 @@ p,b,small,div,span{overflow-wrap:anywhere}
     <div><b>💳 Bayar pakai QRIS</b><span>Bisa bayar dari GoPay, OVO, DANA, ShopeePay & semua m-banking.</span></div>
   </section>
 </main>
-<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 41 · gratis ongkir pembelian pertama</small></footer>
+<footer>© 2026 PasarRuang · Jual beli barang baru & bekas<div class="flinks"><a onclick="openLegal('sk')">Syarat &amp; Ketentuan</a><a onclick="openLegal('priv')">Kebijakan Privasi</a><a onclick="openLegal('help')">Bantuan &amp; Komplain</a></div><small style="opacity:.6">versi 44 · ikuti toko + pengikut</small></footer>
 
 <nav class="navb">
   <button class="on" onclick="setView('all',this)"><i>🏠</i>Beranda</button>
@@ -653,6 +654,7 @@ let LOADING=true;
 function setRemote(arr){LOADING=false;REMOTE=arr;LIST=REMOTE.concat(STATIC);renderCats();render();if(typeof tryOpenHash==="function")tryOpenHash();}
 const byId=id=>LIST.find(i=>String(i.id)===String(id));
 let cat="Semua",cond="Semua",view="all",fav=new Set(),mine=new Set();
+let MALL=new Set(),mallOnly=false;const mk=x=>x.remote?x.uid:"admin",isMall=k=>!!k&&MALL.has(k),mbadge=k=>isMall(k)?` <span class="mbadge">🏬 Mall Ori</span>`:"";
 try{const s=JSON.parse(localStorage.getItem("pr_fav")||"[]");fav=new Set(s.map(String));}catch(e){}
 function save(){try{localStorage.setItem("pr_fav",JSON.stringify([...fav]))}catch(e){}}
 const pic=(x,cls="")=>{const u=x.imgs?x.imgs[0]:(x.img||x.thumb);return u?`<img src="${u}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:(x.icon||"📦");};
@@ -664,7 +666,7 @@ const nfoto=x=>x.imgs?x.imgs.length:(x.nphotos||0);
 
 function renderCats(){
   document.getElementById("cats").innerHTML=CATS.map(([n,i])=>`<div class="catb ${n===cat?'active':''}" onclick="cat='${n}';renderCats();render()"><i>${i}</i>${n}</div>`).join("");
-  document.getElementById("conds").innerHTML=["Semua","Baru","Bekas"].map(c=>`<button class="tab ${c===cond?'active':''}" onclick="cond='${c}';renderCats();render()">${c}</button>`).join("");
+  document.getElementById("conds").innerHTML=["Semua","Baru","Bekas"].map(c=>`<button class="tab ${c===cond?'active':''}" onclick="cond='${c}';renderCats();render()">${c}</button>`).join("")+`<button class="tab ${mallOnly?'active':''}" onclick="mallOnly=!mallOnly;renderCats();render()">🏬 Mall Ori</button>`;
   const cities=[...new Set(LIST.map(x=>x.city))].sort(), sel=document.getElementById("loc"), v=sel.value;
   sel.innerHTML='<option value="">Semua kota</option>'+cities.map(c=>`<option ${c===v?'selected':''}>${esc(c)}</option>`).join("");
   document.getElementById("s-cat").innerHTML=CATS.slice(1).map(([n])=>`<option>${n}</option>`).join("");
@@ -672,14 +674,14 @@ function renderCats(){
 function render(){
   const q=document.getElementById("q").value.toLowerCase(), loc=document.getElementById("loc").value, so=document.getElementById("sort").value;
   let l=LIST.filter(x=>(cat==="Semua"||x.cat===cat)&&(cond==="Semua"||x.cond===cond)&&(!loc||x.city===loc)&&x.title.toLowerCase().includes(q)
-    &&(FLT.min==null||(x.price!=null&&x.price>=FLT.min))&&(FLT.max==null||(x.price!=null&&x.price<=FLT.max))&&(!FLT.avail||!x.sold));
+    &&(FLT.min==null||(x.price!=null&&x.price>=FLT.min))&&(FLT.max==null||(x.price!=null&&x.price<=FLT.max))&&(!FLT.avail||!x.sold)&&(!mallOnly||isMall(mk(x))));
   drawFChips();
   if(view==="fav")l=l.filter(x=>fav.has(String(x.id)));
   if(view==="mine")l=l.filter(x=>mine.has(x.id));
   if(so==="near"){const me=myCity();if(!me){toast("Isi kota di profilmu dulu untuk urutan terdekat");document.getElementById("sort").value="new";}
     else{const km={};l.forEach(x=>{const o=cariKota(x.city)?hitungOngkir(x.city,me):null;km[x.id]=o&&o.ok?o.km:1e9;});l.sort((a,b)=>km[a.id]-km[b.id]||(b.ts||0)-(a.ts||0));}}
   if(so!=="near"||!myCity())l.sort((a,b)=>so==="low"?(a.price??1e15)-(b.price??1e15):so==="high"?(b.price||0)-(a.price||0):(b.ts||0)-(a.ts||0));
-  document.getElementById("title").textContent=view==="fav"?"Favorit kamu":view==="mine"?"Iklan saya":cat==="Semua"?"Rekomendasi untukmu":cat;
+  document.getElementById("title").textContent=view==="fav"?"Favorit kamu":view==="mine"?"Iklan saya":mallOnly?"🏬 Mall Ori — dijamin original":cat==="Semua"?"Rekomendasi untukmu":cat;
   const skel=LOADING&&view==="all"?Array.from({length:4},()=>`<div class="skel"><div class="sb s1"></div><div class="sb s2"></div><div class="sb s3"></div></div>`).join(""):"";
   document.getElementById("grid").innerHTML=skel+(l.length?l.map((x,i)=>`
     <div class="card" style="--i:${Math.min(i,12)}" onclick="openDetail('${x.id}')">
@@ -687,8 +689,8 @@ function render(){
         <span class="tag ${x.cond.toLowerCase()}">${x.cond}</span>${nfoto(x)>1?`<span class="tag" style="left:auto;right:44px;background:rgba(0,0,0,.6);color:#fff">📷 ${nfoto(x)}</span>`:""}${x.sold?`<span class="soldtag">TERJUAL</span>`:""}
         <button class="fav" onclick="event.stopPropagation();this.classList.add('pop');setTimeout(()=>toggleFav('${x.id}'),180)">${fav.has(String(x.id))?'❤️':'🤍'}</button>
       </div>
-      <div class="cb"><div class="p">${pr(x)}</div><div class="t">${esc(x.title)}</div><div class="m">📍 ${esc(x.city)} · ${ago(x)}</div></div>
-    </div>`).join(""):(skel?"":`<p class="empty">${view==="mine"?"Belum ada iklan. Tekan “+ Jual” untuk mulai.":view==="fav"?"Belum ada favorit.":"Barang tidak ditemukan."}</p>`));
+      <div class="cb"><div class="p">${pr(x)}</div><div class="t">${isMall(mk(x))?`<span class="mtag">Mall Ori</span>`:""}${esc(x.title)}</div><div class="m">📍 ${esc(x.city)} · ${ago(x)}</div></div>
+    </div>`).join(""):(skel?"":`<p class="empty">${view==="mine"?"Belum ada iklan. Tekan “+ Jual” untuk mulai.":view==="fav"?"Belum ada favorit.":mallOnly?"Belum ada produk Mall Ori di sini.":"Barang tidak ditemukan."}</p>`));
 }
 
 
@@ -795,11 +797,12 @@ function openDetail(id){
     ${x.imgs&&x.imgs.length>1?`<div class="gal">${x.imgs.map(u=>`<img src="${u}" alt="">`).join('')}</div><div class="galhint">Geser untuk lihat ${x.imgs.length} foto →</div>`:`<div class="d-thumb" style="background:${COLORS[x.cat]||'#eee'};overflow:hidden">${pic(x)}</div>`}
     <div class="d-body">
       <div class="d-price">${pr(x)}</div>
-      <h3>${esc(x.title)}</h3>
+      <h3>${isMall(mk(x))?`<span class="mtag" style="font-size:12px;padding:2px 7px;vertical-align:3px">Mall Ori</span>`:""}${esc(x.title)}</h3>
       <div class="meta"><span>${x.cond}</span><span>${x.cat}</span><span>📍 ${esc(x.city)}</span><span>🕒 ${ago(x)}</span>${x.sold?`<span style="background:#fde2e2;color:#b42318">Terjual</span>`:""}</div>
       <p style="white-space:pre-line">${esc(x.desc||"Tidak ada deskripsi.")}</p>
       ${!x.sold&&x.price&&!x.noBuy?(()=>{const tj=PROFILE&&PROFILE.city;const o=hitungOngkir(x.city,tj||"");return `<div class="ongkirinfo">🚚 ${o.ok?`Ongkir ke <b>${esc(o.tujuan)}</b>: mulai <b>${rp(o.reg)}</b> · ±${o.km.toLocaleString("id-ID")} km dari ${esc(o.asal)}`:`Dikirim dari <b>${esc((cariKota(x.city)||cariKota(TARIF.asalDefault))[0])}</b> · ongkir dihitung saat checkout sesuai kota tujuan`}</div>`;})():""}
-      <div class="seller" style="cursor:pointer" onclick="openShop('${x.remote?x.uid:"admin"}')"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div style="flex:1;min-width:0"><b>${esc(x.seller)}${vbadge(x.uid)}</b><small>${x.remote?"Penjual PasarRuang":"PasarRuang Official"} · ${shopCount(x.remote?x.uid:"admin")} produk</small><small id="sellRate">${(st=>st?`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`:"")(revStat(x.remote?x.uid:"admin"))}</small></div><span class="visit">Kunjungi<br>toko ›</span></div>
+      ${isMall(mk(x))?`<div class="mallbox">🏬 <b>Mall Ori</b> — toko ini sudah dicek admin & produknya dijamin <b>100% original</b>. Kalau terbukti palsu, uang kembali lewat komplain pesanan.</div>`:""}
+      <div class="seller" style="cursor:pointer" onclick="openShop('${x.remote?x.uid:"admin"}')"><div class="ava" id="sellAva" style="overflow:hidden">${avaHtml(x.remote?x.uid:"",x.seller)}</div><div style="flex:1;min-width:0"><b>${esc(x.seller)}${vbadge(x.uid)}${mbadge(mk(x))}</b><small>${x.remote?"Penjual PasarRuang":"PasarRuang Official"} · ${shopCount(x.remote?x.uid:"admin")} produk</small><small id="sellRate">${(st=>st?`${stars(st.avg,12)} ${st.avg.toFixed(1)} (${st.n} ulasan)`:"")(revStat(x.remote?x.uid:"admin"))}</small></div><span class="visit">Kunjungi<br>toko ›</span></div>
       <div class="actions">
         ${x.noChat||x.sold?"":`<button class="btn wa" onclick="startChat('${x.id}')">💬 Chat Penjual</button>`}
         ${x.price&&!x.noBuy&&!x.sold?`<button class="btn cartb" onclick="addCart('${x.id}')" aria-label="Tambah ke keranjang">🛒</button><button class="btn buy" onclick="openPay('${x.id}')">Beli Sekarang</button>`:""}
@@ -1076,7 +1079,7 @@ function needLogin(cb,why){
 }
 function doLogin(){ if(window.fbLogin) window.fbLogin().catch(e=>toast("Gagal masuk: "+(e.code||e.message))); }
 function onUser(u){
-  USER=u; if(window.FB) FB.refresh(); if(u){loadProfile();checkBan();} else {PROFILE=null;PROF_ASKED=false;BANNED_ME=null;} AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex"; document.getElementById("bellBtn").style.display=u?"grid":"none";
+  USER=u; if(window.FB) FB.refresh(); if(u){loadProfile();checkBan();loadMyFol();} else {MYFOL=new Set();PROFILE=null;PROF_ASKED=false;BANNED_ME=null;} AUTH_READY=true; const b=document.getElementById("userBtn"); b.style.display="flex"; document.getElementById("bellBtn").style.display=u?"grid":"none";
   if(u){ b.className="user-btn"; b.innerHTML=(myPhoto()?`<img src="${myPhoto()}" referrerpolicy="no-referrer" alt="" style="object-fit:cover">`:`<span class="av">${esc(myName()[0]).toUpperCase()}</span>`)+`<span class="nm">${esc(myName().split(" ")[0])}</span>`;
     if(document.getElementById("login").classList.contains("open")){close_("login");toast("Halo, "+(u.displayName||"")+"!");const f=afterLogin;afterLogin=null;if(f)f();}
   } else { b.className="user-btn out"; b.textContent="Masuk"; }
@@ -1103,6 +1106,16 @@ const STATUS={pending:["Menunggu dicek","#fff6e5","#8a5a00"],approved:["Tayang",
 const badge=x=>{const s=x.sold?["Terjual","#eef0f2","#44515c"]:(STATUS[x.status]||STATUS.pending);return `<span class="badge" style="background:${s[1]};color:${s[2]}">${s[0]}</span>`;};
 const row=(x,btns)=>`<div class="lrow"><div class="lth">${x.thumb?`<img src="${x.thumb}">`:"📦"}</div><div class="linfo"><b>${esc(x.title)}</b><div>${pr(x)} · ${esc(x.city)}</div>${badge(x)}${x.email?`<small>${esc(x.seller)} · ${esc(x.email)} · wa ${esc(x.wa)}</small>`:""}<div class="lbtn">${btns}</div></div></div>`;
 let MY=[],ALL=[],ADMTAB="pending";
+async function admMall(k){if(!isAdmin())return;const on=!isMall(k);if(!confirmTap("mall"+k))return;const name=k==="admin"?"PasarRuang Official":((shopItems(k)[0]||{}).seller||"Toko");
+  try{await FB.setMall(k,on,name);if(on)MALL.add(k);else MALL.delete(k);if(k!=="admin")notif(k,"mall",on?"Tokomu masuk Mall Ori 🏬":"Status Mall Ori dicabut",on?"Selamat! Tokomu kini berlencana Mall Ori. Jaga keaslian semua produkmu.":"Lencana Mall Ori tokomu dicabut admin.","shop:"+k);render();if(SHOP_K===k)drawShop();toast(on?"Toko dijadikan Mall Ori":"Mall Ori dicabut");}catch(e){toast("Gagal: "+(e.code||e.message));}}
+let FOL={},MYFOL=new Set(),FOL_BUSY=false;
+function loadFol(k){if(!window.FB)return;FB.followCount(k).then(n=>{FOL[k]=n||0;if(SHOP_K===k)drawShop();}).catch(e=>{console.warn("fol:",e);FOL[k]=FOL[k]||0;if(SHOP_K===k)drawShop();});}
+function loadMyFol(){if(!window.FB||!USER)return;FB.myFollows().then(a=>{MYFOL=new Set(a||[]);if(SHOP_K)drawShop();}).catch(e=>console.warn("myfol:",e));}
+async function toggleFollow(k){if(!needLogin(()=>toggleFollow(k),"mengikuti toko"))return;if(!window.FB||!USER){toast("Belum bisa, coba refresh halaman");return;}if(FOL_BUSY)return;FOL_BUSY=true;const on=!MYFOL.has(k);
+  try{if(on){await FB.follow(k);MYFOL.add(k);FOL[k]=(FOL[k]||0)+1;const nm=(PROFILE&&PROFILE.name)||USER.displayName||"Seseorang";notif(k,"follow","Pengikut baru 🎉",`${nm} mulai mengikuti tokomu.`,"shop:"+k);toast("Kamu mengikuti toko ini");}
+    else{await FB.unfollow(k);MYFOL.delete(k);FOL[k]=Math.max(0,(FOL[k]||1)-1);toast("Berhenti mengikuti");}}
+  catch(e){toast("Gagal: "+(e.code||e.message));}
+  FOL_BUSY=false;if(SHOP_K===k)drawShop();}
 function shareShop(k){const name=k==="admin"?"PasarRuang Official":((shopItems(k)[0]||{}).seller||"Toko");const url=SHARE_BASE?SHARE_BASE+"/p/t-"+k:location.origin+location.pathname+"#toko-"+k;const txt=`🏪 ${name} di PasarRuang — lihat semua produknya:`;
   if(navigator.share){navigator.share({title:name,text:txt,url}).catch(()=>{});}else{copyTxt(url,"Link toko disalin — tempel di status/grup");window.open(`https://wa.me/?text=${encodeURIComponent(txt+" "+url)}`,"_blank");}}
 function shareId(id){const x=byId(id);if(!x){toast("Produk tidak ada");return;}if(navigator.share)shareNative(id);else{copyTxt(linkOf(x),"Link disalin — tempel di status/grup");window.open(`https://wa.me/?text=${encodeURIComponent(shareText(x)+" "+linkOf(x))}`,"_blank");}}
@@ -1675,7 +1688,7 @@ const shopKey=x=>x.remote?x.uid:"admin";
 const shopItems=k=>LIST.filter(x=>shopKey(x)===k);
 const shopCount=k=>shopItems(k).filter(x=>!x.sold).length;
 let SHOP_K=null,SHOP_TAB="all";
-function openShop(k){if(!k)return;SHOP_K=k;SHOP_TAB="all";REPLY_ID=null;loadRevs(k,true).then(()=>{if(SHOP_K===k)drawShop();});close_("detail");drawShop();document.getElementById("shop").classList.add("open");setHash("toko-"+k);
+function openShop(k){if(!k)return;SHOP_K=k;SHOP_TAB="all";REPLY_ID=null;loadFol(k);loadRevs(k,true).then(()=>{if(SHOP_K===k)drawShop();});close_("detail");drawShop();document.getElementById("shop").classList.add("open");setHash("toko-"+k);
   if(k!=="admin"&&!(k in AVA))getAva(k).then(()=>{if(SHOP_K===k)drawShop();});}
 function drawShop(){const k=SHOP_K,items=shopItems(k),act=items.filter(x=>!x.sold),sold=items.filter(x=>x.sold);
   const first=items[0]||{},name=k==="admin"?"PasarRuang Official":(first.seller||"Penjual");
@@ -1683,15 +1696,15 @@ function drawShop(){const k=SHOP_K,items=shopItems(k),act=items.filter(x=>!x.sol
   const since=items.length?Math.min(...items.map(x=>x.ts||Date.now())):Date.now();
   const list=SHOP_TAB==="sold"?sold:act;const link=SHARE_BASE?SHARE_BASE+"/p/t-"+k:location.origin+location.pathname+"#toko-"+k;
   document.getElementById("shopBox").innerHTML=`<div class="shead"><div class="sava">${k==="admin"?document.querySelector('.logo .mark').innerHTML:avaHtml(k,name)}</div>
-    <div style="min-width:0"><b>${esc(name)}</b>${k==="admin"?` <span class="vbadge">🏪 Official</span>`:vbadge(k)}
+    <div style="min-width:0"><b>${esc(name)}</b>${k==="admin"?` <span class="vbadge">🏪 Official</span>`:vbadge(k)}${mbadge(k)}
     <small>📍 ${esc(cities.slice(0,2).join(", ")||"Indonesia")} · aktif sejak ${new Date(since).toLocaleDateString("id-ID",{month:"short",year:"numeric"})}</small></div></div>
-   <div class="sstats"><div><b>${act.length}</b><small>Produk</small></div><div><b>${sold.length}</b><small>Terjual</small></div><div>${(st=>st?`<b>⭐ ${st.avg.toFixed(1)}</b><small>${st.n} ulasan</small>`:`<b>—</b><small>Belum ada ulasan</small>`)(revStat(k))}</div></div>
-   <div class="sbtns">${act[0]?`<button class="btn wa" onclick="close_('shop');startChat('${act[0].id}')">💬 Chat</button>`:""}<button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="shareShop('${k}')">🔗 Bagikan toko</button>${k==="admin"||(USER&&USER.uid===k)?"":isAdmin()?(isBannedK(k)?`<button class="tab" onclick="admUnban('${k}')">🔓 Buka blokir</button>`:`<button class="tab" style="border-color:#f5c2c0;color:#b42318" onclick="admBan('${k}','${esc(name).replace(/'/g,"")}')">🚫 Blokir</button>`):`<button class="rptlink" style="align-self:center" onclick="openReport('shop','${k}')">🚩 Laporkan</button>`}</div>
+   <div class="sstats"><div><b>${act.length}</b><small>Produk</small></div><div><b>${k in FOL?FOL[k].toLocaleString("id-ID"):"…"}</b><small>Pengikut</small></div><div><b>${sold.length}</b><small>Terjual</small></div><div>${(st=>st?`<b>⭐ ${st.avg.toFixed(1)}</b><small>${st.n} ulasan</small>`:`<b>—</b><small>Belum ada ulasan</small>`)(revStat(k))}</div></div>
+   <div class="sbtns">${(USER&&(USER.uid===k||(k==="admin"&&isAdmin())))?"":`<button class="btn buy" style="${MYFOL.has(k)?"background:#fff;color:var(--brand-d);border:1px solid var(--brand)":""}" onclick="toggleFollow('${k}')">${MYFOL.has(k)?"✓ Mengikuti":"➕ Ikuti"}</button>`}${act[0]?`<button class="btn wa" onclick="close_('shop');startChat('${act[0].id}')">💬 Chat</button>`:""}<button class="btn buy" style="background:#fff;color:var(--ink);border:1px solid var(--line)" onclick="shareShop('${k}')">🔗 Bagikan toko</button>${isAdmin()?`<button class="tab" onclick="admMall('${k}')">${isMall(k)?"❌ Cabut Mall Ori":"🏬 Jadikan Mall Ori"}</button>`:""}${k==="admin"||(USER&&USER.uid===k)?"":isAdmin()?(isBannedK(k)?`<button class="tab" onclick="admUnban('${k}')">🔓 Buka blokir</button>`:`<button class="tab" style="border-color:#f5c2c0;color:#b42318" onclick="admBan('${k}','${esc(name).replace(/'/g,"")}')">🚫 Blokir</button>`):`<button class="rptlink" style="align-self:center" onclick="openReport('shop','${k}')">🚩 Laporkan</button>`}</div>
    <div class="otabs" style="padding:0 16px"><button class="${SHOP_TAB==="all"?"on":""}" onclick="SHOP_TAB='all';drawShop()">Produk${act.length?`<b style="background:var(--brand)">${act.length}</b>`:""}</button><button class="${SHOP_TAB==="sold"?"on":""}" onclick="SHOP_TAB='sold';drawShop()">Terjual${sold.length?`<b style="background:#44515c">${sold.length}</b>`:""}</button><button class="${SHOP_TAB==="rev"?"on":""}" onclick="SHOP_TAB='rev';drawShop()">⭐ Ulasan${(REVS[k]||[]).length?`<b style="background:#ffb400;color:#3b2a00">${REVS[k].length}</b>`:""}</button></div>
    ${SHOP_TAB==="rev"?(()=>{const rs=REVS[k]||[],mine=USER&&(USER.uid===k||(k==="admin"&&isAdmin()));const st=revStat(k);
       return `<div style="padding:12px 16px 18px;display:flex;flex-direction:column;gap:10px">${st?`<div class="rsum"><b>${st.avg.toFixed(1)}</b><div>${stars(st.avg,20)}<small>${st.n} ulasan · ${[5,4,3,2,1].map(i=>`${i}★ ${rs.filter(r=>r.rating===i).length}`).join(" · ")}</small></div></div>`:""}
         ${rs.length?rs.map(r=>revCard(r,mine)).join(""):`<div class="oempty"><div>⭐</div>Belum ada ulasan</div>`}</div>`;})():`
-   <div class="sgrid">${list.length?list.map(x=>`<div class="card" onclick="close_('shop');openDetail('${x.id}')"><div class="thumb" style="background:${COLORS[x.cat]||'#eee'}">${pic(x)}<span class="tag ${x.cond.toLowerCase()}">${x.cond}</span>${x.sold?`<span class="soldtag">TERJUAL</span>`:""}</div><div class="cb"><div class="p">${pr(x)}</div><div class="t">${esc(x.title)}</div><div class="m">📍 ${esc(x.city)}</div></div></div>`).join("")
+   <div class="sgrid">${list.length?list.map(x=>`<div class="card" onclick="close_('shop');openDetail('${x.id}')"><div class="thumb" style="background:${COLORS[x.cat]||'#eee'}">${pic(x)}<span class="tag ${x.cond.toLowerCase()}">${x.cond}</span>${x.sold?`<span class="soldtag">TERJUAL</span>`:""}</div><div class="cb"><div class="p">${pr(x)}</div><div class="t">${isMall(mk(x))?`<span class="mtag">Mall Ori</span>`:""}${esc(x.title)}</div><div class="m">📍 ${esc(x.city)}</div></div></div>`).join("")
      :`<div class="oempty" style="grid-column:1/-1"><div>📦</div>${SHOP_TAB==="sold"?"Belum ada yang terjual":"Belum ada produk"}</div>`}</div>`}`;
   const miss=(REVS[k]||[]).map(r=>r.buyerUid).filter(u=>u&&!(u in AVA));if(SHOP_TAB==="rev"&&miss.length)Promise.all(miss.map(getAva)).then(()=>{if(SHOP_K===k&&SHOP_TAB==="rev")drawShop();});}
 
@@ -1777,6 +1790,12 @@ try{
     async editListing(fid,patch,imgs){ const u=auth.currentUser; const b=F.writeBatch(db); b.update(F.doc(db,"listings",fid),{...patch,editedAt:F.serverTimestamp()});
       if(imgs){ b.set(F.doc(db,"photos",fid),{uid:u.uid,imgs}); delete photoCache[fid]; } await b.commit(); },
     async update(fid,patch){ await F.updateDoc(F.doc(db,"listings",fid),patch); },
+    async followCount(k){ const r=await F.getCountFromServer(F.query(F.collection(db,"follows"),F.where("shop","==",k))); return r.data().count; },
+    async myFollows(){ const u=auth.currentUser; const r=await F.getDocs(F.query(F.collection(db,"follows"),F.where("uid","==",u.uid),F.limit(500))); return r.docs.map(d=>d.data().shop); },
+    async follow(k){ const u=auth.currentUser; await F.setDoc(F.doc(db,"follows",k+"_"+u.uid),{shop:k,uid:u.uid,at:F.serverTimestamp()}); },
+    async unfollow(k){ const u=auth.currentUser; await F.deleteDoc(F.doc(db,"follows",k+"_"+u.uid)); },
+    async loadMall(){ const r=await F.getDocs(F.query(F.collection(db,"mall"),F.limit(500))); return r.docs.map(d=>d.id); },
+    async setMall(k,on,name){ if(on) await F.setDoc(F.doc(db,"mall",k),{name:name||"",at:F.serverTimestamp()}); else await F.deleteDoc(F.doc(db,"mall",k)); },
     async overrides(){ const r=await F.getDocs(F.collection(db,"overrides")); const m={}; r.docs.forEach(d=>m[d.id]=d.data()); return m; },
     async saveOverride(sid,patch){ await F.setDoc(F.doc(db,"overrides",String(sid)),{...patch,editedAt:F.serverTimestamp()},{merge:true}); },
     async remove(fid){ await F.deleteDoc(F.doc(db,"photos",fid)).catch(()=>{}); await F.deleteDoc(F.doc(db,"listings",fid)); },
@@ -1857,6 +1876,7 @@ try{
     const parts={}; keys.forEach(k=>{ chatUnsubs.push(F.onSnapshot(F.query(F.collection(db,"chats"),F.where("participants","array-contains",k),F.limit(200)),
       r=>{parts[k]=r.docs.map(toChat); const m={}; Object.values(parts).flat().forEach(c=>m[c.id]=c); onChats(Object.values(m));},e=>console.warn("chat:",e))); }); });
   FB.refresh(); if(auth.currentUser) loadProfile();
+  FB.loadMall().then(ids=>{MALL=new Set(ids||[]);renderCats();render();}).catch(e=>console.warn("mall:",e));
   FB.overrides().then(o=>{OVR=o;applyOverrides();render();}).catch(e=>console.warn("overrides:",e));
   FB.loadVerified().then(ids=>{VERIFIED=new Set(ids);render();}).catch(e=>console.warn("verified:",e));
 }catch(e){ console.warn("Firebase tidak tersedia:",e); }
